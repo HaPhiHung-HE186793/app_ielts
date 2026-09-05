@@ -4,47 +4,58 @@ Cập nhật: 2026-09-06, múi giờ Asia/Saigon.
 
 ## Đang ở đâu
 
-**Mốc 0: tài liệu khởi đầu đã hoàn thành. Task tiếp theo là APP-001.**
+**Đã có bản học thử local “Mỗi ngày”. Task tiếp theo là PLAN-001.**
 
-- Repository: `app_ielts`.
-- Branch khi lập bàn giao: `main`.
-- Remote đã cấu hình: `origin` trỏ tới `https://github.com/HaPhiHung-HE186793/app_ielts.git`.
-- Có bộ tài liệu sản phẩm/kiến trúc/task/bàn giao và `.gitignore` cơ bản.
-- Chưa có ứng dụng chạy được, `package.json`, dependency, backend, AI, service worker hoặc deployment.
-- Không có task triển khai đang thực hiện. Không có blocker cho APP-001.
+- Branch: `main`; remote `origin`: `https://github.com/HaPhiHung-HE186793/app_ielts.git`.
+- Hoàn thành DOC-001, APP-001, APP-002, CONTENT-001, LEARN-001, LEARN-002, REVIEW-001.
+- PLAN-001 ở trạng thái READY. Không có task đang làm dở hoặc blocker cho phần local này.
+- Mốc 1 chưa đóng hoàn toàn: còn kế hoạch/onboarding theo thời gian và PROGRESS-001 đầy đủ.
+- Chưa có backend, AI, dịch vụ cloud, deployment công khai hoặc PWA install/offline.
 
-## Đã hoàn thành
+## Dùng được ngay
 
-- DOC-001: ghi định hướng sản phẩm, phạm vi theo giai đoạn, giả định, kiến trúc dự kiến và tiêu chí cho các task.
-- Thêm `AGENTS.md` để session mới đọc trạng thái trước khi sửa code.
-- Lưu nguyên tắc cập nhật tài liệu và phân biệt kế hoạch với tính năng đã có.
+- Chạy `npm ci` rồi `npm run dev`, mở http://127.0.0.1:5173.
+- Năm khu vực: Hôm nay, Khám phá, Luyện tập, Ôn lại, Tiến bộ; desktop có sidebar, điện thoại có thanh dưới.
+- Bảy bài thử nghiệm, mỗi bài có câu mẫu, ba hoạt động, gợi ý/giải thích/thử lại và câu tự viết tùy chọn.
+- Lưu bài dở kể cả lựa chọn/câu đang nhập, phân biệt đáp án đúng độc lập với đúng sau gợi ý/sửa lỗi.
+- Lịch ôn 1/3/7/14/30 ngày; sai hoặc dùng gợi ý quay lại sau 10 phút; có ôn sớm và trạng thái đến hạn cập nhật khi chuyển trang.
+- Cài đặt tên/sở thích/phút dự kiến/loại thi, tải và khôi phục bản sao JSON, xử lý lỗi dữ liệu và lỗi ghi.
+- Trang Tiến bộ dùng lượt làm thật và hiển thị câu tự viết, chưa đo phút học chủ động hoặc suy band IELTS.
 
-## Bước tiếp theo chính xác
+## File cần biết
 
-**APP-001 — Khởi tạo React + TypeScript + Vite.**
+- `src/content/lessons.ts`, [CONTENT_REVIEW.md](CONTENT_REVIEW.md): học liệu và nguồn/rà soát.
+- `src/domain/learning.ts`, `session.ts`: chấm đáp án, lượt làm, lịch ôn; có unit test.
+- `src/data/schema.ts`, `store.ts`: schema version 1 và localStorage key `moi-ngay.study.v1`.
+- `src/app`, `src/features`, `src/components`, `src/styles`: điều hướng và giao diện.
+- `tests/learning.spec.ts`, `playwright.config.ts`, [TESTING.md](TESTING.md): luồng kiểm tra trình duyệt và cách chạy.
+- [DECISIONS.md](DECISIONS.md): tên làm việc, stack, lưu local, lịch ôn và các chọn lựa còn mở.
 
-Đọc phần chi tiết APP-001 trong [TASKS.md](TASKS.md), kiểm tra Git và Node/npm, rồi tạo scaffold trong repository hiện tại. Giữ nguyên tài liệu, chọn dependency tương thích, bổ sung lockfile và hướng dẫn chạy. Lệnh lint/typecheck/build cùng kiểm tra mở trang là bằng chứng hoàn thành.
+## Kiểm tra đã đạt
 
-## Quyết định cần giữ
+- Cài dependency thành công, có lockfile; Node 22.18.0 và npm 10.9.3.
+- Lint, typecheck và build thành công.
+- Vitest: 26 test đạt, gồm vòng đời cả bảy bài, chấm đáp án, lịch ôn, chống nộp trùng và kiểm tra bản sao.
+- Playwright: 18 test đạt trên Chrome desktop 1440×1000 và màn hình điện thoại 360×800; chạy trên bản build qua preview.
+- Đã kiểm tra ảnh giao diện, không có lỗi runtime/tràn ngang ở hai kích thước trên.
+- Axe không phát hiện vi phạm trong tập luật WCAG A/AA trên các trang đã quét và hộp cài đặt; đây chỉ là kiểm tra tự động.
+- Chi tiết phạm vi và các môi trường chưa kiểm tra nằm trong TESTING.
 
-- Ưu tiên trải nghiệm cá nhân trên điện thoại, PWA trước.
-- Một luồng học hoàn chỉnh trước, đồng bộ và AI sau.
-- Học ngắn luôn có hoạt động chủ động và lịch ôn; giữ buổi tập trung trong kế hoạch.
-- IELTS sáu tháng là mục tiêu có điều chỉnh; AI không cấp điểm chính thức.
-- Xem [DECISIONS.md](DECISIONS.md) để biết giả định chưa chốt. Không tự coi lựa chọn cá nhân, loại bài thi, ngân sách AI hoặc cấu hình cloud là đã được xác nhận.
+## Task tiếp theo chính xác
 
-## Kiểm tra của mốc này
+**PLAN-001 — Onboarding và phiên học theo thời gian.**
 
-- Đã kiểm tra repository sạch trước khi sửa và local đồng bộ `origin/main` sau fetch.
-- Đã kiểm tra 8 file Markdown, 13 liên kết nội bộ và 24 task: không có liên kết hỏng/ID trùng, phụ thuộc xuất hiện trước task và APP-001 là task READY duy nhất với phụ thuộc đã DONE.
-- Đã đối chiếu trạng thái README/TASKS/STATUS/nhật ký và chạy `git diff --check` thành công; kiểm tra phần staged được thực hiện trước commit.
-- Chưa có code để chạy build, test hoặc kiểm tra trình duyệt.
-- Kết quả kiểm tra và lưu Git cuối mốc được ghi ở nhật ký/đầu ra bàn giao. Session mới vẫn cần kiểm tra lại Git để biết trạng thái remote hiện tại.
+Đã có form cài đặt cơ bản, không cần xây lại. Cần thu thập mục tiêu/ngày thi tùy chọn, bổ sung lựa chọn 2/5/15 phút hoặc buổi đầy đủ có hành vi học thực sự khác nhau, giữ bài dở và tương thích dữ liệu version 1. Không tạo band từ đánh giá ngắn hoặc báo phiên hai phút là đủ khối lượng IELTS. Xem phần chi tiết PLAN-001 trong [TASKS.md](TASKS.md).
 
-## Điều chưa thực hiện và lưu ý tiếp tục
+Sau đó hoàn thiện PROGRESS-001 với kế hoạch và thời gian hoạt động thực; hiện trang thống kê mới là phần nền.
 
-- Chưa kiểm tra Node/npm hoặc thiết bị iOS/Android; thực hiện khi làm task liên quan.
-- Chưa tạo tài khoản/dự án Supabase, cấu hình AI hoặc tên miền.
-- Chưa có học liệu chính thức, người kiểm duyệt hoặc tập bài đánh giá AI.
-- Chưa có dữ liệu học viên thật trong repository.
-- Không cần đọc lại lịch sử chat để bắt đầu APP-001; tài liệu này và TASKS là đầu vào bàn giao.
+## Giới hạn cần giữ rõ
+
+- Tiến độ chỉ nằm ở trình duyệt/origin hiện tại; localhost và 127.0.0.1 là hai kho khác nhau. Có bản sao thủ công, chưa đồng bộ cloud.
+- Chỉ giữ một bài dở. Chuyển bài khác cần xác nhận trong app. Chưa giải quyết ghi đồng thời an toàn từ nhiều tab.
+- Không ghi âm, không chấm phát âm/Writing bằng AI. Giọng câu mẫu là SpeechSynthesis tùy thiết bị.
+- Học liệu do trợ lý biên soạn và rà soát nội bộ, chưa có giáo viên độc lập xác nhận; không phải kho đề IELTS.
+- Chưa có đánh giá đầu vào, lịch học sáu tháng cá nhân, đo phút chủ động hoặc chương trình bốn tuần đầy đủ.
+- Chưa kiểm thử Safari/iPhone và Android thật, PWA offline/push, Supabase hoặc nhà cung cấp AI.
+- Ảnh và script kiểm tra tạm ở `.local`, báo cáo Playwright ở `test-results`, đều được gitignore.
+- Dev server là tiến trình local, có thể cần chạy lại trong session mới. Dùng Git để xác minh commit và trạng thái remote hiện tại.

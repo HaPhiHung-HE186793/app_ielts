@@ -18,10 +18,10 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 
 ## DEC-003 — React, TypeScript, Vite; backend Supabase theo giai đoạn
 
-- Trạng thái: lựa chọn mặc định để khởi tạo, chưa có code.
+- Trạng thái: đã triển khai frontend và luồng học local ngày 2026-09-06.
 - Quyết định: React + TypeScript + Vite, npm/lockfile; luồng học local trước, tài khoản và đồng bộ sau.
 - Lý do: có thể kiểm tra một phiên học hoàn chỉnh trước khi cần cấu hình dịch vụ ngoài.
-- Hệ quả: tách lớp dữ liệu, ghi rõ local chưa phải sao lưu; chọn phiên bản thực tế ở APP-001. Nhà cung cấp AI và hosting chưa chốt.
+- Hệ quả: tách lớp dữ liệu, ghi rõ local chưa phải sao lưu. Dùng React 19.2.8, Vite 8.2.2 và TypeScript 5.9.3 với Node 22.18.0; TypeScript 5.9 phù hợp peer dependency của bộ lint. Phiên bản chính xác nằm trong lockfile. Nhà cung cấp AI và hosting chưa chốt.
 
 ## DEC-004 — Tiến bộ học tập là mục tiêu chính
 
@@ -43,6 +43,26 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 - Lý do: cần kiểm tra được trải nghiệm học và độ phù hợp trước khi tăng số lượng nội dung.
 - Hệ quả: các bài cần mục tiêu, giải thích, nguồn và quyền sử dụng; nội dung mẫu không được trình bày thành kho học liệu hoàn chỉnh.
 
+## DEC-007 — Tên làm việc và giao diện
+
+- Ngày: 2026-09-06. Trạng thái: tên làm việc, có thể đổi khi người dùng yêu cầu.
+- Quyết định: tên hiển thị “Mỗi ngày”, giao diện xanh lá nhạt/kem, chữ Việt Be Vietnam Pro và Lora được đóng gói local, điều hướng cạnh trái trên desktop và dưới cùng trên điện thoại.
+- Lý do: thể hiện nhịp học nhẹ nhàng và giữ thao tác học dễ tìm. Tên repository vẫn là app_ielts.
+
+## DEC-008 — Dữ liệu văn bản local với bản sao có kiểm tra
+
+- Ngày: 2026-09-06. Trạng thái: đã triển khai cho mốc 1.
+- Quyết định: dùng localStorage cho lượng dữ liệu văn bản nhỏ, qua store riêng và schema Zod version 1; IndexedDB được dành cho gói offline/audio sau này.
+- Hệ quả: lưu cả câu chưa nộp, lượt sai/gợi ý, bài tự viết; bản lỗi/khác phiên bản không bị ghi đè. Lỗi quota giữ công việc trong bộ nhớ và hiện cảnh báo. Có xuất JSON và nhập JSON được kiểm tra trước khi thay thế dữ liệu.
+- Giới hạn: một bài dở; local không thay thế sao lưu. Không cam kết giải quyết ghi đồng thời giữa nhiều tab; đồng bộ và quy tắc xung đột cần DATA-002.
+
+## DEC-009 — Lịch ôn khởi đầu minh bạch
+
+- Ngày: 2026-09-06. Trạng thái: đã triển khai, có thể thay khi có dữ liệu.
+- Quyết định: sau lần đầu hoàn thành bài, ôn sau 24 giờ. Trả lời đúng không cần gợi ý tăng bước đến 3/7/14/30 ngày; sai hoặc dùng gợi ý quay về bước 0 và ôn sau 10 phút.
+- Quy tắc: ngày là khoảng 24 giờ tính từ lượt luyện, không phải đổi ngày lúc nửa đêm. Học lại bài không xóa lịch ôn sẵn có; một lượt nộp ôn chỉ được ghi một lần theo ID. Một phiên lấy tối đa 10 mục; xem danh sách không đổi lịch.
+- Giới hạn: đây là lựa chọn kỹ thuật ban đầu, không phải kết luận về khoảng cách tối ưu cho mọi học viên. Không gọi thuật toán này là FSRS hay dự báo thành thạo.
+
 ## Các giả định/chọn lựa còn mở
 
 | Mã | Vấn đề | Mặc định hiện tại | Thời điểm cần làm rõ |
@@ -52,7 +72,7 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 | OPEN-003 | Đầu vào, thời gian, ngày thi, điểm tối thiểu từng kỹ năng | Chưa biết; mục tiêu sáu tháng cần đánh giá lại | Khi tạo kế hoạch học cá nhân |
 | OPEN-004 | Nhà cung cấp và ngân sách AI | Chưa chọn, không giả định có API key | AI-001 |
 | OPEN-005 | Hosting, dự án Supabase, tên miền | Chưa cấp cấu hình; local trước | DATA-001 và bản triển khai beta |
-| OPEN-006 | Thuật toán lịch ôn và tham số | Chưa chọn | REVIEW-001 |
+| OPEN-006 | Đánh giá lại thuật toán lịch ôn | Đã có lịch khởi đầu DEC-009; cần hiệu chỉnh theo dữ liệu | Sau thử nghiệm sử dụng và trước mở rộng |
 | OPEN-007 | Thời gian lưu audio và bài cá nhân trên cloud | Chưa chốt, chưa thu thập dữ liệu thật | Trước upload dữ liệu thật và AI-002 |
 | OPEN-008 | Người kiểm duyệt/giáo viên đối chiếu bài | Chưa bố trí | Trước phê duyệt học liệu beta và đánh giá AI |
 

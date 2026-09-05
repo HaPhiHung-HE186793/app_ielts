@@ -1,6 +1,19 @@
 # Kiến trúc dự kiến
 
-Ngày lập: 2026-09-06. Đây là thiết kế để bắt đầu triển khai, chưa mô tả hệ thống đang chạy. Các quyết định và giả định nằm trong [DECISIONS.md](DECISIONS.md).
+Ngày cập nhật: 2026-09-06. Frontend và luồng học local đã được triển khai; các phần cloud, AI và PWA dưới đây vẫn là kế hoạch. Các quyết định và giả định nằm trong [DECISIONS.md](DECISIONS.md).
+
+## Hiện có trong code
+
+- React + TypeScript + Vite, điều hướng hash cho năm khu vực và `/lesson/:id`; không cần cấu hình rewrite để mở đường dẫn bài học trên static host.
+- `src/content/lessons.ts`: bảy bài thử nghiệm; nguồn và rà soát tại [CONTENT_REVIEW.md](CONTENT_REVIEW.md).
+- `src/domain/learning.ts` và `session.ts`: chấm đáp án đóng, quản lý lượt làm, kết quả độc lập và lịch ôn đơn giản.
+- `src/data/schema.ts`: schema Zod phiên bản 1. `store.ts`: localStorage với key `moi-ngay.study.v1`, giữ bản lỗi nguyên trạng, xuất/nhập bản sao, phản ánh lỗi ghi. Dữ liệu nhỏ gồm văn bản và tiến độ; chưa dùng IndexedDB/audio cache.
+- `src/app/clock.ts`: đọc thời gian mới khi render/đổi trang, thông báo cập nhật sau 30 giây hoặc khi tab lấy lại focus/hiển thị. Lịch ôn lưu thời điểm tuyệt đối; ngày hiển thị theo múi giờ trình duyệt.
+- SpeechSynthesis cho câu mẫu tùy khả năng thiết bị; font và minh họa được đóng gói local. Không có lời gọi API AI.
+- Một bài dở tại một thời điểm. Chuyển sang bài khác cần xác nhận trong giao diện; tiếp tục cùng bài giữ câu đang nhập, đáp án/gợi ý và bài tự viết.
+- Thống kê từ lượt hoàn thành/ôn thật; chưa đo phút hoạt động hoặc xây lịch ngày hoàn chỉnh. Chưa hỗ trợ chỉnh sửa đồng thời an toàn từ nhiều tab hay đồng bộ nhiều thiết bị.
+
+Các lệnh và phạm vi kiểm tra nằm trong [TESTING.md](TESTING.md). Đọc STATUS để biết phần nào đã đạt tiêu chí task.
 
 ## 1. Hướng công nghệ
 
@@ -14,7 +27,7 @@ Ngày lập: 2026-09-06. Đây là thiết kế để bắt đầu triển khai,
 | Cài lên màn hình chính | PWA: manifest, icons, service worker | Mở như ứng dụng và hỗ trợ các chức năng offline được triển khai |
 | App Store/Google Play | Capacitor ở giai đoạn sau | Tái sử dụng ứng dụng web, bổ sung tích hợp và quy trình phát hành riêng |
 
-Chưa chốt phiên bản, thư viện UI, routing, thuật toán ôn, nhà cung cấp AI hoặc nơi deploy. Chọn khi làm task tương ứng và ghi lý do nếu có ảnh hưởng dài hạn. Dùng npm cùng lockfile cho scaffold đầu tiên, trừ khi môi trường hoặc yêu cầu mới cho thấy cần thay đổi.
+Phiên bản đã chọn nằm trong `package.json` và lockfile: React 19, Vite 8, TypeScript 5.9; CSS trực tiếp và Lucide, không có bộ UI bên ngoài. Điều hướng hash và lịch ôn khởi đầu đã triển khai. Nhà cung cấp AI và nơi deploy chưa chốt. Dùng npm cùng lockfile.
 
 ## 2. Phân chia trách nhiệm
 
@@ -82,7 +95,7 @@ Một phiên hoàn thành phải được lưu từ hành động thực của n
 - Chọn bài dựa trên kiến thức tiên quyết, nội dung đến hạn ôn, mục tiêu và sở thích.
 - Ghi lại câu trả lời trước khi hiển thị đáp án; phân biệt đúng độc lập với đúng sau gợi ý.
 - Phản hồi xác định được dùng cho câu hỏi có đáp án; gọi AI khi cần xử lý câu trả lời mở.
-- Lịch ôn là logic có thể kiểm tra bằng thời gian giả lập. Chưa chọn FSRS hay thuật toán khác; cần ghi rõ quyết định trước REVIEW-001.
+- Lịch ôn dùng các khoảng 1/3/7/14/30 ngày; sai hoặc có gợi ý quay lại sau 10 phút, xem DEC-009. Đây là thuật toán khởi đầu có test bằng thời gian giả lập, không phải FSRS hoặc ước lượng xác suất ghi nhớ.
 - Không đổi lịch ôn chỉ vì người học xem thẻ hoặc tải lại trang.
 - Giới hạn tải bài ôn mỗi ngày, giữ lại bài chưa ôn và ưu tiên lại sau thời gian nghỉ.
 - Tách phút tương tác chủ động với thời gian tab đang mở; xử lý tab nền và thời gian không hoạt động khi triển khai đo lường.

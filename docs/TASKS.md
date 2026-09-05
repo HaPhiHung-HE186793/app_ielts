@@ -22,13 +22,13 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 
 | ID | Trạng thái | Phụ thuộc | Kết quả và tiêu chí hoàn thành |
 | --- | --- | --- | --- |
-| APP-001 | READY | DOC-001 | Khởi tạo React + TypeScript + Vite; có lockfile, scripts dev/build/lint/typecheck, màn hình khởi động tiếng Việt; chạy được và hướng dẫn README chính xác. |
-| APP-002 | TODO | APP-001 | Layout ưu tiên điện thoại và điều hướng năm khu vực; dùng được bàn phím, có focus/nhãn; kiểm tra 360px và desktop, không tràn ngang. Mục chưa làm có trạng thái trung thực. |
-| CONTENT-001 | TODO | APP-001 | Bộ học liệu tuần đầu quy mô nhỏ, tối thiểu 7 bài nền tảng; mỗi bài có mục tiêu, mức độ, hoạt động, giải thích, nguồn/quyền sử dụng. Ghi rõ ai/cách kiểm duyệt; chỉ bài đã kiểm duyệt được dùng như nội dung chính thức. |
-| LEARN-001 | TODO | APP-002, CONTENT-001 | Chọn bài → làm hoạt động → xem phản hồi → thử lại → hoàn thành; phân biệt đúng độc lập và sau gợi ý. Kiểm tra chấm đáp án, tránh hoàn thành hai lần khi nhấn lặp. |
-| LEARN-002 | TODO | LEARN-001 | Lưu tiến độ và bài dở vào local qua lớp dữ liệu riêng; đóng/mở lại tiếp tục được. Hiển thị giới hạn lưu local, xử lý lỗi lưu và thay đổi phiên bản dữ liệu có chủ đích. |
-| PLAN-001 | TODO | LEARN-002 | Onboarding lưu sở thích, thời gian, mục tiêu và loại thi chưa xác định nếu cần; Hôm nay chọn 2/5/15 phút hoặc buổi đầy đủ. Không tự tạo band đầu vào hoặc hứa mục tiêu chưa có đánh giá. |
-| REVIEW-001 | TODO | LEARN-002 | Chọn và ghi quyết định thuật toán ôn; tạo lịch từ kết quả thực, ôn đến hạn và thử lại. Kiểm tra thời gian giả lập, qua ngày, trả lời sai, reload và ngày nghỉ; xem thẻ không tự tăng thành thạo. |
+| APP-001 | DONE | DOC-001 | Khởi tạo React + TypeScript + Vite; có lockfile, scripts dev/build/lint/typecheck, màn hình khởi động tiếng Việt; chạy được và hướng dẫn README chính xác. |
+| APP-002 | DONE | APP-001 | Layout ưu tiên điện thoại và điều hướng năm khu vực; dùng được bàn phím, có focus/nhãn; kiểm tra 360px và desktop, không tràn ngang. Mục chưa làm có trạng thái trung thực. |
+| CONTENT-001 | DONE | APP-001 | Có 7 bài nền tảng với mục tiêu, hoạt động, giải thích và hồ sơ nguồn/rà soát trong CONTENT_REVIEW. Hiển thị học liệu thử nghiệm do trợ lý rà soát nội bộ, chưa có giáo viên độc lập xác nhận; chưa gọi là nội dung chính thức. |
+| LEARN-001 | DONE | APP-002, CONTENT-001 | Chọn bài → làm hoạt động → xem phản hồi → thử lại → hoàn thành; phân biệt đúng độc lập và sau gợi ý. Kiểm tra chấm đáp án, tránh hoàn thành hai lần khi nhấn lặp. |
+| LEARN-002 | DONE | LEARN-001 | Lưu tiến độ và bài dở vào local qua lớp dữ liệu riêng; đóng/mở lại tiếp tục được. Hiển thị giới hạn lưu local, xử lý lỗi lưu và thay đổi phiên bản dữ liệu có chủ đích. |
+| PLAN-001 | READY | LEARN-002 | Onboarding lưu sở thích, thời gian, mục tiêu và loại thi chưa xác định nếu cần; Hôm nay chọn 2/5/15 phút hoặc buổi đầy đủ. Không tự tạo band đầu vào hoặc hứa mục tiêu chưa có đánh giá. |
+| REVIEW-001 | DONE | LEARN-002 | Lịch ôn DEC-009 từ kết quả thật, điền đáp án trước phản hồi; sai/có gợi ý ôn lại sau 10 phút. Kiểm tra qua ngày, reload, nộp trùng và gián đoạn; xem thẻ không đổi lịch. |
 | PROGRESS-001 | TODO | PLAN-001, REVIEW-001 | Tiến bộ từ dữ liệu thật: bài hoàn thành, nhớ lại, lượt luyện; dữ liệu trống có hướng dẫn. Phân biệt thời gian hoạt động, dữ liệu mẫu và ước lượng; không suy band từ XP. |
 
 Điều kiện đạt mốc 1: một người mở app local, hoàn thành bài, đóng/mở lại, ôn một mục đến hạn và thấy tiến độ được lưu đúng.
@@ -67,18 +67,22 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | COACH-001 | TODO | BETA-001 | Nếu người dùng cần: dashboard gia sư, giao bài và nhận xét với quyền truy cập có lựa chọn; kiểm tra học viên khác không xem chéo dữ liệu. |
 | MOBILE-001 | TODO | BETA-001 | Nếu cần cửa hàng ứng dụng: đánh giá Capacitor, build/ký và kiểm thử native, chuẩn bị thông tin phát hành. Tài khoản, thiết bị và quyền phát hành phải có trước khi gửi lên cửa hàng. |
 
-## Chi tiết task tiếp theo: APP-001
+## Chi tiết task tiếp theo: PLAN-001
 
 ### Thực hiện
 
-1. Đọc trạng thái, kiểm tra Git và công cụ Node/npm có sẵn.
-2. Chọn phiên bản tương thích, ghi phiên bản Node yêu cầu; không chạy scaffolder theo cách ghi đè README hoặc docs.
-3. Tạo ứng dụng React/TypeScript/Vite trong repository hiện tại, dùng npm và commit lockfile.
-4. Dựng màn hình khởi động tối thiểu, tiếng Việt, dùng được trên màn hình nhỏ; không đi trước toàn bộ thiết kế APP-002.
-5. Cấu hình các lệnh `dev`, `build`, `lint`, `typecheck` và cập nhật hướng dẫn README.
-6. Kiểm tra cài dependency, lint, typecheck, build và mở trang. Nếu chưa có khả năng kiểm tra UI trực tiếp, ghi rõ phần còn thiếu thay vì báo đã xác minh.
-7. Cập nhật task/status/nhật ký; chọn APP-002 làm bước tiếp theo nếu không có chỉ dẫn mới.
+1. Đọc STATUS, DECISIONS và code thực tế. Đã có form cài đặt tên, sở thích, loại thi và phút dự kiến; không viết lại phần này mà thiếu nhu cầu.
+2. Thiết kế onboarding ngắn cho mục tiêu/ngày thi tùy chọn, thời gian thực và thông tin nền tảng. Nếu thêm đánh giá ngắn, ghi rõ chưa đủ để suy band IELTS.
+3. Làm lựa chọn 2/5/15 phút và buổi đầy đủ trên Hôm nay với hành vi thực sự khác nhau. Phiên khởi động không tự đánh dấu toàn bộ bài hoàn thành hoặc đủ khối lượng luyện thi.
+4. Giữ một luồng tiếp tục rõ ràng, bảo toàn bài dở và lịch ôn hiện có; nếu đổi schema, có đường đọc dữ liệu version 1/bản sao cũ.
+5. Hiển thị kế hoạch dự kiến riêng với kết quả đã thực hiện. Chưa có bài phù hợp thì nêu giới hạn, không tạo tiến độ giả.
+6. Thêm test hành vi chọn thời gian, quay lại bài dở và tương thích dữ liệu; chạy lint/typecheck/unit/e2e liên quan.
+7. Cập nhật task/status/nhật ký, tiếp tục PROGRESS-001 để hoàn thiện tiến bộ gắn với kế hoạch và phút học chủ động.
 
 ### Chưa thuộc task này
 
-Supabase thật, API AI, đăng nhập, thông báo, service worker/offline, phát hành lên cửa hàng và kho học liệu đầy đủ. Không cần placeholder giả cho những chức năng này để đánh dấu scaffold hoàn tất.
+Supabase thật, API AI, đăng nhập, thông báo, PWA offline, phát hành lên cửa hàng và kho học liệu đầy đủ.
+
+### Phần đã có nhưng chưa đóng task khác
+
+PROGRESS-001 đã có trang thống kê bài/lượt ôn và lịch sử câu tự viết từ dữ liệu thật; chưa có liên kết kế hoạch hoặc đo phút học chủ động. Không đánh dấu task này DONE chỉ vì trang đã hiển thị.

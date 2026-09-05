@@ -1,0 +1,20 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+*.tsbuildinfo
+
+# Local secrets; keep a documented template when it is added
+.env
+.env.*
+!.env.example
+
+# Local logs, exports, and learner recordings
+*.log
+.local/
+
+# OS metadata
+.DS_Store
+Thumbs.db

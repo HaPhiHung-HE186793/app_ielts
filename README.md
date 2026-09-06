@@ -11,8 +11,8 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 - Lưu bài dở, cả câu đang nhập; ôn theo lịch, thống kê thật và xuất/khôi phục bản sao JSON.
 - Thiết lập mục tiêu/ngày tùy chọn và tự nhận xét nền tảng; chọn phiên 2/5/15 phút hoặc buổi đầy đủ, tạm dừng và tiếp tục phiên.
 - Tiến bộ có thời gian hoạt động đo được, biểu đồ bảy ngày, lịch sử phiên hoàn tất/đã đổi và bộ lọc bài học/ôn/khởi động.
-- Hoàn thành mốc 1 local và PWA-001: manifest, biểu tượng, chế độ standalone và hướng dẫn cài từ web. Task tiếp theo: **DATA-001 — Supabase, tài khoản và quyền dữ liệu**.
-- Chưa có backend, AI, PWA offline hoặc bản triển khai công khai.
+- Hoàn thành mốc 1 local, PWA-001 và DATA-001: hướng dẫn cài, đăng nhập bằng mã email, tên tài khoản trên Supabase và kho học riêng từng tài khoản. Backend đã kiểm tra trên Docker local.
+- Task tiếp theo: **DATA-002 — đồng bộ tiến độ giữa thiết bị**. Chưa có Supabase cloud, AI, PWA offline hoặc bản triển khai công khai.
 - Trạng thái chi tiết và bước tiếp theo luôn được cập nhật tại [docs/STATUS.md](docs/STATUS.md).
 
 ## Bắt đầu hoặc tiếp tục phát triển
@@ -26,7 +26,7 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 5. [Các quyết định](docs/DECISIONS.md): lý do chọn hướng triển khai và các giả định chưa xác nhận.
 6. [Nhật ký bàn giao](docs/SESSION_LOG.md): những thay đổi quan trọng qua từng session.
 
-Tài liệu bổ sung: [kiểm tra ứng dụng](docs/TESTING.md), [cài lên màn hình chính](docs/INSTALLATION.md), [nguồn và rà soát học liệu](docs/CONTENT_REVIEW.md).
+Tài liệu bổ sung: [tài khoản và backend](docs/BACKEND.md), [kiểm tra ứng dụng](docs/TESTING.md), [cài lên màn hình chính](docs/INSTALLATION.md), [nguồn và rà soát học liệu](docs/CONTENT_REVIEW.md).
 
 Trước khi sửa, kiểm tra `git status --short --branch` và `git log -5 --oneline`. Đối chiếu tài liệu với code thực tế; không coi tính năng trong kế hoạch là tính năng đã tồn tại.
 
@@ -52,7 +52,16 @@ npm run preview
 
 `build` tạo `dist/`; `preview` dùng để kiểm tra bản build local, không phải máy chủ production.
 
-`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 47 unit test và 56 ca trình duyệt ở 1440px/360px, bao gồm quét axe A/AA tự động. Kết quả thực tế ở STATUS/SESSION_LOG.
+`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 59 unit test, 58 ca trình duyệt chế độ khách và 11 ca Auth/RLS riêng trên Supabase local. Kết quả thực tế ở STATUS/SESSION_LOG.
+
+Để thử tài khoản, mở Docker rồi chạy:
+
+```sh
+npm run db:start
+npm run dev:local
+```
+
+Dừng dev server cũ của dự án nếu đang chiếm cổng 5173. Mở http://127.0.0.1:5173/#/account, nhập email thử và lấy mã tại [hộp thư thử trên máy](http://127.0.0.1:54324). Không gửi email ra ngoài. `dev:local` tự lấy cấu hình công khai từ CLI, không cần tạo `.env`. `npm run test:auth` kiểm tra backend thật; `npm run db:stop` dừng stack và giữ database. Hướng dẫn cấu hình cloud và các giới hạn ở [BACKEND.md](docs/BACKEND.md).
 
 ## Dùng thử
 
@@ -64,6 +73,7 @@ npm run preview
 6. Bộ đo tự dừng khi đổi cửa sổ/tab, mở cài đặt, rời bài hoặc không thao tác 60 giây. Có nút tạm dừng đo riêng; xem “Cách tính thời gian” trong Tiến bộ.
 7. Trong cài đặt, tải bản sao hoặc khôi phục tiến độ. App đọc bản sao version 1/2/3 và lưu version 3.
 8. Chọn **Thêm vào màn hình chính** trong cài đặt/cuối trang, hoặc mở http://127.0.0.1:5173/#/install để xem cách cài. Nút **Cài Mỗi ngày** chỉ hiện khi trình duyệt hỗ trợ; có hướng dẫn Safari/Chrome/Edge khi không có nút.
+9. Khi đã chạy backend, vào **Tài khoản và đăng nhập** trong cài đặt. Phần học khách và từng tài khoản được giữ riêng; đăng xuất để trở lại phần khách. Chỉ tên tài khoản được lưu trên server, tiến độ chưa đồng bộ. Trên máy chung, tải bản sao rồi xóa phần học hiện tại trước khi đăng xuất vì kho trình duyệt chưa mã hóa.
 
 Tiến độ lưu riêng theo trình duyệt và địa chỉ mở app; dùng nhất quán `127.0.0.1:5173`. Khi cần đổi máy hoặc xóa dữ liệu trình duyệt, tải bản sao trước. Chưa có đồng bộ cloud. Chỉ giữ một bài đang làm; app sẽ hỏi trước khi chuyển sang bài khác.
 

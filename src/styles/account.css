@@ -1,0 +1,91 @@
+.account-page {
+  max-width: 700px;
+  margin: 0 auto;
+}
+.account-panel {
+  padding: 28px;
+  margin-bottom: 22px;
+}
+.account-panel > p,
+.account-panel form > p {
+  font-size: 13px;
+}
+.account-panel > p.small,
+.account-panel form > p.small {
+  font-size: 12px;
+}
+.account-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #eaf0e2;
+  border: 1px solid #dbe4d2;
+  padding: 25px 28px;
+  border-radius: 18px;
+  margin-bottom: 22px;
+}
+.account-banner svg {
+  flex-shrink: 0;
+}
+.account-banner h2 {
+  margin-bottom: 4px;
+}
+.account-banner p {
+  margin: 0;
+  font-size: 13px;
+}
+.account-email {
+  overflow-wrap: anywhere;
+}
+.account-feedback {
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 16px 0 0;
+}
+.account-feedback:empty {
+  display: none;
+}
+.account-resend {
+  margin-top: 18px;
+  justify-content: space-between;
+}
+.account-signout {
+  margin-top: 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+.account-signout .button {
+  white-space: normal;
+  text-align: left;
+}
+.account-loading {
+  max-width: 650px;
+  margin: 15vh auto;
+  padding: 28px;
+}
+.settings-account-link {
+  margin-top: -12px;
+}
+.current-study-scope {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  background: #edf3e5;
+  border-radius: 10px;
+  padding: 12px 15px;
+  margin-bottom: 24px;
+  font-size: 11px;
+}
+.current-study-scope a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .account-panel {
+    padding: 23px;
+  }
+  .account-panel input {
+    font-size: 16px;
+  }
+}

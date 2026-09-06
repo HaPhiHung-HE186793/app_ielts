@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { Download, Upload, X } from 'lucide-react'
-import { backupText, importBackup, resetState, updateState } from '../data/store'
+import { Download, Upload, UserRound, X } from 'lucide-react'
+import { backupText, getDataEpoch, importBackup, resetState, updateState } from '../data/store'
 import { profileSchema, type Profile } from '../data/schema'
 import { navigate } from '../app/router'
 
@@ -79,6 +79,9 @@ export function SettingsDialog({
       </div>
       <a className="settings-install-link" href="#/install" onClick={onClose}>
         <Download size={17} /> Thêm vào màn hình chính
+      </a>
+      <a className="settings-install-link settings-account-link" href="#/account" onClick={onClose}>
+        <UserRound size={17} /> Tài khoản và đăng nhập
       </a>
       <form onSubmit={save}>
         {!profile && (
@@ -198,9 +201,9 @@ export function SettingsDialog({
       <section className="backup-section">
         <h3>Giữ lại hành trình của bạn</h3>
         <p className="muted small">
-          Tiến độ hiện lưu trên trình duyệt này, chưa đồng bộ tài khoản. Tải bản sao để giữ lại
-          trước khi đổi máy hoặc xóa dữ liệu trình duyệt. Bản sao có thể chứa tên và câu bạn đã
-          viết.
+          Tiến độ hiện lưu trong phần học đang mở trên trình duyệt này, chưa đồng bộ giữa thiết bị.
+          Tải bản sao để giữ lại trước khi đổi máy hoặc xóa dữ liệu trình duyệt. Bản sao có thể chứa
+          tên và câu bạn đã viết.
         </p>
         <div className="button-row">
           <button className="button secondary small-button" onClick={download}>
@@ -219,6 +222,7 @@ export function SettingsDialog({
           accept="application/json,.json"
           hidden
           onChange={async (event) => {
+            const importEpoch = getDataEpoch()
             const file = event.target.files?.[0]
             event.target.value = ''
             if (!file) return
@@ -228,6 +232,7 @@ export function SettingsDialog({
             }
             try {
               const raw = await file.text()
+              if (getDataEpoch() !== importEpoch) return
               if (
                 !window.confirm(
                   'Khôi phục sẽ thay thế tiến độ hiện tại trên trình duyệt này. Bạn đã giữ bản sao cần thiết chưa?',
@@ -256,7 +261,7 @@ export function SettingsDialog({
           onClick={() => {
             if (
               !window.confirm(
-                'Xóa toàn bộ tiến độ trên trình duyệt này? Hãy tải bản sao trước nếu bạn muốn giữ lại.',
+                'Xóa tiến độ của phần học đang mở trên trình duyệt này? Các phần học khác được giữ nguyên. Hãy tải bản sao trước nếu muốn giữ lại.',
               )
             )
               return

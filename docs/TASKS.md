@@ -37,8 +37,8 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 
 | ID | Trạng thái | Phụ thuộc | Kết quả và tiêu chí hoàn thành |
 | --- | --- | --- | --- |
-| DATA-001 | READY | LEARN-002 | Thiết lập Supabase, migration và Auth; `.env.example` chỉ chứa cấu hình mẫu phù hợp. Xác định chính sách dữ liệu local khi đăng xuất; kiểm tra truy cập dữ liệu riêng bằng hai tài khoản. Có tài liệu cấu hình dịch vụ. |
-| DATA-002 | TODO | DATA-001, REVIEW-001, PROGRESS-001 | Đồng bộ lượt làm, tiến độ và trạng thái ôn; nhập tiến độ local sau đăng nhập theo lựa chọn rõ ràng. Kiểm tra hai phiên/thiết bị, mất mạng, gửi lặp, xung đột và đăng xuất; hiển thị trạng thái đồng bộ. |
+| DATA-001 | DONE | LEARN-002 | Supabase Docker local, email OTP thật, migration account_profiles/RLS và cấu hình mẫu công khai. Tách kho khách/tài khoản, bảo vệ callback/import khi đổi chủ. Kiểm tra quyền bằng hai tài khoản và 11 ca Auth/API/trình duyệt đạt; setup ở BACKEND. Chưa cấu hình hosted/SMTP thật hoặc đồng bộ. |
+| DATA-002 | READY | DATA-001, REVIEW-001, PROGRESS-001 | Đồng bộ lượt làm, tiến độ và trạng thái ôn; nhập tiến độ local sau đăng nhập theo lựa chọn rõ ràng. Kiểm tra hai phiên/thiết bị, mất mạng, gửi lặp, xung đột và đăng xuất; hiển thị trạng thái đồng bộ. |
 | PWA-001 | DONE | APP-002, LEARN-002 | Manifest/icon/standalone, hướng dẫn và prompt tự nguyện; Chrome đọc manifest/icon và không báo lỗi installability trong hồ sơ thử riêng. Luồng prompt/standalone có kiểm tra điều khiển; chưa cài/khởi chạy trên iPhone/Android hoặc cửa sổ app hệ điều hành. Phạm vi và bước xác minh ở INSTALLATION/TESTING. |
 | PWA-002 | TODO | PWA-001, DATA-002 | Tải một gói bài/audio được phép lưu; mở và học offline, chờ gửi khi có mạng. Có quản lý dung lượng/xóa tải xuống; không rò cache giữa tài khoản, không giả lập AI offline. |
 | NOTIFY-001 | TODO | PWA-001, DATA-001, PLAN-001 | Nhắc học tự nguyện, múi giờ và giờ yên lặng, tắt/dời lịch được. Xin quyền từ thao tác người dùng, xử lý từ chối; xác minh nền tảng hỗ trợ, không phụ thuộc thông báo để vào bài. |
@@ -67,22 +67,22 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | COACH-001 | TODO | BETA-001 | Nếu người dùng cần: dashboard gia sư, giao bài và nhận xét với quyền truy cập có lựa chọn; kiểm tra học viên khác không xem chéo dữ liệu. |
 | MOBILE-001 | TODO | BETA-001 | Nếu cần cửa hàng ứng dụng: đánh giá Capacitor, build/ký và kiểm thử native, chuẩn bị thông tin phát hành. Tài khoản, thiết bị và quyền phát hành phải có trước khi gửi lên cửa hàng. |
 
-## Chi tiết task tiếp theo: DATA-001
+## Chi tiết task tiếp theo: DATA-002
 
 ### Thực hiện
 
-1. Đọc STATUS, ARCHITECTURE và DEC-008/011/012. Giữ luồng khách và dữ liệu version 3, không đưa tiến độ local lên cloud tự động.
-2. Kiểm tra môi trường Supabase khả dụng. Máy có `docker.exe` trong PATH, chưa kiểm tra Docker engine và chưa thấy Supabase CLI trong PATH; chưa có dự án/URL/key cloud được cung cấp. Ưu tiên chuẩn bị và kiểm tra bằng môi trường local tách biệt nếu chạy được.
-3. Xác minh SDK/CLI hiện hành từ tài liệu chính thức, chọn bản tương thích và lockfile. Tạo migration, cấu hình mẫu công khai và tài liệu chạy. Không đưa khóa dịch vụ vào `VITE_*` hoặc Git.
-4. Làm Auth với trạng thái thiếu cấu hình/lỗi dịch vụ rõ ràng; vẫn dùng được phần học local. Chọn luồng xác thực phù hợp môi trường thật, không trình bày mock đăng nhập là tài khoản thật.
-5. Chốt quy tắc kho local khi đăng nhập/đăng xuất/đổi tài khoản để tránh lộ bài giữa người dùng. Quyền bảng dữ liệu theo chủ sở hữu và RLS cần kiểm tra bằng hai tài khoản; ghi lựa chọn trong DECISIONS.
-6. Test Auth, kiểm tra truy cập chéo và chưa đăng nhập trên Supabase chạy thật (local hoặc dịch vụ được cấu hình). Nếu chưa có môi trường, bàn giao phần code có thể kiểm tra và giữ task chưa DONE; nêu điều kiện cụ thể còn thiếu.
-7. Chạy kiểm tra phù hợp, cập nhật docs/README/task/status, commit/push theo ủy quyền. Đồng bộ toàn bộ lịch sử là DATA-002, chưa tự mở rộng sang AI/offline/deploy.
+1. Đọc STATUS, BACKEND, ARCHITECTURE và DEC-008/011/013. Kiểm tra Git và backend local bằng CLI trong lockfile; Docker có thể cần mở lại. Giữ kho khách, bản sao version 1/2/3 và bộ test Auth đã đạt.
+2. Chốt mô hình sự kiện/lượt làm trên server và quy tắc xung đột trước khi code: ID ổn định cho gửi lại, lịch ôn từ lượt thực, checkpoint cộng dồn lấy giá trị phù hợp thay vì cộng trùng, cách chọn bài/phiên dở khi hai nơi cùng sửa. Ghi quyết định, không ghi đè cả snapshot theo lần gửi cuối một cách ngầm định.
+3. Thêm migration theo chủ sở hữu và RLS, lớp đồng bộ tách khỏi giao diện. Hàng đợi phải gắn đúng backend/user ID; hủy/vô hiệu request và callback khi đăng xuất/đổi tài khoản. Kiểm tra read/write chưa đăng nhập và chéo tài khoản trên backend thật.
+4. Hiển thị rõ đang lưu/chờ đồng bộ/đã đồng bộ/lỗi và thử lại; chỉ báo thành công sau xác nhận máy chủ. Tải xuống/merge không tự phá dữ liệu chưa gửi hoặc bản lỗi. Xử lý reload, nhiều tab, mất mạng, retry và phản hồi đến muộn.
+5. Cho người học lựa chọn rõ trước khi nhập phần khách vào tài khoản. Giữ nguồn khách và có bản sao; không tự upload dữ liệu có sẵn. Phân biệt bản sao JSON thủ công với trạng thái sync.
+6. Kiểm tra hai browser context độc lập cùng tài khoản tiếp tục đúng dữ liệu, hai tài khoản không đọc chéo, gửi lặp, xung đột, mất mạng/khôi phục và đăng xuất trong khi gửi. Browser context không thay kiểm tra hai điện thoại thật; ghi rõ giới hạn môi trường.
+7. Chạy các kiểm tra phù hợp, cập nhật docs/README/task/status, commit/push theo ủy quyền. Chưa cần cloud hosted để hoàn thành các kiểm tra local độc lập; chưa tự triển khai dịch vụ công khai.
 
 ### Chưa thuộc task này
 
-Đồng bộ tiến độ nhiều thiết bị (DATA-002), AI, thông báo, gói offline, deployment công khai, phát hành cửa hàng và kho học liệu đầy đủ.
+AI, thông báo, gói tải offline/service worker (PWA-002), deployment công khai, phát hành cửa hàng và kho học liệu đầy đủ.
 
 ### Phần đã có nhưng chưa đóng task khác
 
-Mốc 1 local và PWA-001 đã đóng. DATA-001 READY; DATA-002 và PWA-002 chưa bắt đầu. Chưa đạt mốc 2: cần tài khoản, đồng bộ hai thiết bị và học gói đã tải khi mất mạng. Kiểm tra điện thoại thật còn được ghi rõ trong INSTALLATION và BETA-001.
+Mốc 1 local, PWA-001 và DATA-001 đã đóng. DATA-002 READY, chưa triển khai; PWA-002 chờ DATA-002. Chưa đạt mốc 2: cần đồng bộ hai thiết bị và học gói đã tải khi mất mạng. Kiểm tra điện thoại thật còn được ghi rõ trong INSTALLATION và BETA-001.

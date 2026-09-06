@@ -27,6 +27,8 @@ import { SessionPage } from '../features/today/SessionPage'
 import '../styles/sessions.css'
 import { ActivityGate } from './activity-context'
 import { InstallPage } from '../features/install/InstallPage'
+import { AccountPage } from '../features/account/AccountPage'
+import { getAuthSnapshot, subscribeAuth } from './auth'
 
 const navigation = [
   { path: '/today', label: 'Hôm nay', icon: House },
@@ -38,7 +40,8 @@ const navigation = [
 
 export function App() {
   const route = useRoute()
-  const { state, error } = useSyncExternalStore(subscribe, getSnapshot)
+  const { state, error, scopeKey } = useSyncExternalStore(subscribe, getSnapshot)
+  const auth = useSyncExternalStore(subscribeAuth, getAuthSnapshot)
   const [settings, setSettings] = useState(false)
   const now = useClock()
   const main = useRef<HTMLElement>(null)
@@ -47,9 +50,11 @@ export function App() {
   const activePath = isLesson ? '/discover' : route === '/session' ? '/today' : route
   const currentNav = navigation.find((item) => item.path === activePath)
   const pageTitle =
-    route === '/install'
-      ? 'Thêm vào màn hình chính'
-      : (lesson?.title ?? currentNav?.label ?? 'Không tìm thấy')
+    route === '/account'
+      ? 'Tài khoản'
+      : route === '/install'
+        ? 'Thêm vào màn hình chính'
+        : (lesson?.title ?? currentNav?.label ?? 'Không tìm thấy')
   const due = Object.values(state.reviews).filter((card) => card.dueAt <= now).length
 
   useEffect(() => {
@@ -57,8 +62,16 @@ export function App() {
     main.current?.focus({ preventScroll: true })
     window.scrollTo({ top: 0, behavior: 'instant' })
     window.speechSynthesis?.cancel()
-  }, [route, pageTitle])
+  }, [route, pageTitle, scopeKey, auth.status])
   useEffect(() => () => window.speechSynthesis?.cancel(), [])
+
+  if (auth.status === 'loading')
+    return (
+      <main className="account-loading">
+        <h1>Đang mở không gian học…</h1>
+        <p role="status">Đang khôi phục phiên đăng nhập trên trình duyệt này.</p>
+      </main>
+    )
 
   function openLesson(item: Lesson) {
     if (
@@ -75,7 +88,7 @@ export function App() {
 
   return (
     <ActivityGate value={!settings}>
-      <div className="app-shell">
+      <div className="app-shell" key={scopeKey}>
         <a
           className="skip-link"
           href="#main-content"
@@ -139,7 +152,11 @@ export function App() {
               <span>Mỗi ngày</span>
               <ChevronRight size={14} />
               <span>
-                {route === '/install' ? 'Cài ứng dụng' : (currentNav?.label ?? 'Bài học')}
+                {route === '/account'
+                  ? 'Tài khoản'
+                  : route === '/install'
+                    ? 'Cài ứng dụng'
+                    : (currentNav?.label ?? 'Bài học')}
               </span>
             </div>
             <span className="topbar-date">
@@ -163,6 +180,12 @@ export function App() {
             tabIndex={-1}
             className={`main-content ${isLesson ? 'learning-content' : ''}`}
           >
+            {auth.user && (
+              <div className="current-study-scope">
+                <span>Phần học riêng của tài khoản đang đăng nhập · Lưu trên trình duyệt</span>
+                <a href="#/account">Xem tài khoản</a>
+              </div>
+            )}
             {error && (
               <div className="storage-warning" role="alert">
                 <p>{error}</p>
@@ -190,6 +213,8 @@ export function App() {
               <Progress state={state} now={now} onSettings={() => setSettings(true)} />
             ) : route === '/install' ? (
               <InstallPage onSettings={() => setSettings(true)} />
+            ) : route === '/account' ? (
+              <AccountPage onSettings={() => setSettings(true)} />
             ) : lesson ? (
               <LessonPlayer
                 key={lesson.id}

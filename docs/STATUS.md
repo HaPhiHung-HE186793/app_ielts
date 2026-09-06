@@ -4,71 +4,58 @@ Cập nhật: 2026-09-06, múi giờ Asia/Saigon.
 
 ## Đang ở đâu
 
-**Đã hoàn thành mốc 1 local và PWA-001: cấu hình, biểu tượng và hướng dẫn cài từ web. Task tiếp theo là DATA-001.**
+**Hoàn thành mốc 1 local, PWA-001 và DATA-001. Task tiếp theo: DATA-002 — đồng bộ tiến độ.**
 
-- Branch: `main`; remote `origin`: `https://github.com/HaPhiHung-HE186793/app_ielts.git`.
-- Hoàn thành DOC-001, APP-001, APP-002, CONTENT-001, LEARN-001, LEARN-002, REVIEW-001, PLAN-001, PROGRESS-001, PWA-001.
-- DATA-001 ở trạng thái READY, đủ phụ thuộc. Không có code đang làm dở trong PWA-001; kiểm tra cài/khởi chạy trên thiết bị thật vẫn còn thiếu.
-- Mốc 1 đã đóng theo tiêu chí luồng local. Chưa coi đây là chương trình IELTS hoặc bản dùng đa thiết bị hoàn chỉnh.
-- Chưa có backend, AI, dịch vụ cloud, deployment công khai hoặc PWA offline. Chưa đạt điều kiện mốc 2 đồng bộ nhiều thiết bị.
+- Branch `main`, origin `https://github.com/HaPhiHung-HE186793/app_ielts.git`. Dùng Git để lấy commit và xác minh remote hiện tại.
+- DATA-001 đã chạy với Supabase Docker local thật: email OTP, tên tài khoản, RLS kiểm tra bằng hai người dùng và kho học riêng theo tài khoản. Không có phần code DATA-001 còn dở.
+- Chưa có Supabase cloud/SMTP bên ngoài, sync nhiều thiết bị, AI, service worker/offline hoặc deployment công khai. Mốc 2 chưa hoàn thành.
 
 ## Dùng được ngay
 
-- Chạy `npm ci` rồi `npm run dev`, mở http://127.0.0.1:5173.
-- Năm khu vực: Hôm nay, Khám phá, Luyện tập, Ôn lại, Tiến bộ; desktop có sidebar, điện thoại có thanh dưới.
-- Bảy bài thử nghiệm, mỗi bài có câu mẫu, ba hoạt động, gợi ý/giải thích/thử lại và câu tự viết tùy chọn.
-- Lưu bài dở kể cả lựa chọn/câu đang nhập, phân biệt đáp án đúng độc lập với đúng sau gợi ý/sửa lỗi.
-- Lịch ôn 1/3/7/14/30 ngày; sai hoặc dùng gợi ý quay lại sau 10 phút; có ôn sớm và trạng thái đến hạn cập nhật khi chuyển trang.
-- Thiết lập tùy chọn tên/sở thích/phút dự kiến/loại thi, mục tiêu, ngày mục tiêu và tự nhận xét nền tảng. Không tự gán band hoặc ngày thi.
-- Hôm nay chọn 2/5/15 phút/buổi đầy đủ: khởi động một câu; một bài trọn vẹn; hoặc ghép bài với tối đa ba câu đến hạn. Hiện rõ thời gian dự kiến và phần chưa có học liệu.
-- Lưu phiên hiện tại, câu chưa nộp/gợi ý và kết quả qua reload; tiếp tục từ Hôm nay. Lượt khởi động không tính là bài hoàn thành và không đổi lịch ôn. Tạo phiên mới giữ bài dở.
-- Tải và khôi phục bản sao JSON, đọc version 1/2/3 và lưu version 3; xử lý dữ liệu lỗi/phiên bản không hỗ trợ và lỗi ghi.
-- Bộ đo trong hoạt động học: cửa sổ có focus/hiển thị, tự dừng khi nghỉ 60 giây, đổi tab, mở cài đặt hoặc rời bài; có nút tạm dừng đo. Lưu checkpoint mỗi 5 giây, tách khoảng qua nửa đêm.
-- Tiến bộ có biểu đồ 7 ngày, tổng đo, lịch sử phiên hoàn tất/đã thay và bộ lọc bài/ôn/khởi động. Khởi động không tăng số bài; dữ liệu cũ giữ giờ là chưa biết. Phút kế hoạch và số đo là hai loại dữ liệu khác nhau.
-- Thêm vào màn hình chính từ cài đặt/cuối trang hoặc `#/install`: ba hướng dẫn iPhone/iPad, Android, máy tính. Có nút cài khi trình duyệt cung cấp prompt, đường từ chối/lỗi và nhận biết cửa sổ standalone. Manifest/icon nằm trong repo; bản cài chưa có offline/cloud.
+- `npm ci` rồi `npm run dev`: học khách trên http://127.0.0.1:5173 khi chưa cấu hình môi trường.
+- Thử tài khoản: mở Docker, chạy `npm run db:start`, dừng dev server cũ của repo nếu cần, rồi `npm run dev:local`. Mở http://127.0.0.1:5173/#/account; lấy mã tại http://127.0.0.1:54324. Chỉ dùng dữ liệu thử, không gửi email ra ngoài. Chi tiết [BACKEND.md](BACKEND.md).
+- Năm khu vực, bảy bài nền tảng với câu mẫu/ba hoạt động/giải thích/thử lại và câu tự viết tùy chọn. Lưu bài dở và câu chưa nộp, phân biệt đúng độc lập với đúng sau gợi ý.
+- Lịch ôn 1/3/7/14/30 ngày; sai/có gợi ý quay lại sau 10 phút. Có ôn sớm và kiểm tra đến hạn khi chuyển trang.
+- Thiết lập tên gọi, sở thích, mục tiêu/ngày/loại thi/tự nhận xét tùy chọn. Chọn 2/5/15 phút/buổi đầy đủ, lưu và tiếp tục phiên; khởi động không tính bài hoàn thành hoặc đổi lịch ôn. Thời gian dự kiến không phải số đo.
+- Bộ đo có focus/visibility/idle 60 giây, dừng khi mở cài đặt/rời bài, checkpoint 5 giây. Tiến bộ có biểu đồ bảy ngày, lịch sử phiên và bộ lọc; giờ cũ giữ là chưa biết.
+- Cài đặt có bản sao JSON version 1/2/3, khôi phục và xóa phần học đang mở; giữ bản lỗi nguyên trạng, cảnh báo quota/lỗi lưu. Kho tài khoản riêng theo backend/user ID; đăng xuất mở lại phần khách. Chưa upload bài học.
+- `#/account`: OTP email, lưu tên riêng trên server, khôi phục phiên, logout và lỗi dịch vụ có đường thử lại. Đổi người dùng dựng lại form và vô hiệu timer/import cũ. Auth cập nhật qua các tab cùng origin.
+- `#/install`: manifest/icon/standalone, hướng dẫn iPhone/iPad, Android và máy tính; nút cài khi có prompt. Bản cài chưa có offline/cloud; xem [INSTALLATION.md](INSTALLATION.md).
 
 ## File cần biết
 
-- `src/content/lessons.ts`, [CONTENT_REVIEW.md](CONTENT_REVIEW.md): học liệu và nguồn/rà soát.
-- `src/domain/learning.ts`, `session.ts`: chấm đáp án, lượt làm, lịch ôn; có unit test.
-- `src/domain/planner.ts`, `planner.test.ts`: ghép phiên và chuyển hoạt động theo kết quả thật.
-- `src/data/schema.ts`, `store.ts`: schema version 3, đường đọc version 1/2; key vẫn là `moi-ngay.study.v1`, epoch bảo vệ import/reset.
-- `src/domain/activity.ts`, `activity.test.ts`: đồng hồ, phân ngày, lưu checkpoint không trùng; `progress.ts`: dữ liệu hiển thị tiến bộ.
-- `src/components/ActivityMeter.tsx`, `src/app/activity-context.ts`, `src/features/progress/Progress.tsx`: gắn bộ đo và giao diện. Progress đã tách khỏi `features/pages/Pages.tsx`.
-- `src/features/today/SessionChoices.tsx`, `SessionPage.tsx`, `src/components/SettingsDialog.tsx`: chọn nhịp, tiếp tục phiên và thiết lập mục tiêu.
-- `src/app`, `src/features`, `src/components`, `src/styles`: điều hướng và giao diện.
-- `public/manifest.webmanifest`, `public/icons`, `scripts/generate-icons.js`: tài nguyên cài app; `src/app/installation.ts`, `src/features/install/InstallPage.tsx`: trạng thái và hướng dẫn. [INSTALLATION.md](INSTALLATION.md) ghi cách dùng, chuẩn bị hosting và bước kiểm tra thiết bị.
-- `tests/learning.spec.ts`, `planning.spec.ts`, `progress.spec.ts`, `install.spec.ts`, `playwright.config.ts`, [TESTING.md](TESTING.md): luồng kiểm tra trình duyệt và cách chạy.
-- [DECISIONS.md](DECISIONS.md): tên làm việc, stack, lưu local, lịch ôn và các chọn lựa còn mở.
+- Học liệu: `src/content/lessons.ts`, [CONTENT_REVIEW.md](CONTENT_REVIEW.md).
+- Logic học: `src/domain/learning.ts`, `session.ts`, `planner.ts`, `activity.ts`, `progress.ts` và unit test tương ứng.
+- Kho học: `src/data/schema.ts` version 3; `study-store.ts` tách chủ sở hữu/epoch/bản sao; `store.ts` nối localStorage. Key khách vẫn `moi-ngay.study.v1`.
+- Auth: `src/app/auth.ts`, `src/services/supabase.ts`, `supabase-config.ts`, `src/features/account/AccountPage.tsx`. `App.tsx` dựng lại shell theo chủ sở hữu, `SettingsDialog.tsx` bảo vệ import bất đồng bộ.
+- Backend: `supabase/config.toml`, `supabase/migrations/20260906000100_account_profiles.sql`, `supabase/templates/otp.html`, `.env.example`, scripts `dev-local`/`test-auth`/`local-backend` và [BACKEND.md](BACKEND.md).
+- Giao diện học: `src/features/today`, `lessons`, `review`, `progress`; `ActivityMeter.tsx` và `activity-context.ts` gắn bộ đo.
+- PWA: `public/manifest.webmanifest`, `public/icons`, `scripts/generate-icons.js`, `src/app/installation.ts`, `src/features/install/InstallPage.tsx`.
+- Kiểm tra: `tests/*.spec.ts`, `tests/auth`, hai cấu hình Playwright và [TESTING.md](TESTING.md). Quyết định tài khoản ở DEC-013 trong [DECISIONS.md](DECISIONS.md).
 
 ## Kiểm tra đã đạt
 
-- Cài dependency thành công, có lockfile; Node 22.18.0 và npm 10.9.3.
-- Lint, typecheck và build thành công.
-- Vitest: 47 test đạt, gồm bộ đo/ngắt quãng/đổi giờ/nửa đêm, checkpoint, lịch sử và các luồng học cũ.
-- Playwright: 56 ca đã kiểm tra thành công ở Chrome desktop 1440×1000/mobile viewport 360×800 qua các lượt chạy. Lượt toàn bộ 52/56 đạt; bốn ca PWA mới cần đổi từ incognito sang hồ sơ thử riêng và sửa locator tiếp tục phiên. Chạy lại sáu ca liên quan đạt. Sau bổ sung safe-area, chạy sáu ca điều hướng/axe/hướng dẫn đạt; chi tiết trong SESSION_LOG.
-- Chrome đọc manifest và bốn icon đúng kích thước; `Page.getInstallabilityErrors` trả mảng rỗng trong hồ sơ Chrome tạm riêng. Không cài app lên hệ điều hành. Prompt/standalone có điều khiển, không coi là kiểm tra thiết bị thật.
-- Đã xem giao diện desktop/mobile; mô phỏng safe-area tại 390×844 và 844×390 không có lỗi runtime/tràn ngang. Thanh dưới vẫn tiếp cận được khi máy ngang thấp; chưa xác minh Safari hoặc bàn phím thiết bị thật.
-- Axe không phát hiện vi phạm trong tập luật WCAG A/AA trên các trang đã quét, hộp cài đặt, phiên khởi động/phản hồi/kết quả và buổi đầy đủ; đây chỉ là kiểm tra tự động.
-- Chi tiết phạm vi và các môi trường chưa kiểm tra nằm trong TESTING.
+- Node 22.18.0, npm 10.9.3; SDK/CLI được khóa trong lockfile. Docker engine 28.3.2 và Supabase PostgreSQL 17 local chạy được.
+- Lint/typecheck và build đạt; Vitest 59 ca đạt.
+- Playwright chế độ khách: toàn bộ 58 ca đạt ở Chrome 1440×1000/360×800; sau chỉnh focus khi đổi chủ sở hữu, build lại và 12 ca tài khoản khách/tiến bộ đạt. Chi tiết ở SESSION_LOG.
+- Auth: toàn bộ 11 ca đạt với Supabase local thật, gồm RLS đọc/ghi chéo/chưa đăng nhập, OTP, reload/lưu tên, hai tab/tài khoản, epoch bộ đo/import và xử lý HTTP 503. Các lỗi mạng là inject có điều khiển.
+- Vite từ chối cấu hình secret giả trước build; kiểm tra bundle Auth không chứa server key local. Sau test, database còn 0 Auth user/0 hồ sơ, hộp thư thử còn 0 thư.
+- Axe không phát hiện vi phạm A/AA trong các trang đã quét; đã xem ảnh tài khoản desktop/mobile, không tràn ngang. Không thay kiểm tra tiếp cận thủ công.
+- Kiểm tra cài PWA từ mốc trước: Chrome đọc manifest/icon và trả mảng lỗi installability rỗng trong hồ sơ tạm; không cài lên OS. Prompt/standalone/safe-area dùng mô phỏng có điều khiển.
 
 ## Task tiếp theo chính xác
 
-**DATA-001 — Supabase, tài khoản và quyền truy cập dữ liệu.**
+**DATA-002 READY.** Thiết kế migration sự kiện và quy tắc hợp nhất tiến độ trước khi làm hàng đợi đồng bộ. Có trạng thái gửi/chờ/lỗi/đã lưu; kiểm tra hai phiên độc lập, gửi lặp, xung đột, mất mạng và đổi tài khoản trong lúc gửi. Nhập dữ liệu khách cần lựa chọn rõ ràng, giữ nguồn/bản sao. Chi tiết từng bước ở [TASKS.md](TASKS.md).
 
-Kiểm tra môi trường Supabase, chuẩn bị Auth/migration/cấu hình mẫu và chính sách local khi đăng xuất. Có `docker.exe` trong PATH nhưng chưa kiểm tra engine; chưa thấy Supabase CLI trong PATH, chưa có cấu hình cloud. Có thể làm phần code/tài liệu độc lập; chỉ đóng task sau khi kiểm tra quyền bằng hai tài khoản trên Supabase chạy thật. Xem [TASKS.md](TASKS.md).
-
-Giữ luồng khách, kho version 3 và bản sao cũ. Không tự tải dữ liệu local lên cloud; đồng bộ là DATA-002. PWA-002 offline vẫn chờ DATA-002. Chưa có hosting/HTTPS công khai để mở app từ điện thoại; quy trình kiểm tra khi có thiết bị ở INSTALLATION.
+Backend local và bộ test quyền đã có; chưa cần dự án hosted cho phần phát triển độc lập. Chưa bắt đầu DATA-002. Không tự mở rộng sang AI/deployment/offline; PWA-002 chờ DATA-002.
 
 ## Giới hạn cần giữ rõ
 
-- Tiến độ chỉ nằm ở trình duyệt/origin hiện tại; localhost và 127.0.0.1 là hai kho khác nhau. Có bản sao thủ công, chưa đồng bộ cloud.
-- Chỉ giữ một bài dở. Chuyển bài khác cần xác nhận trong app. Chưa giải quyết ghi đồng thời an toàn từ nhiều tab.
-- Lịch sử phiên chỉ có từ bản này; không khôi phục được các kế hoạch cũ đã bị thay. Phiên dở giữ danh sách lúc tạo, không tự xếp lại theo ngày.
-- Số đo không xác nhận chú ý, có thể thiếu lúc đọc/nói yên lặng hoặc khi thiết bị kill trước checkpoint. Test focus dùng sự kiện trình duyệt; visibility/pagehide/pageshow được mô phỏng có điều khiển, chưa thay kiểm thử thiết bị thật. Nút dừng đo áp dụng cho lượt mở hoạt động hiện tại.
-- Không ghi âm, không chấm phát âm/Writing bằng AI. Giọng câu mẫu là SpeechSynthesis tùy thiết bị.
-- Học liệu do trợ lý biên soạn và rà soát nội bộ, chưa có giáo viên độc lập xác nhận; không phải kho đề IELTS.
-- Chưa có đánh giá đầu vào, lịch học sáu tháng cá nhân hoặc chương trình bốn tuần đầy đủ.
-- Chưa kiểm thử Safari/iPhone và Android thật, PWA offline/push, Supabase hoặc nhà cung cấp AI.
-- Ảnh và script kiểm tra tạm ở `.local`, báo cáo Playwright ở `test-results`, đều được gitignore.
-- Dev server là tiến trình local, có thể cần chạy lại trong session mới. Dùng Git để xác minh commit và trạng thái remote hiện tại.
+- Dữ liệu học nằm ở trình duyệt/origin hiện tại; localhost và 127.0.0.1 là hai kho khác nhau. Đăng nhập chưa đồng bộ học tập. Tên tài khoản là dữ liệu duy nhất app lưu thêm vào bảng server.
+- Kho local chưa mã hóa; tách giao diện theo tài khoản không bảo vệ khỏi người đọc dữ liệu máy. Có hướng dẫn xuất/xóa phần đang mở trước logout trên máy chung. Logout không xóa Auth user/hồ sơ; access token có thể còn hợp lệ đến expiry.
+- Chỉ giữ một bài dở; chưa hợp nhất ghi đồng thời từ nhiều tab. Auth qua tab đã kiểm tra, không đồng nghĩa dữ liệu học nhiều tab được hợp nhất an toàn.
+- Số đo không xác nhận chú ý; đọc/nói yên lặng hoặc kill trước checkpoint có thể tính thiếu. Lifecycle/focus test có phần mô phỏng, chưa thay kiểm tra thiết bị thật.
+- Chưa ghi âm/chấm nói/viết bằng AI. SpeechSynthesis tùy thiết bị; bảy bài do trợ lý biên soạn/rà soát nội bộ, chưa có giáo viên độc lập xác nhận. Chưa có đánh giá đầu vào, bốn tuần học liệu hoặc lộ trình sáu tháng cá nhân.
+- Chưa kiểm thử iPhone/Safari/Android thật, cài/khởi chạy OS, SMTP gửi thư ngoài hoặc hạ tầng cloud. Chưa có HTTPS công khai cho điện thoại.
+- Vite cảnh báo bundle chính khoảng 605 kB minified/174 kB gzip sau thêm SDK; chưa chia nhỏ theo route. Không chặn build, cần xét tốc độ tải ở mốc tối ưu beta.
+- Log/ảnh/bản build Auth và dữ liệu test tạm trong `.local`/`test-results`, được gitignore. Dev server/Docker có thể cần khởi động lại ở session sau; không đưa khóa hoặc log chứa token vào Git.

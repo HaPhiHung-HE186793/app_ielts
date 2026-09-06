@@ -161,3 +161,40 @@ Người dùng yêu cầu tiếp tục; triển khai PWA-001 theo bàn giao. Gi�
 - File trọng tâm: `public/manifest.webmanifest`, `public/icons`, `index.html`, `src/app/installation.ts`, `src/features/install/InstallPage.tsx`, `src/styles/install.css`, `tests/install.spec.ts` và INSTALLATION.
 - DATA-001 READY: kiểm tra môi trường Supabase, làm Auth/migration/quyền và chính sách kho khi đăng xuất. Có docker.exe, chưa xác minh engine; chưa thấy CLI trong PATH hoặc được cấp URL/key cloud. Phải kiểm tra hai tài khoản trên môi trường chạy thật trước DONE.
 - Giữ giới hạn local theo origin, chưa đồng bộ/offline/AI/deployment công khai và chưa kiểm duyệt học liệu độc lập. Commit/push sau kiểm tra diff/liên kết; hash và remote được xác minh trong bàn giao cuối.
+
+## 2026-09-06 — DATA-001: tài khoản, Supabase local và quyền riêng từng người
+
+### Phạm vi và kết quả
+
+Người dùng yêu cầu tiếp tục. Đọc bàn giao, xác minh code/Git sạch tại `9f608f9` và chọn DATA-001, đánh dấu IN_PROGRESS trước khi triển khai. Giữ ủy quyền commit/push; không cấu hình cloud, gửi thư ra bên ngoài hoặc triển khai công khai.
+
+- Kiểm tra tài liệu Supabase chính thức và môi trường: Node 22.18.0, npm 10.9.3, Docker Desktop có sẵn nhưng daemon chưa chạy. Khởi động Docker bằng tiến trình ẩn; engine 28.3.2. Thêm SDK 2.115.0/CLI 2.116.0 và lockfile; npm audit khi cài báo 0 lỗ hổng.
+- Khởi tạo stack Supabase của repo với PostgreSQL 17, Auth, PostgREST và Mailpit. Migration `account_profiles` có RLS CRUD theo `auth.uid()`, giới hạn tên và chỉ cấp quyền ghi cột cần thiết. Test phát hiện upsert cần quyền update cột ID; bổ sung quyền cột trong migration và local DB, policy vẫn chặn thay chủ.
+- Email OTP thật cho đăng ký/đăng nhập, template mã sáu số, hạn 10 phút và cooldown 60 giây. UI có mã sai, retry, lưu tên riêng, khôi phục phiên và logout. Local hiện đường đến Mailpit và ghi rõ chỉ là email thử trên máy.
+- `supabase-config.ts` kiểm tra URL/publishable key từ Vite trước bundle và từ client; không nhận secret hoặc JWT legacy. `.env.example` để trống hai biến công khai. Scripts `dev:local`/`test:auth` lấy cấu hình qua CLI, không ghi `.env` và chỉ đưa key công khai vào Vite.
+- Tách store thành factory kiểm tra độc lập và adapter trình duyệt, giữ schema version 3/key khách cũ. Kho tài khoản theo backend URL/user ID; đăng xuất về kho khách, giữ bài dở của mỗi người. Lỗi đọc/quota giữ công việc riêng trong bộ nhớ.
+- Đổi chủ sở hữu tăng epoch trước khi đổi kho, dựng lại form và cập nhật focus. File import bất đồng bộ kiểm tra epoch trước thay dữ liệu; bộ đo cũ không ghi sang người mới. Auth cập nhật qua tab nhưng chưa hợp nhất tiến độ học nhiều tab.
+- Logout dùng scope local. SDK thực tế bỏ phiên local cả khi endpoint logout lỗi; UI phản ánh đã rời trình duyệt/chưa xác nhận thu hồi máy chủ. Không nói dữ liệu local được mã hóa hoặc JWT đã hết hiệu lực tức thì.
+- Thêm BACKEND, DEC-013, cập nhật README/ARCHITECTURE/TESTING/TASKS/STATUS để tiếp tục DATA-002.
+
+### Kiểm tra và xử lý lỗi
+
+- Lint/typecheck/build đạt, Vitest 59 ca đạt. Có 7 ca mới về tách kho/epoch/quota/bản lỗi và 5 ca cấu hình công khai/URL/loại key.
+- Bộ Playwright khách chạy toàn bộ 58 ca đạt trên Chrome 1440×1000/360×800, giữ luồng học, PWA, bản sao và tiến bộ cũ.
+- Lượt Auth đầu 9 ca: 7 đạt, hai ca lỗi tải hồ sơ chưa thấy thông báo kịp thời do PostgREST mặc định retry GET sau 1/2/4 giây. Đọc SDK và tắt retry tự động cho tải tên; giữ nút thử lại của người học. Không tăng timeout test để che độ trễ giao diện.
+- Thêm kiểm tra timer đang hoạt động và import bắt đầu trước logout. Chạy lại toàn bộ Auth: 11/11 đạt, gồm API RLS thật với hai tài khoản và năm luồng UI trên mỗi kích thước. Mã OTP đọc từ Mailpit, tạo/xóa tên qua API thật; ca lỗi mạng inject 503 có ghi rõ phạm vi trong TESTING.
+- Khi restart Supabase để cập nhật hạn mức test local, Docker Windows chưa nhả cổng 54324 khiến start thất bại. Kiểm tra listener/container rồi retry sau khi cổng được giải phóng; start thành công, không xóa volume/reset dữ liệu hoặc dừng dịch vụ khác.
+- Sau sửa focus theo chủ sở hữu và thông tin hộp thư thử, build lại; 12 ca khách/tiến bộ liên quan đạt. Kiểm tra định dạng phát hiện một file test còn khác Prettier, đã định dạng lại và kiểm tra đạt.
+- Vite thực sự từ chối key secret giả trước build; quét ba tài nguyên JS/CSS/HTML của bản Auth không chứa server key local. Không capture trace Auth. Sau suite, xác minh 0 Auth user, 0 account profile và 0 email thử còn lại.
+- Axe A/AA không phát hiện vi phạm ở form mã và tài khoản có dữ liệu; xem ảnh desktop/mobile, không tràn ngang. Chưa kiểm tra điện thoại/Safari hoặc SMTP ngoài máy.
+- Vite có cảnh báo bundle chính khoảng 605 kB minified/174 kB gzip sau thêm SDK; không chặn build, chưa chia route. Cần xét tốc độ tải thực ở mốc tối ưu beta.
+- Kiểm tra 12 file Markdown, 41 liên kết nội bộ, 24 task: không lỗi, DATA-002 READY duy nhất. `git diff --check` đạt.
+
+### Bàn giao
+
+- DATA-001 DONE trong phạm vi Auth/migration/quyền trên backend local thật. DATA-002 READY; chưa có sync tiến độ, cloud hosted, AI, service worker, offline hoặc bản public. Mốc 2 chưa hoàn thành.
+- File trọng tâm: `src/app/auth.ts`, `src/features/account/AccountPage.tsx`, `src/data/study-store.ts`, `src/services/supabase.ts`, migration và config trong `supabase/`, `tests/auth`, scripts local và BACKEND.
+- Đã thay dev server của chính repo bằng `npm run dev:local` tương đương (launcher Node nền ẩn); HTTP 200 tại 127.0.0.1:5173. Docker local và Mailpit đang chạy. Có thể cần khởi động lại ở session mới; hướng dẫn ở README/BACKEND.
+- Giữ giới hạn dữ liệu học local chưa mã hóa/chưa sync, một bài dở, chưa an toàn hợp nhất nhiều tab, bộ đo không chứng minh chú ý và học liệu thử nghiệm chưa được giáo viên độc lập xác nhận.
+- Task tiếp theo: DATA-002 thiết kế sự kiện/quy tắc xung đột, hàng đợi theo chủ sở hữu, trạng thái sync và nhập dữ liệu khách có lựa chọn; kiểm tra hai phiên độc lập/gửi lặp/mất mạng/đổi tài khoản trên backend thật.
+- Commit/push sau rà soát diff, chỉ stage code/cấu hình mẫu/tài liệu; không stage khóa, log, bản build hay dữ liệu người học. Hash và kết quả remote được báo từ Git trong bàn giao cuối.

@@ -96,6 +96,18 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 - Giữ key và schema version 3. Bản cài, trình duyệt khác hoặc địa chỉ mới có thể có kho riêng; có đường tải/khôi phục bản sao. Localhost trên máy tính không phải link điện thoại. Chưa triển khai HTTPS công khai hoặc xác nhận cài trên thiết bị thật.
 - Tiếp theo chọn DATA-001: chuẩn bị Supabase/Auth/migration và chính sách local khi đăng xuất. Chỉ đóng task sau khi có môi trường Supabase chạy thật và kiểm tra quyền bằng hai tài khoản; thiếu cấu hình dịch vụ không ngăn phần code/tài liệu độc lập.
 
+## DEC-013 — Tài khoản bằng mã email và kho học theo chủ sở hữu
+
+- Ngày: 2026-09-06. Triển khai DATA-001 trên Supabase Docker local; SDK 2.115.0, CLI 2.116.0, PostgreSQL 17. Chưa được cấp dự án cloud/SMTP; không cần dịch vụ hosted để kiểm tra quyền thật. Setup và nguồn chính thức ở [BACKEND.md](BACKEND.md).
+- Chọn email OTP thay vì mật khẩu hoặc callback magic link để người học nhập mã ngay trong hash route. Email mới tạo Auth user, phải xác nhận mã mới có phiên. Hộp thư local giữ thư thử, không gửi ra ngoài; UI và tài liệu ghi rõ. Thiết lập giới hạn/gửi thư production cần kiểm tra khi có host.
+- Chỉ nhận key công khai `sb_publishable_…`, không nhận JWT legacy hoặc `sb_secret_…`. Vite kiểm tra trước khi bundle để lỗi điền nhầm key không đưa bí mật vào client. URL phải là HTTPS origin hoặc HTTP loopback; cả hai biến trống vẫn dùng khách, cấu hình dở/sai dừng Vite. Đây là kiểm tra hai biến đã biết, không thay việc giữ mọi bí mật khỏi `VITE_*`.
+- Server lưu Auth user và tên trong `account_profiles` khi người dùng chủ động lưu. Bảng giới hạn độ dài, thời điểm tạo do server cấp và RLS CRUD theo `auth.uid()`. Không tạo hồ sơ học cloud, không tự copy tên gọi học tập hoặc tải tiến độ lên. Hai tài khoản và request chưa đăng nhập phải được kiểm tra bằng Auth/RLS thật.
+- Giữ schema học version 3; key khách cũ không đổi. Key tài khoản gồm origin backend và user ID, tránh dùng nhầm dữ liệu giữa các dự án/tài khoản. Đăng nhập mở kho riêng; đăng xuất quay lại kho khách; đăng nhập lại mở dữ liệu local đã giữ. Bản sao vẫn không gắn định danh để người học chủ động chuyển dữ liệu; nhập/xóa chỉ thay kho đang mở.
+- Epoch tăng trước khi đổi kho, shell dựng lại toàn bộ form theo chủ sở hữu. Timer cũ và file import đã bắt đầu trước khi đổi người dùng không được ghi vào kho mới. Dữ liệu lỗi/quota chưa lưu vẫn được giữ riêng trong bộ nhớ trang; đóng trang khi chưa xuất bản sao có thể mất phần đó. Auth thay đổi qua tab, chưa hợp nhất ghi học đồng thời nhiều tab.
+- Phiên SDK trong localStorage chỉ quyết định UI, không cấp quyền server. Auth/RLS xác minh JWT và chủ sở hữu của từng request. Kho học chưa mã hóa; ẩn theo tài khoản không chặn người đọc devtools/dữ liệu trên máy. Có hướng dẫn tải bản sao rồi xóa phần hiện tại khi dùng máy chung.
+- Logout dùng scope `local`; nếu server lỗi nhưng SDK đã xóa phiên local, thông báo đúng trạng thái đã rời trình duyệt/chưa xác nhận thu hồi trên server. Không hứa access token hết hiệu lực tức thì; token có thể còn dùng đến expiry. Logout không xóa hàng tên, Auth user hoặc các bản sao học.
+- DATA-002 là task tiếp theo: migration sự kiện, hàng đợi, gửi lặp/xung đột, đồng bộ hai phiên và nhập phần khách có lựa chọn rõ ràng. Mốc 2 chưa hoàn thành; chưa mở rộng sang AI, offline hoặc deployment.
+
 ## Các giả định/chọn lựa còn mở
 
 | Mã | Vấn đề | Mặc định hiện tại | Thời điểm cần làm rõ |
@@ -104,7 +116,7 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 | OPEN-002 | Academic hay General Training | Không tự điền loại thi; nền tảng dùng chung | Onboarding và trước xây học liệu luyện thi |
 | OPEN-003 | Đầu vào, thời gian, ngày thi, điểm tối thiểu từng kỹ năng | Đã có form thời gian/ngày mục tiêu và tự nhận xét; chưa có đánh giá đầu vào hoặc yêu cầu band từng kỹ năng | Trước kế hoạch luyện thi cá nhân |
 | OPEN-004 | Nhà cung cấp và ngân sách AI | Chưa chọn, không giả định có API key | AI-001 |
-| OPEN-005 | Hosting, dự án Supabase, tên miền | Chưa cấp cấu hình; local trước | DATA-001 và bản triển khai beta |
+| OPEN-005 | Hosting, dự án Supabase, tên miền | Đã có Supabase Docker local; chưa có cloud, SMTP gửi thư thật hoặc tên miền | Trước cấu hình hosted và bản triển khai beta |
 | OPEN-006 | Đánh giá lại thuật toán lịch ôn | Đã có lịch khởi đầu DEC-009; cần hiệu chỉnh theo dữ liệu | Sau thử nghiệm sử dụng và trước mở rộng |
 | OPEN-007 | Thời gian lưu audio và bài cá nhân trên cloud | Chưa chốt, chưa thu thập dữ liệu thật | Trước upload dữ liệu thật và AI-002 |
 | OPEN-008 | Người kiểm duyệt/giáo viên đối chiếu bài | Chưa bố trí | Trước phê duyệt học liệu beta và đánh giá AI |

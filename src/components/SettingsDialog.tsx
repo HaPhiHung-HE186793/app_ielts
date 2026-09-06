@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from 'react'
 import { Download, Upload, UserRound, X } from 'lucide-react'
 import { backupText, getDataEpoch, importBackup, resetState, updateState } from '../data/store'
 import { profileSchema, type Profile } from '../data/schema'
 import { navigate } from '../app/router'
+import { getSyncSnapshot, subscribeSync } from '../app/sync'
 
 export function SettingsDialog({
   profile,
@@ -12,6 +13,8 @@ export function SettingsDialog({
   onClose: () => void
 }) {
   const dialog = useRef<HTMLDialogElement>(null)
+  const syncStatus = useSyncExternalStore(subscribeSync, getSyncSnapshot)
+  const readOnly = !syncStatus.canEdit || syncStatus.phase === 'conflict'
   const fileInput = useRef<HTMLInputElement>(null)
   const [message, setMessage] = useState('')
   const [name, setName] = useState(profile?.name ?? '')
@@ -31,6 +34,7 @@ export function SettingsDialog({
 
   function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (readOnly) return
     const form = new FormData(event.currentTarget)
     const result = profileSchema.safeParse({
       name: form.get('name'),
@@ -84,126 +88,134 @@ export function SettingsDialog({
         <UserRound size={17} /> Tài khoản và đăng nhập
       </a>
       <form onSubmit={save}>
-        {!profile && (
-          <p className="onboarding-intro">
-            Một phút để chọn điểm bắt đầu. Bạn có thể đóng phần này để học thử ngay, rồi quay lại
-            thay đổi bất cứ lúc nào.
+        {readOnly && (
+          <p role="status">
+            Phần học đang chờ tab khác hoặc cần chọn bản đồng bộ. Bạn vẫn tải bản sao được; mở Tài
+            khoản để tiếp tục.
           </p>
         )}
-        <label className="field">
-          Mình gọi bạn là gì?
-          <input
-            name="name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            maxLength={40}
-            placeholder="Tên của bạn (không bắt buộc)"
-            autoComplete="given-name"
-          />
-        </label>
-        <div className="field-grid">
+        <fieldset className="settings-fields" disabled={readOnly}>
+          {!profile && (
+            <p className="onboarding-intro">
+              Một phút để chọn điểm bắt đầu. Bạn có thể đóng phần này để học thử ngay, rồi quay lại
+              thay đổi bất cứ lúc nào.
+            </p>
+          )}
           <label className="field">
-            Thời gian có thể học mỗi ngày
-            <select
-              name="minutes"
-              value={minutes}
-              onChange={(event) =>
-                setMinutes(Number(event.target.value) as Profile['dailyMinutes'])
-              }
-            >
-              <option value="15">15 phút</option>
-              <option value="30">30 phút</option>
-              <option value="60">60 phút</option>
-              <option value="120">120 phút</option>
-              <option value="180">180 phút</option>
-            </select>
-          </label>
-          <label className="field">
-            Loại bài thi dự định
-            <select
-              name="exam"
-              value={exam}
-              onChange={(event) => setExam(event.target.value as Profile['exam'])}
-            >
-              <option value="undecided">Mình chưa quyết định</option>
-              <option value="academic">IELTS Academic</option>
-              <option value="general">IELTS General Training</option>
-            </select>
-          </label>
-        </div>
-        <div className="field-grid">
-          <label className="field">
-            Mục tiêu của bạn
-            <select
-              value={goal}
-              onChange={(event) => setGoal(event.target.value as Profile['goal'])}
-            >
-              <option value="explore">Mình đang khám phá</option>
-              <option value="foundation">Xây lại nền tảng tiếng Anh</option>
-              <option value="ielts65">Hướng đến IELTS 6.5</option>
-            </select>
-          </label>
-          <label className="field">
-            Ngày mục tiêu (không bắt buộc)
+            Mình gọi bạn là gì?
             <input
-              type="date"
-              value={targetDate}
-              max="9999-12-31"
-              onChange={(event) => setTargetDate(event.target.value)}
+              name="name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              maxLength={40}
+              placeholder="Tên của bạn (không bắt buộc)"
+              autoComplete="given-name"
             />
           </label>
-        </div>
-        <label className="field">
-          Bạn thấy nền tảng hiện tại thế nào?
-          <select
-            value={foundation}
-            onChange={(event) => setFoundation(event.target.value as Profile['foundation'])}
-          >
-            <option value="unsure">Mình chưa biết rõ</option>
-            <option value="starting">Mình cần học lại từ đầu</option>
-            <option value="some">Mình hiểu được một số câu đơn giản</option>
-          </select>
-        </label>
-        <p className="muted small">
-          Đây là tự nhận xét để ghi lại điểm bắt đầu, chưa phải bài đánh giá trình độ.
-        </p>
-        <fieldset className="interest-field">
-          <legend>Bạn thích tìm hiểu điều gì?</legend>
-          <div className="chips">
-            {(['Đời sống', 'Giải trí', 'Ăn uống', 'Học tập'] as const).map((topic) => (
-              <button
-                key={topic}
-                type="button"
-                className={`chip ${interests.includes(topic) ? 'selected' : ''}`}
-                aria-pressed={interests.includes(topic)}
-                onClick={() =>
-                  setInterests((current) =>
-                    current.includes(topic)
-                      ? current.filter((item) => item !== topic)
-                      : [...current, topic],
-                  )
+          <div className="field-grid">
+            <label className="field">
+              Thời gian có thể học mỗi ngày
+              <select
+                name="minutes"
+                value={minutes}
+                onChange={(event) =>
+                  setMinutes(Number(event.target.value) as Profile['dailyMinutes'])
                 }
               >
-                {topic}
-              </button>
-            ))}
+                <option value="15">15 phút</option>
+                <option value="30">30 phút</option>
+                <option value="60">60 phút</option>
+                <option value="120">120 phút</option>
+                <option value="180">180 phút</option>
+              </select>
+            </label>
+            <label className="field">
+              Loại bài thi dự định
+              <select
+                name="exam"
+                value={exam}
+                onChange={(event) => setExam(event.target.value as Profile['exam'])}
+              >
+                <option value="undecided">Mình chưa quyết định</option>
+                <option value="academic">IELTS Academic</option>
+                <option value="general">IELTS General Training</option>
+              </select>
+            </label>
           </div>
+          <div className="field-grid">
+            <label className="field">
+              Mục tiêu của bạn
+              <select
+                value={goal}
+                onChange={(event) => setGoal(event.target.value as Profile['goal'])}
+              >
+                <option value="explore">Mình đang khám phá</option>
+                <option value="foundation">Xây lại nền tảng tiếng Anh</option>
+                <option value="ielts65">Hướng đến IELTS 6.5</option>
+              </select>
+            </label>
+            <label className="field">
+              Ngày mục tiêu (không bắt buộc)
+              <input
+                type="date"
+                value={targetDate}
+                max="9999-12-31"
+                onChange={(event) => setTargetDate(event.target.value)}
+              />
+            </label>
+          </div>
+          <label className="field">
+            Bạn thấy nền tảng hiện tại thế nào?
+            <select
+              value={foundation}
+              onChange={(event) => setFoundation(event.target.value as Profile['foundation'])}
+            >
+              <option value="unsure">Mình chưa biết rõ</option>
+              <option value="starting">Mình cần học lại từ đầu</option>
+              <option value="some">Mình hiểu được một số câu đơn giản</option>
+            </select>
+          </label>
+          <p className="muted small">
+            Đây là tự nhận xét để ghi lại điểm bắt đầu, chưa phải bài đánh giá trình độ.
+          </p>
+          <fieldset className="interest-field">
+            <legend>Bạn thích tìm hiểu điều gì?</legend>
+            <div className="chips">
+              {(['Đời sống', 'Giải trí', 'Ăn uống', 'Học tập'] as const).map((topic) => (
+                <button
+                  key={topic}
+                  type="button"
+                  className={`chip ${interests.includes(topic) ? 'selected' : ''}`}
+                  aria-pressed={interests.includes(topic)}
+                  onClick={() =>
+                    setInterests((current) =>
+                      current.includes(topic)
+                        ? current.filter((item) => item !== topic)
+                        : [...current, topic],
+                    )
+                  }
+                >
+                  {topic}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+          <p className="muted small">
+            Thời gian bạn chọn dùng để ghép buổi học từ bài hiện có. Mục tiêu và ngày dự kiến không
+            phải dự báo kết quả; vài phút duy trì chưa đủ khối lượng luyện IELTS. App chưa có đánh
+            giá đầu vào.
+          </p>
+          <button className="button primary full-width" type="submit">
+            Lưu lựa chọn
+          </button>
         </fieldset>
-        <p className="muted small">
-          Thời gian bạn chọn dùng để ghép buổi học từ bài hiện có. Mục tiêu và ngày dự kiến không
-          phải dự báo kết quả; vài phút duy trì chưa đủ khối lượng luyện IELTS. App chưa có đánh giá
-          đầu vào.
-        </p>
-        <button className="button primary full-width" type="submit">
-          Lưu lựa chọn
-        </button>
       </form>
       <section className="backup-section">
         <h3>Giữ lại hành trình của bạn</h3>
         <p className="muted small">
-          Tiến độ hiện lưu trong phần học đang mở trên trình duyệt này, chưa đồng bộ giữa thiết bị.
-          Tải bản sao để giữ lại trước khi đổi máy hoặc xóa dữ liệu trình duyệt. Bản sao có thể chứa
-          tên và câu bạn đã viết.
+          Bản sao chứa phần học đang mở, có thể gồm tên và câu bạn đã viết. Kiểm tra trạng thái đồng
+          bộ trong Tài khoản trước khi đổi máy. Khôi phục hoặc xóa ở đây sẽ dừng đồng bộ trên máy
+          này, không xóa phần đã lưu trên máy chủ; bật lại có thể tải phần đó xuống.
         </p>
         <div className="button-row">
           <button className="button secondary small-button" onClick={download}>
@@ -211,6 +223,7 @@ export function SettingsDialog({
           </button>
           <button
             className="button secondary small-button"
+            disabled={readOnly}
             onClick={() => fileInput.current?.click()}
           >
             <Upload size={16} /> Khôi phục
@@ -235,7 +248,7 @@ export function SettingsDialog({
               if (getDataEpoch() !== importEpoch) return
               if (
                 !window.confirm(
-                  'Khôi phục sẽ thay thế tiến độ hiện tại trên trình duyệt này. Bạn đã giữ bản sao cần thiết chưa?',
+                  'Khôi phục sẽ thay thế tiến độ trên trình duyệt này và dừng đồng bộ tại đây; không xóa bản trên máy chủ. Bạn đã giữ bản sao cần thiết chưa?',
                 )
               )
                 return
@@ -258,10 +271,11 @@ export function SettingsDialog({
         />
         <button
           className="text-button danger"
+          disabled={readOnly}
           onClick={() => {
             if (
               !window.confirm(
-                'Xóa tiến độ của phần học đang mở trên trình duyệt này? Các phần học khác được giữ nguyên. Hãy tải bản sao trước nếu muốn giữ lại.',
+                'Xóa tiến độ của phần học đang mở trên trình duyệt này và dừng đồng bộ tại đây? Bản trên máy chủ và các phần học khác vẫn được giữ. Hãy tải bản sao trước nếu muốn giữ lại.',
               )
             )
               return

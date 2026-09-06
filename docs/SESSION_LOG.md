@@ -198,3 +198,42 @@ Người dùng yêu cầu tiếp tục. Đọc bàn giao, xác minh code/Git s�
 - Giữ giới hạn dữ liệu học local chưa mã hóa/chưa sync, một bài dở, chưa an toàn hợp nhất nhiều tab, bộ đo không chứng minh chú ý và học liệu thử nghiệm chưa được giáo viên độc lập xác nhận.
 - Task tiếp theo: DATA-002 thiết kế sự kiện/quy tắc xung đột, hàng đợi theo chủ sở hữu, trạng thái sync và nhập dữ liệu khách có lựa chọn; kiểm tra hai phiên độc lập/gửi lặp/mất mạng/đổi tài khoản trên backend thật.
 - Commit/push sau rà soát diff, chỉ stage code/cấu hình mẫu/tài liệu; không stage khóa, log, bản build hay dữ liệu người học. Hash và kết quả remote được báo từ Git trong bàn giao cuối.
+
+## 2026-09-06 — DATA-002: đồng bộ tiến độ và giải quyết xung đột
+
+### Phạm vi và triển khai
+
+Người dùng yêu cầu tiếp tục. Đọc bàn giao và code tại `1dffddb`, Git sạch trên main; DATA-002 được chuyển IN_PROGRESS trước khi làm. Docker/Supabase local đang chạy. Giữ ủy quyền commit/push, không tạo dịch vụ hosted, gửi thư ngoài máy hoặc triển khai public.
+
+- Ghi DEC-014 trước triển khai: bật sync theo lựa chọn, gộp ba phía theo ID, phiên bản server/CAS, outbox bền và khóa một tab sửa tài khoản trong cùng origin. Giữ luồng khách và StudyState/bản sao version 3.
+- Migration 002 tạo snapshot/commit/RPC theo chủ; RLS cho đọc hàng của mình, không cho client ghi trực tiếp. RPC xác nhận Auth/chủ dự kiến, khóa hàng và kiểm tra revision trước ghi; UUID cùng payload nhận lại receipt, UUID dùng cho payload khác bị chặn.
+- Migration 003 giữ hash SHA-256 và phần dữ liệu thay đổi trong receipt, không chép lại toàn bộ lịch sử ở mỗi lần gõ. Có đường bảo toàn receipt cũ thành legacySnapshot. Request vẫn là snapshot đầy đủ trong phạm vi dữ liệu nhỏ hiện tại. Thêm `npm run db:migrate` dùng CLI local đã khóa phiên bản, không thêm dependency.
+- `domain/sync.ts` gộp lượt theo ID; cùng checkpoint lấy giá trị cộng dồn lớn nhất. Dựng lịch ôn theo lượt thật/time/ID, giữ lịch cũ nếu thiếu nguồn. Hồ sơ/draft/plan hoặc cùng ID kết quả sửa khác nhau cần lựa chọn; không ngầm xóa lịch sử phía khác.
+- Store ghi StudyState và `_sync` trong một lần setItem: bản chung, payload/UUID chờ xác nhận, xung đột và thời điểm xác nhận. Giữ chỉnh sửa phát sinh trong khi gửi; retry sau reload vẫn dùng đúng ID. Giữ bản lỗi/quota và không gửi payload chưa ghi được.
+- Engine tách khỏi UI/transport, có retry, rebase, AbortSignal và kiểm tra chủ. Coordinator dùng Web Locks một tab sửa, đánh thức khi online/focus/hiển thị hoặc mỗi 15 giây, debounce 800 ms. Tạm hoãn khi hộp cài đặt mở để tránh thay form chưa lưu.
+- App có trạng thái chờ/gửi/đã xác nhận/lỗi/offline, xem/tải hai bản xung đột và lựa chọn. Dựng lại vùng bài học khi nhận draft/plan mới, không dựng lại toàn bộ trang tài khoản làm mất tên đang nhập.
+- Nhập phần khách có bước xem/chọn giữ thiết lập/bài dở, nút bản sao và giữ nguồn khách. Bật/tắt sync không tự nhập khách. Khôi phục JSON/reset local dừng sync ở máy đó, không xóa server; bật lại có thể lấy bản server xuống.
+- Bổ sung SYNC, cập nhật README/BACKEND/ARCHITECTURE/PRODUCT/INSTALLATION/TESTING/STATUS/TASKS và câu mô tả trong trang cài app để phản ánh sync đã có.
+
+### Kiểm tra và xử lý lỗi
+
+- Lint/typecheck/build đạt. Đã sửa hai lỗi TypeScript trong kiểu nullable/union của merge và fixture. Vitest **76/76** đạt: 8 ca merge và 9 ca engine mới cùng 59 ca cũ.
+- Áp dụng migration trên stack hiện có bằng CLI, không reset hoặc xóa volume. Lượt đầu migration 002 vướng cú pháp CASE trong điều kiện PL/pgSQL; bọc biểu thức CASE, chạy lại thành công. Migration 003 áp dụng thành công; `db:migrate` cuối xác nhận không có migration thiếu.
+- API ban đầu 3/3 đạt; desktop trước bước bổ sung cuối 9/9 đạt. Sau kiểm tra logout đang gửi/hoãn form và journal thay đổi, chạy toàn bộ **23 ca Auth/API/sync**: 22 đạt, một ca fixture payload sai dùng revision cũ nhận conflict trước validation ID. Đổi fixture dùng revision hiện tại để thực sự kiểm tra đường validation; chạy lại ba ca API, đều đạt. Không thay logic server để bỏ kiểm tra hoặc che lỗi.
+- Bộ **58 ca khách** chạy toàn bộ đạt ở Chrome desktop 1440×1000 và mobile viewport 360×800. Sau sửa câu mô tả đồng bộ ở trang cài, lint/build lại và chạy hai ca hướng dẫn/axe đạt. Không thêm/sửa dependency hoặc lockfile trong task này.
+- Xác minh quyền chéo/chưa đăng nhập/ghi trực tiếp/RPC khác chủ; commit đồng thời chỉ một thành công, retry song song không tạo bản sao, receipt cũ không làm lùi snapshot. Journal lần sửa draft chỉ chứa trường thay đổi và hash.
+- Hai browser context cùng tài khoản có phiên Auth riêng nhận/tiếp tục dữ liệu. Lịch sử nền ban đầu có fixture được khai báo; tiếp tục câu đang nhập và đồng bộ sau sửa thực hiện qua UI. Không gọi context là điện thoại thật.
+- Offline bằng Playwright khi app đã mở; server đã nhận commit nhưng response bị thay bằng 503, retry sau reload dùng cùng ID. Response khác giữ đến sau logout và đăng nhập B, xác minh không ghi vào B. Đây là kiểm tra lỗi có điều khiển, chưa chứng minh khả năng mở app offline hoặc hành vi OS native.
+- Xung đột hiện hai bản, giữ qua reload và chọn được; nguồn khách không tự gửi và không bị xóa. Tab thứ hai chờ khóa thật của Web Locks, nhận lại quyền khi tab thứ nhất đóng. Axe A/AA ở sync/xung đột không phát hiện vi phạm; xem ảnh desktop/mobile.
+- Sau test, Auth user, tên, snapshot và commit thử đều còn 0 hàng. Không dùng dữ liệu học viên thật. Trace Auth tắt; hình/log/build thử trong `.local` hoặc `test-results`, gitignore.
+- Kiểm tra tài liệu: 13 file Markdown, 50 liên kết nội bộ và 24 task hợp lệ; PWA-002 READY duy nhất. `git diff --check` đạt. Bundle khoảng 622 kB minified/178 kB gzip vẫn có cảnh báo kích thước.
+- Rà soát staged phát hiện dòng trống thừa cuối migration 003, đã sửa và kiểm tra lại. Guard build từ chối secret giả; bundle Auth và 33 file staged không chứa server key local. Mailpit còn 0 thư, app local trả HTTP 200.
+
+### Bàn giao
+
+- DATA-002 DONE, PWA-002 READY; chưa đạt mốc 2 vì còn gói offline và kiểm tra thiết bị. Không còn code DATA-002 làm dở.
+- File chính: `src/domain/sync.ts`, `src/data/sync-engine.ts`, `sync-schema.ts`, `study-store.ts`, `src/app/sync.ts`, `src/services/study-sync.ts`, `SyncPanel.tsx`, hai migration mới và `tests/auth/sync*.spec.ts`.
+- Docker local, Mailpit và dev server của repo tiếp tục chạy tại các cổng đã ghi trong BACKEND; có thể cần mở lại ở session mới. Chỉ email thử trên máy, chưa có Supabase hosted/SMTP/HTTPS public.
+- Giữ giới hạn: local chưa mã hóa/còn quota, request gửi snapshot, chưa benchmark dữ liệu nhiều tháng/hạn mức hosted hoặc UI xóa lịch sử server. Mỗi origin một tab sửa tài khoản, không hứa học khi mở mới app offline. Chưa kiểm tra iPhone/Safari/Android thật, AI, nguồn audio tải offline hoặc hiệu quả học tập.
+- Tiếp theo PWA-002: chốt gói bài/audio có quyền lưu, app shell/service worker có phiên bản, tải/xóa/dung lượng, không cache Auth/cá nhân dùng chung, kiểm tra mở mới offline và giữ outbox khi cập nhật. Không tự mở rộng sang deploy hoặc AI.
+- Commit/push sau rà soát đúng file; hash và kết quả remote được xác minh bằng Git trong bàn giao cuối.

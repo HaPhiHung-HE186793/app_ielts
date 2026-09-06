@@ -11,8 +11,8 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 - Lưu bài dở, cả câu đang nhập; ôn theo lịch, thống kê thật và xuất/khôi phục bản sao JSON.
 - Thiết lập mục tiêu/ngày tùy chọn và tự nhận xét nền tảng; chọn phiên 2/5/15 phút hoặc buổi đầy đủ, tạm dừng và tiếp tục phiên.
 - Tiến bộ có thời gian hoạt động đo được, biểu đồ bảy ngày, lịch sử phiên hoàn tất/đã đổi và bộ lọc bài học/ôn/khởi động.
-- Hoàn thành mốc 1 local, PWA-001 và DATA-001: hướng dẫn cài, đăng nhập bằng mã email, tên tài khoản trên Supabase và kho học riêng từng tài khoản. Backend đã kiểm tra trên Docker local.
-- Task tiếp theo: **DATA-002 — đồng bộ tiến độ giữa thiết bị**. Chưa có Supabase cloud, AI, PWA offline hoặc bản triển khai công khai.
+- Hoàn thành mốc 1 local, PWA-001, DATA-001 và DATA-002: đăng nhập, kho riêng, đồng bộ có lựa chọn, chống gửi trùng và xử lý xung đột. Đã kiểm tra hai phiên trình duyệt độc lập trên Supabase Docker local.
+- Task tiếp theo: **PWA-002 — gói học offline**. Chưa có Supabase hosted, AI, PWA offline hoặc bản triển khai công khai.
 - Trạng thái chi tiết và bước tiếp theo luôn được cập nhật tại [docs/STATUS.md](docs/STATUS.md).
 
 ## Bắt đầu hoặc tiếp tục phát triển
@@ -26,7 +26,7 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 5. [Các quyết định](docs/DECISIONS.md): lý do chọn hướng triển khai và các giả định chưa xác nhận.
 6. [Nhật ký bàn giao](docs/SESSION_LOG.md): những thay đổi quan trọng qua từng session.
 
-Tài liệu bổ sung: [tài khoản và backend](docs/BACKEND.md), [kiểm tra ứng dụng](docs/TESTING.md), [cài lên màn hình chính](docs/INSTALLATION.md), [nguồn và rà soát học liệu](docs/CONTENT_REVIEW.md).
+Tài liệu bổ sung: [tài khoản và backend](docs/BACKEND.md), [đồng bộ và xung đột](docs/SYNC.md), [kiểm tra ứng dụng](docs/TESTING.md), [cài lên màn hình chính](docs/INSTALLATION.md), [nguồn và rà soát học liệu](docs/CONTENT_REVIEW.md).
 
 Trước khi sửa, kiểm tra `git status --short --branch` và `git log -5 --oneline`. Đối chiếu tài liệu với code thực tế; không coi tính năng trong kế hoạch là tính năng đã tồn tại.
 
@@ -52,12 +52,13 @@ npm run preview
 
 `build` tạo `dist/`; `preview` dùng để kiểm tra bản build local, không phải máy chủ production.
 
-`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 59 unit test, 58 ca trình duyệt chế độ khách và 11 ca Auth/RLS riêng trên Supabase local. Kết quả thực tế ở STATUS/SESSION_LOG.
+`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 76 unit test, 58 ca trình duyệt khách và 23 ca Auth/RLS/đồng bộ trên Supabase local. Kết quả thực tế ở STATUS/SESSION_LOG.
 
 Để thử tài khoản, mở Docker rồi chạy:
 
 ```sh
 npm run db:start
+npm run db:migrate
 npm run dev:local
 ```
 
@@ -73,9 +74,10 @@ Dừng dev server cũ của dự án nếu đang chiếm cổng 5173. Mở http:
 6. Bộ đo tự dừng khi đổi cửa sổ/tab, mở cài đặt, rời bài hoặc không thao tác 60 giây. Có nút tạm dừng đo riêng; xem “Cách tính thời gian” trong Tiến bộ.
 7. Trong cài đặt, tải bản sao hoặc khôi phục tiến độ. App đọc bản sao version 1/2/3 và lưu version 3.
 8. Chọn **Thêm vào màn hình chính** trong cài đặt/cuối trang, hoặc mở http://127.0.0.1:5173/#/install để xem cách cài. Nút **Cài Mỗi ngày** chỉ hiện khi trình duyệt hỗ trợ; có hướng dẫn Safari/Chrome/Edge khi không có nút.
-9. Khi đã chạy backend, vào **Tài khoản và đăng nhập** trong cài đặt. Phần học khách và từng tài khoản được giữ riêng; đăng xuất để trở lại phần khách. Chỉ tên tài khoản được lưu trên server, tiến độ chưa đồng bộ. Trên máy chung, tải bản sao rồi xóa phần học hiện tại trước khi đăng xuất vì kho trình duyệt chưa mã hóa.
+9. Trong **Tài khoản và đăng nhập**, chọn **Bật đồng bộ phần học này** để gửi tiến độ của tài khoản. Trên trình duyệt khác, đăng nhập cùng tài khoản và bật đồng bộ để tiếp tục. Chờ **Đã đồng bộ** trước khi đổi máy; hai nơi cùng sửa sẽ có lựa chọn bản giữ lại.
+10. Phần khách không tự nhập. Có màn hình xem/chọn nhập và tải bản sao, giữ nguyên phần khách gốc. Trong cùng trình duyệt, chỉ một tab sửa tiến độ tài khoản; đóng tab đó để tiếp tục ở tab khác. Xem [SYNC.md](docs/SYNC.md).
 
-Tiến độ lưu riêng theo trình duyệt và địa chỉ mở app; dùng nhất quán `127.0.0.1:5173`. Khi cần đổi máy hoặc xóa dữ liệu trình duyệt, tải bản sao trước. Chưa có đồng bộ cloud. Chỉ giữ một bài đang làm; app sẽ hỏi trước khi chuyển sang bài khác.
+Dùng nhất quán `127.0.0.1:5173` để giữ kho local. Khi chưa bật đồng bộ, tiến độ chỉ ở trình duyệt; khi bật, xem trạng thái xác nhận server. Khôi phục JSON hoặc xóa trên thiết bị dừng sync ở đó, không xóa bản server; bật lại có thể tải bản cũ xuống. Trên máy chung, tải bản sao, xóa phần hiện tại rồi đăng xuất vì kho chưa mã hóa. Chỉ giữ một bài đang làm; app hỏi trước khi chuyển bài.
 
 Phút trong kế hoạch là ước tính, tách với thời gian hoạt động được đo. Chỉ có bảy bài: buổi 60 phút ban đầu xếp khoảng 35 phút học liệu; phần còn lại chưa được xếp. Phiên mới lưu lịch sử kế hoạch cũ và giữ bài dở. Những kế hoạch đã bị thay trước bản cập nhật này không thể khôi phục; dữ liệu cũ chưa đo giờ giữ trạng thái chưa có số đo. Chưa có lộ trình sáu tháng cá nhân.
 
@@ -83,7 +85,7 @@ Bộ đo phản ánh tương tác trên app, không khẳng định mức chú �
 
 Giọng đọc là SpeechSynthesis tùy thiết bị; câu tự viết chưa được chấm. Học liệu được biên soạn mới và rà soát nội bộ, chưa có giáo viên độc lập xác nhận. Chưa có đánh giá đầu vào, AI hoặc PWA offline. Chưa kiểm thử cài/khởi chạy trên iPhone/Safari và Android thật.
 
-Để dùng trên điện thoại cần địa chỉ HTTPS đã triển khai; link localhost trên máy tính chưa đáp ứng điều đó. Bản cài vẫn cần mạng để mở và không tự sao lưu hoặc đồng bộ dữ liệu. Xem [hướng dẫn cài và giữ tiến độ](docs/INSTALLATION.md). `npm run icons` tái tạo PNG từ SVG trong repo bằng Chrome/Playwright đã có; không cần chạy lại mỗi lần build.
+Để dùng trên điện thoại cần địa chỉ HTTPS đã triển khai; link localhost trên máy tính chưa đáp ứng điều đó. Bản cài vẫn cần mạng để mở; thêm biểu tượng không tự bật đồng bộ. Xem [hướng dẫn cài và giữ tiến độ](docs/INSTALLATION.md). `npm run icons` tái tạo PNG từ SVG trong repo bằng Chrome/Playwright đã có; không cần chạy lại mỗi lần build.
 
 ## Phạm vi khởi đầu
 

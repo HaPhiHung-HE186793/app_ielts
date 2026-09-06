@@ -102,6 +102,8 @@ PROGRESS-001 đã có tổng thời gian hoạt động đo trên thiết bị, 
 
 Chưa đặt ngưỡng thành công định lượng trước khi có dữ liệu thử nghiệm; không dùng số giả như kết quả đo thực.
 
+DATA-002 đã có đồng bộ tự nguyện và tiếp tục tiến độ giữa hai phiên trình duyệt, kiểm tra bằng backend local thật. Không tự gửi phần khách, không dùng bản đến sau để ngầm xóa bài của phía khác. Người học chọn phần giữ lại khi hai nơi cùng sửa, có đường tải cả hai bản. Chưa có gói mở app offline hoặc host cho điện thoại; chi tiết ở [SYNC.md](SYNC.md).
+
 ## 11. Nguồn tham khảo
 
 Các nguồn đã được xem khi lập đề xuất ngày 2026-09-06:

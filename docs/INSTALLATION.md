@@ -24,7 +24,7 @@ Nếu đang mở trong Zalo/Facebook hoặc trình duyệt nhúng, dùng Safari/
 - Cần một địa chỉ HTTPS đã triển khai, truy cập được trên điện thoại để dùng ngoài máy phát triển. `127.0.0.1`/`localhost` luôn trỏ về thiết bị đang mở; link local máy tính không đưa app sang điện thoại. Chạy Vite qua IP LAN bằng HTTP không tương đương bản PWA trên HTTPS.
 - Cài trên máy local chỉ mở được khi server local còn chạy. `npm run dev` và `npm run preview` không phải hosting production. Chưa có URL công khai để gửi người học.
 - Tải bản sao JSON trong cài đặt trước khi đổi origin, trình duyệt hoặc dùng cửa sổ cài lần đầu. Nếu cửa sổ mới chưa có tiến độ, dùng Khôi phục. Bản sao chứa dữ liệu học cá nhân; không đưa vào repository.
-- App chưa đồng bộ cloud, chưa hỗ trợ học gói đã tải khi mất mạng. Biểu tượng trên màn hình chính không tự sao lưu; dữ liệu local vẫn có thể bị xóa.
+- App có đồng bộ tài khoản tự nguyện, đã kiểm tra trên backend local; chưa có cloud hosted hoặc gói học offline. Thêm biểu tượng không tự bật đồng bộ; kiểm tra trạng thái hoặc giữ bản sao trước khi đổi nơi mở. Xem [SYNC.md](SYNC.md).
 
 Điều kiện manifest và HTTPS/localhost được tham khảo từ [MDN: Making PWAs installable](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable). Quy tắc local của dự án ở DEC-008/012 trong [DECISIONS.md](DECISIONS.md).
 

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { App } from './app/App'
 import { initializeInstallation } from './app/installation'
 import { initializeAuth } from './app/auth'
+import { initializeSync } from './app/sync'
 import '@fontsource/be-vietnam-pro/400.css'
 import '@fontsource/be-vietnam-pro/500.css'
 import '@fontsource/be-vietnam-pro/600.css'
@@ -14,6 +15,7 @@ import './styles/index.css'
 
 initializeInstallation()
 initializeAuth()
+initializeSync()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

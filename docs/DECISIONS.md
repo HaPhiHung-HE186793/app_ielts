@@ -108,6 +108,18 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 - Logout dùng scope `local`; nếu server lỗi nhưng SDK đã xóa phiên local, thông báo đúng trạng thái đã rời trình duyệt/chưa xác nhận thu hồi trên server. Không hứa access token hết hiệu lực tức thì; token có thể còn dùng đến expiry. Logout không xóa hàng tên, Auth user hoặc các bản sao học.
 - DATA-002 là task tiếp theo: migration sự kiện, hàng đợi, gửi lặp/xung đột, đồng bộ hai phiên và nhập phần khách có lựa chọn rõ ràng. Mốc 2 chưa hoàn thành; chưa mở rộng sang AI, offline hoặc deployment.
 
+## DEC-014 — Đồng bộ có phiên bản và xử lý xung đột rõ ràng
+
+- Ngày: 2026-09-06. Đã triển khai DATA-002. Giữ StudyState/bản sao version 3; metadata đồng bộ chỉ ở kho trình duyệt, không nằm trong bản sao hợp lệ. Người học chủ động bật đồng bộ phần tài khoản trên trình duyệt; phần khách không được tự nhập hoặc gửi.
+- Server có snapshot hiện tại và nhật ký commit bất biến với UUID gửi, phiên bản gốc, SHA-256 nội dung, các trường/lượt làm thay đổi và phiên bản máy chủ. Không chép lại toàn bộ lịch sử vào mỗi commit khi gõ câu mới; request vẫn gửi snapshot đầy đủ trong phạm vi dữ liệu nhỏ hiện tại. Một RPC khóa hàng theo chủ, kiểm tra phiên bản trước khi ghi và nhận lại cùng UUID/nội dung mà không ghi hai lần. Từ chối UUID tái dùng cho nội dung khác. Client không được ghi trực tiếp các bảng hoặc chọn chủ khác.
+- Khi khác phiên bản, gộp ba phía (bản chung đã xác nhận, phần đang học, bản server): lịch sử hợp nhất theo ID; checkpoint cùng ID lấy số cộng dồn lớn nhất; lịch ôn dựng từ các lượt đã gộp theo thời gian/ID. Dữ liệu cũ thiếu lượt nguồn giữ lịch có sẵn, không bịa lịch sử đã mất.
+- Bài dở, phiên hiện tại, hồ sơ hoặc cùng ID kết quả có hai sửa đổi khác nhau cần lựa chọn rõ. Giữ hai bản trong xung đột, cho xem/tải bản sao trước chọn. Không tự dùng snapshot gửi sau để xóa lịch sử của thiết bị khác.
+- Outbox chứa đúng payload/UUID đang gửi, bản gốc và tiến độ hiện tại trong cùng một lần ghi localStorage. Gửi thành công nhưng mất response sẽ thử lại UUID cũ; chỉnh sửa trong lúc gửi còn lại cho lần sau. Không báo đã đồng bộ trước xác nhận. Lỗi quota hoặc dữ liệu không đọc được chặn gửi và giữ cảnh báo/bản gốc.
+- Mỗi tài khoản chỉ một tab sửa kho học trong cùng origin, dùng Web Locks; tab khác có thể vào tài khoản/đăng xuất nhưng chờ tab giữ khóa đóng/rời tài khoản trước khi học. Hai browser context/thiết bị vẫn học độc lập và giải quyết xung đột qua phiên bản server. Nếu trình duyệt thiếu Web Locks, không bật đồng bộ; vẫn có chế độ học local.
+- Đồng bộ khi có thay đổi, lấy lại focus, trở lại online, theo chu kỳ khi hiển thị hoặc bấm thử lại; không cần Realtime/background sync. Tạm hoãn khi hộp cài đặt đang mở để không thay nội dung chưa bấm lưu. Đổi chủ hoặc tắt đồng bộ hủy request và vô hiệu callback theo thế hệ. Request RPC mang chủ dự kiến và phải khớp `auth.uid()` để token đổi người không ghi sai chủ.
+- Nhập phần khách có màn hình lựa chọn và giữ nguồn khách. Khôi phục JSON hoặc xóa dữ liệu trên thiết bị dừng đồng bộ tại trình duyệt đó, không xóa bản server; bật lại có thể tải bản server xuống. Chưa có nút xóa toàn bộ lịch sử server; không dùng reset local như xóa cloud.
+- Backend vẫn chạy Docker local, chưa triển khai hosted/SMTP ngoài máy. RPC dùng quyền definer chỉ để bảo vệ đường ghi atomic, khóa search_path và kiểm tra chủ rõ ràng; quyền đọc bảng vẫn dùng RLS. Tham khảo [Supabase functions](https://supabase.com/docs/guides/database/functions), [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [PostgreSQL transaction isolation](https://www.postgresql.org/docs/17/transaction-iso.html).
+
 ## Các giả định/chọn lựa còn mở
 
 | Mã | Vấn đề | Mặc định hiện tại | Thời điểm cần làm rõ |

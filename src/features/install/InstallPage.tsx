@@ -170,8 +170,8 @@ export function InstallPage({ onSettings }: { onSettings: () => void }) {
           Mở cài đặt và bản sao <ArrowRight size={16} />
         </button>
         <p className="muted small">
-          Bản hiện tại cần mạng để mở app, chưa có gói học offline hoặc đồng bộ giữa thiết bị. Thêm
-          biểu tượng không tự sao lưu tiến độ.
+          Bản hiện tại cần mạng để mở app, chưa có gói học offline. Thêm biểu tượng không tự sao lưu
+          tiến độ; nếu dùng tài khoản, bật đồng bộ và kiểm tra trạng thái đã lưu trước khi đổi máy.
         </p>
       </section>
     </div>

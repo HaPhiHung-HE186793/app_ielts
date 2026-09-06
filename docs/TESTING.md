@@ -26,7 +26,7 @@ npm run test:e2e
 
 ## Phạm vi
 
-- Vitest: 59 ca về chấm đáp án, vòng đời bảy bài, kết quả có gợi ý/thử lại, lịch ôn, ghép phiên, tiếp tục đúng lượt và đọc dữ liệu version 1/2 sang 3. Có kiểm tra đồng hồ qua ngưỡng bất động, gián đoạn callback/đổi giờ hệ thống, nửa đêm, checkpoint cộng dồn, lưu phiên một lần và giữ giờ cũ là chưa biết. DATA-001 thêm 7 ca tách kho/epoch/bản lỗi/quota/import/reset/storage event và 5 ca cấu hình công khai/loại khóa/URL.
+- Vitest: 76 ca về chấm đáp án, vòng đời bảy bài, lịch ôn, ghép phiên, thời gian và tương thích version 1/2/3. Có kiểm tra kho theo chủ, quota, dữ liệu lỗi và cấu hình công khai. DATA-002 thêm 8 ca gộp ba phía/lượt trùng/lịch ôn/checkpoint/xung đột và 9 ca engine: bật tự nguyện, outbox qua reload, mất phản hồi, thay đổi trong lúc gửi, offline, quota, đổi chủ, reset/import và hoãn khi mở cài đặt.
 - Playwright: luồng học thực trên bản build; giữ bài dở sau reload, giữ cả lựa chọn/câu đang nhập, ôn đến hạn khi đổi ngày, ghi lịch ôn một lần, cài đặt và bản sao xuất/nhập, dữ liệu lỗi, quota, bộ lọc và URL không tồn tại.
 - Tổng 58 ca trình duyệt chế độ khách (29 kịch bản × hai kích thước), gồm mục tiêu/ngày/loại thi chưa quyết định, phiên 2/5/15/buổi đầy đủ, tiếp tục, bản sao, bộ đo/lịch sử tiến bộ và PWA. Có trang tài khoản chưa cấu hình, đường tiếp tục học/focus/axe. Ca buổi đầy đủ kiểm tra danh sách/ngân sách, không tự coi bảy bài đã hoàn thành.
 - `tests/progress.spec.ts`: không cộng thời gian nghỉ, dừng thủ công/cài đặt/rời bài, reload, giữ kết quả khởi động riêng, lịch sử phiên đổi/hoàn tất, và không ghi trở lại sau import/reset. Test đổi tab tắt focus emulation của Playwright qua CDP để dùng sự kiện blur/focus của trình duyệt.
@@ -43,19 +43,24 @@ Kết quả cuối mỗi mốc nằm trong [STATUS.md](STATUS.md) và [SESSION_L
 
 ```sh
 npm run db:start
+npm run db:migrate
 npm run test:auth
 ```
 
 Cần Docker và Supabase local của repo đang chạy; xem [BACKEND.md](BACKEND.md). Runner tự build vào `.local/auth-dist` chỉ với cấu hình công khai, mở preview 4174 và dùng `playwright.auth.config.ts`. Chạy tuần tự một worker, tách khỏi 58 ca khách; không cần `.env`. Khi chạy bộ khách, để hai biến Supabase trống vì ca chưa cấu hình kiểm tra chính trạng thái này.
 
-- 11 ca: một ca API RLS và năm kịch bản UI ở mỗi kích thước 1440×1000/360×800. Dùng Auth/PostgreSQL thật và thư từ Mailpit, không thay phản hồi đăng nhập thành công bằng mock.
+- 23 ca: ba ca API và mười kịch bản UI ở mỗi kích thước 1440×1000/360×800. Dùng Auth/PostgreSQL thật và thư từ Mailpit, không thay phản hồi đăng nhập thành công bằng mock.
 - `tests/auth/rls.spec.ts`: hai người dùng thực có phiên riêng; đọc/tạo/sửa/xóa của mình, chặn đọc/ghi/đổi chủ/xóa của người khác, chặn chưa đăng nhập và sửa thời điểm tạo, giới hạn tên. Xóa hàng của mình được kiểm tra ở API; app chưa có giao diện xóa tài khoản.
 - `tests/auth/account.spec.ts`: đăng ký bằng OTP, mã sai, lưu tên và khôi phục phiên sau reload; tách kho khách/A/B qua hai tab; tiến độ của A được giữ và bộ đo không tạo dữ liệu cho B; import đang đọc file không vượt qua lần đăng xuất.
+- `tests/auth/sync-api.spec.ts`: quyền đọc theo chủ/chặn chưa đăng nhập, RPC khác chủ và ghi bảng trực tiếp, payload sai, hai commit đồng thời chỉ một được ghi, retry song song không tăng revision, không tái dùng UUID cho payload khác, receipt cũ không làm lùi snapshot. Kiểm tra nhật ký chỉ ghi trường đã đổi và hash payload.
+- `tests/auth/sync.spec.ts`: hai context độc lập cùng tài khoản nhận bài/lịch ôn/phiên/câu đang nhập; thiết bị thứ hai có phiên OTP riêng. Một phần dữ liệu lịch sử ban đầu là fixture đã định nghĩa, thao tác tiếp tục/nhập câu thực hiện qua UI.
+- Mô phỏng offline bằng context Playwright khi app đã mở; khôi phục mạng và reload giữ outbox. Giữ phản hồi sau khi server thật đã chấp nhận rồi trả 503 để kiểm tra gửi lại đúng UUID. Trường hợp khác giữ response đến sau logout/đăng nhập B, xác minh không ghi vào B. Không coi đây là kiểm thử sóng mạng/OS native.
+- Xung đột câu đang nhập hiển thị cả hai phía, giữ qua reload và có lựa chọn; nhập phần khách không tự gửi trước chọn và giữ nguồn. Tab thứ hai chờ Web Lock và tiếp tục khi tab giữ khóa đóng.
 - Kịch bản lỗi inject HTTP 503 cho tải/lưu tên, gửi mã và logout; kiểm tra giữ nội dung, thử lại với server thật và trạng thái local khi không có xác nhận logout máy chủ. Đây là kiểm tra xử lý lỗi có điều khiển, chưa phải đo độ ổn định mạng/SMTP production.
 - Một số kịch bản chuẩn bị bằng phiên thật được cấp qua đăng nhập mật khẩu của tài khoản thử, rồi nạp vào storage để đi thẳng vào phần cần kiểm tra. Ca đăng ký/đăng nhập OTP được kiểm tra riêng qua UI và email thật ở Mailpit. Không kết luận email đã tới hộp thư bên ngoài.
-- Quét axe A/AA ở form mã và trang tài khoản đã có dữ liệu; kiểm tra tràn ngang và xem ảnh desktop/mobile. Trace Auth tắt để không ghi response chứa token; ảnh chỉ dùng dữ liệu thử và nằm trong `.local`.
+- Quét axe A/AA ở form mã, tài khoản, đồng bộ thành công và xung đột; kiểm tra tràn ngang ở màn hình đã đồng bộ và xem ảnh desktop/mobile. Trace Auth tắt để không ghi response chứa token; ảnh chỉ dùng dữ liệu thử và nằm trong `.local`.
 - Helper chỉ chấp nhận backend/hộp thư loopback đúng cổng repo, tạo email ngẫu nhiên `moi-ngay-<uuid>@example.test`, dùng secret key local trong Node để dựng/dọn đúng tài khoản đó. Không truyền key này cho Vite hoặc đưa vào Git. Không chạy suite lên cloud.
-- Chưa kiểm tra SMTP bên ngoài, hạ tầng hosted, mã thật hết hạn qua thời gian dài, chính sách chống abuse production, thu hồi JWT trước expiry hoặc Safari/điện thoại thật. Chưa có sync tiến độ hoặc PWA offline để kiểm tra.
+- Chưa kiểm tra SMTP bên ngoài, hosted, mã hết hạn qua thời gian dài, chính sách chống abuse production, thu hồi JWT trước expiry, dữ liệu nhiều tháng hoặc Safari/điện thoại thật. Sync kiểm tra bằng hai browser context, chưa có PWA offline để kiểm tra mở mới khi mất mạng.
 
 ## Dữ liệu và giới hạn
 

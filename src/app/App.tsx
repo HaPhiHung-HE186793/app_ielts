@@ -29,6 +29,7 @@ import { ActivityGate } from './activity-context'
 import { InstallPage } from '../features/install/InstallPage'
 import { AccountPage } from '../features/account/AccountPage'
 import { getAuthSnapshot, subscribeAuth } from './auth'
+import { getSyncSnapshot, subscribeSync, suspendSync, syncLabels } from './sync'
 
 const navigation = [
   { path: '/today', label: 'Hôm nay', icon: House },
@@ -40,12 +41,16 @@ const navigation = [
 
 export function App() {
   const route = useRoute()
-  const { state, error, scopeKey } = useSyncExternalStore(subscribe, getSnapshot)
+  const { state, error, scopeKey, viewRevision } = useSyncExternalStore(subscribe, getSnapshot)
   const auth = useSyncExternalStore(subscribeAuth, getAuthSnapshot)
+  const syncStatus = useSyncExternalStore(subscribeSync, getSyncSnapshot)
+  const studyBlocked = !!auth.user && (!syncStatus.canEdit || syncStatus.phase === 'conflict')
   const [settings, setSettings] = useState(false)
   const now = useClock()
   const main = useRef<HTMLElement>(null)
   const isLesson = route.startsWith('/lesson/')
+  const learningViewRevision =
+    isLesson || route === '/session' || route === '/review' ? viewRevision : 0
   const lesson = isLesson ? findLesson(route.slice('/lesson/'.length)) : undefined
   const activePath = isLesson ? '/discover' : route === '/session' ? '/today' : route
   const currentNav = navigation.find((item) => item.path === activePath)
@@ -62,8 +67,12 @@ export function App() {
     main.current?.focus({ preventScroll: true })
     window.scrollTo({ top: 0, behavior: 'instant' })
     window.speechSynthesis?.cancel()
-  }, [route, pageTitle, scopeKey, auth.status])
+  }, [route, pageTitle, scopeKey, learningViewRevision, auth.status])
   useEffect(() => () => window.speechSynthesis?.cancel(), [])
+  useEffect(() => {
+    suspendSync(settings)
+    return () => suspendSync(false)
+  }, [settings])
 
   if (auth.status === 'loading')
     return (
@@ -182,7 +191,7 @@ export function App() {
           >
             {auth.user && (
               <div className="current-study-scope">
-                <span>Phần học riêng của tài khoản đang đăng nhập · Lưu trên trình duyệt</span>
+                <span>Phần học riêng của tài khoản · {syncLabels[syncStatus.phase]}</span>
                 <a href="#/account">Xem tài khoản</a>
               </div>
             )}
@@ -194,7 +203,19 @@ export function App() {
                 </button>
               </div>
             )}
-            {route === '/today' ? (
+            {studyBlocked && route !== '/account' && route !== '/install' ? (
+              <section className="panel account-panel">
+                <h1>{syncLabels[syncStatus.phase]}</h1>
+                <p>
+                  {syncStatus.phase === 'conflict'
+                    ? 'Tiến độ của hai nơi vẫn được giữ. Chọn phần muốn tiếp tục trong tài khoản trước khi học tiếp.'
+                    : 'Đóng tab đang học với tài khoản này để tiếp tục tại đây. Mỗi trình duyệt chỉ có một tab sửa tiến độ của tài khoản.'}
+                </p>
+                <a className="button primary" href="#/account">
+                  Mở tài khoản
+                </a>
+              </section>
+            ) : route === '/today' ? (
               <Today
                 state={state}
                 now={now}
@@ -204,11 +225,11 @@ export function App() {
             ) : route === '/discover' ? (
               <Discover state={state} onStart={openLesson} />
             ) : route === '/session' ? (
-              <SessionPage state={state} />
+              <SessionPage key={viewRevision} state={state} />
             ) : route === '/practice' ? (
               <Practice onStart={openLesson} />
             ) : route === '/review' ? (
-              <ReviewPage state={state} now={now} />
+              <ReviewPage key={viewRevision} state={state} now={now} />
             ) : route === '/progress' ? (
               <Progress state={state} now={now} onSettings={() => setSettings(true)} />
             ) : route === '/install' ? (
@@ -217,7 +238,7 @@ export function App() {
               <AccountPage onSettings={() => setSettings(true)} />
             ) : lesson ? (
               <LessonPlayer
-                key={lesson.id}
+                key={`${lesson.id}:${viewRevision}`}
                 lesson={lesson}
                 draft={state.draft}
                 onStart={() => openLesson(lesson)}

@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Check, LogOut, Mail, UserRound } from 'lucide-re
 import { getAuthSnapshot, signOutHere, subscribeAuth } from '../../app/auth'
 import { publicConfig, supabase } from '../../services/supabase'
 import '../../styles/account.css'
+import { SyncPanel } from './SyncPanel'
 
 function AccountProfile({ userId }: { userId: string }) {
   const [name, setName] = useState('')
@@ -88,8 +89,8 @@ function AccountProfile({ userId }: { userId: string }) {
             />
           </label>
           <p className="muted small">
-            Tên này được lưu cùng tài khoản. Tên gọi, mục tiêu và bài học trong phần cài đặt học tập
-            vẫn lưu riêng trên trình duyệt.
+            Tên này được lưu cùng tài khoản. Tên gọi và mục tiêu trong cài đặt thuộc phần học tập,
+            chỉ được gửi lên khi bạn bật đồng bộ tiến độ.
           </p>
           <button className="button primary" disabled={saving} type="submit">
             <Check size={17} /> {saving ? 'Đang lưu tên…' : 'Lưu tên tài khoản'}
@@ -297,6 +298,7 @@ export function AccountPage({ onSettings }: { onSettings: () => void }) {
             </div>
           </section>
           <AccountProfile userId={auth.user.id} />
+          <SyncPanel />
         </>
       ) : publicConfig.status !== 'ready' ? (
         <section className="panel account-panel">
@@ -317,13 +319,13 @@ export function AccountPage({ onSettings }: { onSettings: () => void }) {
         <h2 id="account-data-title">Bài học đang được giữ ở đâu?</h2>
         <p>
           {auth.user
-            ? 'Phần học hiện tại lưu trên trình duyệt, riêng cho tài khoản này. Đăng xuất sẽ ẩn phần này và mở lại phần học không đăng nhập. Đăng nhập lại cùng tài khoản trên trình duyệt này để tiếp tục.'
+            ? 'Phần học hiện tại được giữ riêng cho tài khoản này. Nếu bật đồng bộ, app lưu thêm vào tài khoản và hiển thị kết quả gửi ở trên. Đăng xuất mở lại phần học không đăng nhập.'
             : 'Bạn đang học không cần tài khoản. Phần này vẫn được giữ riêng khi bạn đăng nhập; đăng xuất để quay lại.'}
         </p>
         <p className="muted small">
-          Chưa đồng bộ bài học giữa thiết bị. Hãy tải bản sao trước khi đổi máy hoặc xóa dữ liệu
-          trình duyệt. Dữ liệu local chưa được mã hóa; nếu dùng máy chung, tải bản sao rồi xóa phần
-          học hiện tại trong cài đặt trước khi đăng xuất.
+          Hãy kiểm tra trạng thái đồng bộ và tải bản sao trước khi đổi máy hoặc xóa dữ liệu trình
+          duyệt. Dữ liệu local chưa được mã hóa; nếu dùng máy chung, tải bản sao rồi xóa phần học
+          hiện tại trong cài đặt trước khi đăng xuất.
         </p>
         <button className="text-button" onClick={onSettings}>
           Mở cài đặt và bản sao <ArrowRight size={16} />

@@ -99,3 +99,36 @@ Người dùng yêu cầu tiếp tục. Thực hiện task READY kế tiếp tr�
 - Chưa đo thời gian hoạt động; phút trên giao diện là ước tính. Chỉ lưu kế hoạch hiện tại, chưa có lịch sử mọi phiên bị thay thế. Lượt khởi động đã lưu riêng nhưng chưa đưa vào trang Tiến bộ.
 - Tiếp theo: PROGRESS-001 định nghĩa phép đo có xử lý tab ẩn/bất động/tạm dừng/reload, lưu lịch sử phiên và phân biệt dữ liệu thực với ngân sách. Không suy giờ học của dữ liệu cũ từ số bài đã làm.
 - Các giới hạn local, một bài dở, học liệu thử nghiệm, chưa AI/cloud/PWA/install và chưa lộ trình sáu tháng vẫn giữ nguyên. Commit/push sau rà soát; kết quả cuối được báo bằng Git trong bàn giao.
+
+## 2026-09-06 — PROGRESS-001: lịch sử phiên và thời gian hoạt động
+
+### Yêu cầu và phạm vi
+
+Người dùng yêu cầu tiếp tục; thực hiện PROGRESS-001 từ bàn giao trước. Giữ ủy quyền commit/push, không thêm dependency hoặc dịch vụ ngoài. Mốc này hoàn tất các task mốc 1 local.
+
+### Đã thực hiện
+
+- Thêm ActivityClock và ActivityMeter cho bài có draft, câu khởi động và ôn. Chỉ tính khi hiển thị/có focus; dừng sau 60 giây không thao tác, khi rời bài/mở cài đặt, blur/visibility/pagehide hoặc dừng đo thủ công.
+- Đồng hồ monotonic, kiểm tra mỗi giây, checkpoint mỗi năm giây và khi rời/dừng, không cộng lại khoảng nghỉ sau reload. Bỏ khoảng callback quá trễ/đổi đồng hồ; chia khoảng qua nửa đêm và lưu theo ngày địa phương.
+- Checkpoint cộng dồn theo ID lượt mở/ngày, ghi lại không tăng hai lần. Epoch store vô hiệu callback cũ sau nhập/xóa/nhận kho khác.
+- Thêm planHistory khi kết thúc/thay phiên, đóng băng phần đã làm tại thời điểm đó, không xóa draft. Khởi động, bài và ôn giữ kết quả riêng.
+- Tách Progress khỏi Pages thành feature riêng: tổng đo, biểu đồ bảy ngày, bốn thẻ thống kê, lịch sử phiên, bộ lọc và xem thêm lượt luyện. Phút dự kiến hiển thị riêng; giữ câu tự viết và ghi rõ chưa chấm.
+- Schema version 3 đọc được version 1/2, giữ dữ liệu cũ và giờ chưa biết. Không tạo lịch sử của kế hoạch cũ đã bị thay. DEC-011 ghi quy tắc và giới hạn.
+- Cập nhật tài liệu định hướng, kiến trúc, kiểm tra, README và bàn giao.
+
+### Kiểm tra và sửa lỗi
+
+- Lint/typecheck/build đạt; Vitest 47 ca đạt, gồm đồng hồ, idle, thời gian gián đoạn, nửa đêm, checkpoint, lịch sử và tương thích dữ liệu.
+- Lượt Playwright toàn bộ ban đầu: 36/38 đạt. Hai ca đổi tab phát hiện Playwright đang giả lập mọi trang có focus; đã tắt focus emulation qua CDP và chạy lại hai ca đạt với blur/focus của trình duyệt.
+- Thêm ca visibility/pagehide/pageshow có giá trị/sự kiện điều khiển, vì Chrome headless vẫn báo visible cho tab nền. Đây là kiểm tra handler, không phải kiểm tra thiết bị native.
+- Kiểm tra ảnh phát hiện kiểu thẻ thống kê mobile cũ làm nội dung bị bó hẹp; đã chuyển thẻ mới sang cột. Build lại và chạy 12 ca liên quan (10 tiến bộ + 2 axe trang chính), tất cả đạt. Tổng bộ test hiện có 40 ca trình duyệt đã được kiểm tra thành công ở 1440×1000/360×800.
+- Axe A/AA không phát hiện vi phạm trong các vùng đã quét. Kiểm tra tổng đo, idle, dừng thủ công/cài đặt/rời bài, đổi tab, reload, khôi phục/xóa không tái ghi, kết quả thật và lịch sử phiên.
+- Đã xem ảnh Tiến bộ ở desktop/mobile và kiểm tra runtime/tràn ngang qua script riêng. Kiểm tra 10 file tài liệu, 22 liên kết nội bộ, 24 task và `git diff --check` đạt.
+
+### Bàn giao
+
+- PROGRESS-001 DONE, mốc 1 local hoàn tất. PWA-001 là task READY tiếp theo, đủ phụ thuộc và chưa cần Supabase.
+- File chính: `domain/activity.ts`, `domain/progress.ts`, `domain/planner.ts`, `data/schema.ts`, `data/store.ts`, `components/ActivityMeter.tsx`, `features/progress/Progress.tsx`; test ở activity.test và progress.spec.
+- Giữ các giới hạn: phép đo không chứng minh chú ý, có thể mất mốc cuối khi kill, dữ liệu cũ chưa có giờ; không an toàn hợp nhất nhiều tab; chưa iPhone/Safari/Android thật, AI/cloud/PWA hoặc học liệu sáu tháng.
+- Nút dừng đo áp dụng cho lượt mở hoạt động; bản ghi thời gian mới bắt đầu lại khi mở hoạt động mới. Dữ liệu local có bản sao thủ công, không phải cloud.
+- Commit/push sau rà soát diff và tài liệu; hash/kết quả remote được xác minh bằng Git trong bàn giao cuối.

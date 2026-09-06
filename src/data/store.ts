@@ -4,6 +4,8 @@ export const STORAGE_KEY = 'moi-ngay.study.v1'
 type Snapshot = { state: StudyState; error: string | null }
 const listeners = new Set<() => void>()
 let unreadable = false
+let dataEpoch = 0
+export const getDataEpoch = () => dataEpoch
 
 function read(): Snapshot {
   try {
@@ -54,6 +56,7 @@ export function updateState(update: (state: StudyState) => StudyState) {
 export function importBackup(raw: string) {
   const next = parseBackup(raw)
   localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+  dataEpoch++
   unreadable = false
   snapshot = { state: next, error: null }
   emit()
@@ -62,6 +65,7 @@ export function importBackup(raw: string) {
 
 export function resetState() {
   localStorage.removeItem(STORAGE_KEY)
+  dataEpoch++
   unreadable = false
   snapshot = { state: emptyState(), error: null }
   emit()
@@ -81,6 +85,7 @@ export function backupText() {
 window.addEventListener('storage', (event) => {
   if (event.key !== STORAGE_KEY && event.key !== null) return
   if (snapshot.error && !unreadable) return // Keep unsaved in-memory work.
+  dataEpoch++
   unreadable = false
   snapshot = read()
   emit()

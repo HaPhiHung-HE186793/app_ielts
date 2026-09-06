@@ -148,7 +148,7 @@ describe('version 1 migration and safe plan backups', () => {
       reviewLog: [],
     }
     const migrated = parseBackup(JSON.stringify(legacy))
-    expect(migrated.version).toBe(2)
+    expect(migrated.version).toBe(3)
     expect(migrated.plan).toBeNull()
     expect(migrated.quickLog).toEqual([])
     expect(migrated.profile).toMatchObject({

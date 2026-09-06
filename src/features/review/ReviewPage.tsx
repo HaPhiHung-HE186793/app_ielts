@@ -6,6 +6,7 @@ import { updateState } from '../../data/store'
 import { recordReview } from '../../domain/session'
 import { isCorrect } from '../../domain/learning'
 import { navigate } from '../../app/router'
+import { ActivityMeter } from '../../components/ActivityMeter'
 
 function ReviewQuestion({ lessonId, onNext }: { lessonId: string; onNext: () => void }) {
   const lesson = findLesson(lessonId)!
@@ -16,6 +17,7 @@ function ReviewQuestion({ lessonId, onNext }: { lessonId: string; onNext: () => 
   return (
     <form
       className="review-question"
+      data-study-activity
       onSubmit={(event) => {
         event.preventDefault()
         if (!answer.trim() || result !== null) return
@@ -23,6 +25,7 @@ function ReviewQuestion({ lessonId, onNext }: { lessonId: string; onNext: () => 
         setResult(isCorrect(lesson.review, answer))
       }}
     >
+      <ActivityMeter attemptId={id} lessonId={lesson.id} kind="review" planId={null} />
       <p className="eyebrow">{lesson.title}</p>
       <h2>{lesson.review.prompt}</h2>
       <label className="field">

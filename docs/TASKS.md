@@ -29,7 +29,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | LEARN-002 | DONE | LEARN-001 | Lưu tiến độ và bài dở vào local qua lớp dữ liệu riêng; đóng/mở lại tiếp tục được. Hiển thị giới hạn lưu local, xử lý lỗi lưu và thay đổi phiên bản dữ liệu có chủ đích. |
 | PLAN-001 | DONE | LEARN-002 | Onboarding lưu sở thích, thời gian, mục tiêu và loại thi chưa xác định nếu cần; Hôm nay chọn 2/5/15 phút hoặc buổi đầy đủ. Phiên hữu hạn, lưu qua reload, khởi động tách khỏi bài đầy đủ; đọc dữ liệu version 1 sang 2. Không tự tạo band đầu vào hoặc hứa mục tiêu chưa có đánh giá. |
 | REVIEW-001 | DONE | LEARN-002 | Lịch ôn DEC-009 từ kết quả thật, điền đáp án trước phản hồi; sai/có gợi ý ôn lại sau 10 phút. Kiểm tra qua ngày, reload, nộp trùng và gián đoạn; xem thẻ không đổi lịch. |
-| PROGRESS-001 | READY | PLAN-001, REVIEW-001 | Tiến bộ từ dữ liệu thật: bài hoàn thành, nhớ lại, lượt luyện; dữ liệu trống có hướng dẫn. Phân biệt thời gian hoạt động, dữ liệu mẫu và ước lượng; không suy band từ XP. |
+| PROGRESS-001 | DONE | PLAN-001, REVIEW-001 | Tiến bộ từ dữ liệu thật, lịch sử phiên hoàn tất/thay, bộ lọc và biểu đồ bảy ngày; đo hoạt động có idle/focus/visibility, checkpoint chống trùng, đọc version 1/2 sang 3. Giữ giờ cũ là chưa có dữ liệu; không suy band từ phút hoặc XP. |
 
 Điều kiện đạt mốc 1: một người mở app local, hoàn thành bài, đóng/mở lại, ôn một mục đến hạn và thấy tiến độ được lưu đúng.
 
@@ -39,7 +39,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | --- | --- | --- | --- |
 | DATA-001 | TODO | LEARN-002 | Thiết lập Supabase, migration và Auth; `.env.example` chỉ chứa cấu hình mẫu phù hợp. Xác định chính sách dữ liệu local khi đăng xuất; kiểm tra truy cập dữ liệu riêng bằng hai tài khoản. Có tài liệu cấu hình dịch vụ. |
 | DATA-002 | TODO | DATA-001, REVIEW-001, PROGRESS-001 | Đồng bộ lượt làm, tiến độ và trạng thái ôn; nhập tiến độ local sau đăng nhập theo lựa chọn rõ ràng. Kiểm tra hai phiên/thiết bị, mất mạng, gửi lặp, xung đột và đăng xuất; hiển thị trạng thái đồng bộ. |
-| PWA-001 | TODO | APP-002, LEARN-002 | Manifest, icons và chế độ standalone; hướng dẫn thêm màn hình chính. Xác minh trên Android/iOS có sẵn, ghi thiết bị chưa kiểm tra; không tuyên bố tương thích chỉ từ responsive preview. |
+| PWA-001 | READY | APP-002, LEARN-002 | Manifest, icons và chế độ standalone; hướng dẫn thêm màn hình chính. Xác minh trên Android/iOS có sẵn, ghi thiết bị chưa kiểm tra; không tuyên bố tương thích chỉ từ responsive preview. |
 | PWA-002 | TODO | PWA-001, DATA-002 | Tải một gói bài/audio được phép lưu; mở và học offline, chờ gửi khi có mạng. Có quản lý dung lượng/xóa tải xuống; không rò cache giữa tài khoản, không giả lập AI offline. |
 | NOTIFY-001 | TODO | PWA-001, DATA-001, PLAN-001 | Nhắc học tự nguyện, múi giờ và giờ yên lặng, tắt/dời lịch được. Xin quyền từ thao tác người dùng, xử lý từ chối; xác minh nền tảng hỗ trợ, không phụ thuộc thông báo để vào bài. |
 
@@ -67,22 +67,22 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | COACH-001 | TODO | BETA-001 | Nếu người dùng cần: dashboard gia sư, giao bài và nhận xét với quyền truy cập có lựa chọn; kiểm tra học viên khác không xem chéo dữ liệu. |
 | MOBILE-001 | TODO | BETA-001 | Nếu cần cửa hàng ứng dụng: đánh giá Capacitor, build/ký và kiểm thử native, chuẩn bị thông tin phát hành. Tài khoản, thiết bị và quyền phát hành phải có trước khi gửi lên cửa hàng. |
 
-## Chi tiết task tiếp theo: PROGRESS-001
+## Chi tiết task tiếp theo: PWA-001
 
 ### Thực hiện
 
-1. Đọc STATUS, DEC-010, schema version 2, planner và trang Progress trong `src/features/pages/Pages.tsx`. Kết quả bài/ôn đã có; kế hoạch hiện tại và quickLog đã lưu.
-2. Định nghĩa phép đo phút hoạt động: chỉ trong hoạt động học, dừng khi tab ẩn/tạm dừng hoặc không tương tác quá ngưỡng có giải thích. Xử lý chuyển route, reload, đóng tab và tránh cộng thời gian hai lần. Không gọi thời gian mở app là thời gian học có chú ý.
-3. Lưu lịch sử phiên hoàn tất/đã thay thế để người học nhìn lại, phân biệt hoạt động đã làm với số dự kiến. Giữ một bài dở và đường đọc bản sao version 1/2 nếu nâng schema.
-4. Đưa lượt khởi động, bài đầy đủ, ôn, câu tự viết và thời gian đo vào Tiến bộ. Tách đúng độc lập với có gợi ý/sai. Dữ liệu cũ chưa đo giờ phải ghi chưa có dữ liệu, không suy từ `minutes` trong học liệu.
-5. Có trạng thái chưa học và gợi ý bước tiếp theo, chỉ dùng dữ liệu thật; không suy band từ số phút hoặc lượt luyện.
-6. Kiểm tra phép đo qua khoảng nghỉ/tab ẩn/reload, chống trùng, phiên ngắn không tăng số bài và khôi phục bản sao; chạy lint/typecheck/unit/e2e liên quan.
-7. Cập nhật task/status/nhật ký và chọn một task mốc 2 đủ phụ thuộc/cấu hình làm bước tiếp theo. Cloud hoặc PWA chưa thuộc PROGRESS-001.
+1. Đọc STATUS, kiến trúc và DEC-011; mốc local đã có học/ôn/phiên/tiến bộ. Giữ dữ liệu version 3 và đường đọc bản sao cũ.
+2. Xác minh yêu cầu cài đặt hiện hành của trình duyệt bằng tài liệu chính thức. Thêm manifest, tên/app ID, start_url/scope phù hợp hash routing, màu, display và bộ icon đủ kích thước/maskable/apple-touch-icon.
+3. Dùng thương hiệu “Mỗi ngày” hiện tại; tạo tài nguyên có quyền sử dụng, giữ nội dung/icon trong repo. Không cần dịch vụ ngoài để làm phần local này.
+4. Có hướng dẫn thêm màn hình chính trên nền tảng hỗ trợ, nhận biết standalone và xử lý khi không có prompt cài. Không ép thông báo hoặc giả lập nút cài đã thành công.
+5. Kiểm tra manifest/icon/đường mở app và phiên đang dở trên trình duyệt sẵn có; kiểm tra thiết bị thật nếu có. Ghi rõ iPhone/Safari và Android còn chưa xác minh; localhost trên máy tính chưa phải link dùng được ở điện thoại.
+6. Giữ giới hạn: dữ liệu theo origin, cài PWA chưa đồng nghĩa đồng bộ/offline. Không tự nhận PWA-002 hoặc phát hành cửa hàng đã hoàn tất.
+7. Chạy lint/typecheck/build/test liên quan, cập nhật docs/task/status và commit/push theo ủy quyền. Chọn task tiếp theo theo phụ thuộc và cấu hình thực tế.
 
 ### Chưa thuộc task này
 
-Supabase thật, API AI, đăng nhập, thông báo, PWA offline, phát hành lên cửa hàng và kho học liệu đầy đủ.
+Supabase thật, API AI, đăng nhập, thông báo, gói học offline (PWA-002), phát hành cửa hàng và kho học liệu đầy đủ.
 
 ### Phần đã có nhưng chưa đóng task khác
 
-PLAN-001 đã đóng, có kết quả riêng cho phiên hiện tại. PROGRESS-001 chưa đóng: trang Tiến bộ vẫn chỉ có phần thống kê bài/lượt ôn và câu tự viết; cần lịch sử phiên và đo thời gian theo tiêu chí trên.
+PROGRESS-001 đã đóng, đánh dấu mốc 1 local hoàn tất. DATA-001 vẫn TODO vì chưa có cấu hình Supabase và kiểm tra quyền thật. Không đánh dấu mốc 2 đạt chỉ vì cài được biểu tượng PWA.

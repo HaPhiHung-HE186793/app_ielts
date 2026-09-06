@@ -81,12 +81,58 @@ const draftSchema = z.object({
   pendingAnswer: z.string().max(500).default(''),
 })
 
+export const activityEntrySchema = z
+  .object({
+    id: z.string().min(1).max(150),
+    attemptId: z.string().min(1).max(120),
+    lessonId,
+    kind: z.enum(['lesson', 'quick', 'review']),
+    planId: z.string().min(1).max(100).nullable(),
+    day: z.iso.date(),
+    startedAt: timestamp,
+    recordedAt: timestamp,
+    elapsedMs: z
+      .number()
+      .int()
+      .positive()
+      .max(26 * 60 * 60 * 1000),
+  })
+  .refine(
+    (entry) =>
+      entry.recordedAt >= entry.startedAt &&
+      entry.elapsedMs <= entry.recordedAt - entry.startedAt + 2000,
+  )
+
+const planHistorySchema = z
+  .object({
+    id: z.string().min(1).max(100),
+    mode: z.enum(['2', '5', '15', 'full']),
+    budget: z.number().int().min(2).max(180),
+    createdAt: timestamp,
+    endedAt: timestamp,
+    status: z.enum(['completed', 'replaced']),
+    items: z
+      .array(planItemSchema.extend({ completed: z.boolean() }))
+      .min(1)
+      .max(10),
+  })
+  .superRefine((entry, ctx) => {
+    if (
+      entry.endedAt < entry.createdAt ||
+      new Set(entry.items.map((item) => item.id)).size !== entry.items.length ||
+      (entry.status === 'completed' && entry.items.some((item) => !item.completed))
+    )
+      ctx.addIssue({ code: 'custom', message: 'Lịch sử phiên không hợp lệ' })
+  })
+
 export const stateSchema = z
   .object({
-    version: z.literal(2),
+    version: z.literal(3),
     profile: profileSchema.nullable(),
     draft: draftSchema.nullable(),
     plan: planSchema.nullable(),
+    activityLog: z.array(activityEntrySchema).max(50_000),
+    planHistory: z.array(planHistorySchema).max(20_000),
     quickLog: z
       .array(
         z.object({
@@ -142,6 +188,22 @@ export const stateSchema = z
     const quickIds = state.quickLog.map((item) => item.id)
     if (new Set(quickIds).size !== quickIds.length)
       ctx.addIssue({ code: 'custom', message: 'Trùng lượt khởi động' })
+    for (const entries of [state.activityLog, state.planHistory]) {
+      if (new Set(entries.map((entry) => entry.id)).size !== entries.length)
+        ctx.addIssue({ code: 'custom', message: 'Trùng bản ghi tiến bộ' })
+    }
+    for (const session of state.planHistory) {
+      for (const item of session.items.filter((item) => item.completed)) {
+        const logs =
+          item.kind === 'lesson'
+            ? state.completions
+            : item.kind === 'review'
+              ? state.reviewLog
+              : state.quickLog
+        if (!logs.some((log) => log.id === item.id && log.lessonId === item.lessonId))
+          ctx.addIssue({ code: 'custom', message: 'Lịch sử phiên thiếu kết quả thực' })
+      }
+    }
     for (const item of [...state.reviewLog, ...state.quickLog]) {
       if (item.independent && !item.correct)
         ctx.addIssue({ code: 'custom', message: 'Kết quả độc lập không hợp lệ' })
@@ -185,11 +247,16 @@ export type Draft = NonNullable<StudyState['draft']>
 export type StudyPlan = NonNullable<StudyState['plan']>
 export type PlanItem = StudyPlan['items'][number]
 export type PlanMode = StudyPlan['mode']
+export type ActivityEntry = z.infer<typeof activityEntrySchema>
+export type ActivityTarget = Pick<ActivityEntry, 'attemptId' | 'lessonId' | 'kind' | 'planId'>
+export type PlanHistoryEntry = z.infer<typeof planHistorySchema>
 export const emptyState = (): StudyState => ({
-  version: 2,
+  version: 3,
   profile: null,
   draft: null,
   plan: null,
+  activityLog: [],
+  planHistory: [],
   quickLog: [],
   completions: [],
   reviews: {},
@@ -200,7 +267,18 @@ export function parseBackup(raw: string): StudyState {
   if (raw.length > 5_000_000) throw new Error('Bản sao vượt quá 5 MB. Hãy chọn bản sao nhỏ hơn.')
   const data: unknown = JSON.parse(raw)
   // Keep the storage key stable. Validate migrated data before any write occurs.
-  if (typeof data === 'object' && data !== null && 'version' in data && data.version === 1)
-    return stateSchema.parse({ ...data, version: 2, plan: null, quickLog: [] })
+  if (typeof data === 'object' && data !== null && 'version' in data) {
+    if (data.version === 1)
+      return stateSchema.parse({
+        ...data,
+        version: 3,
+        plan: null,
+        quickLog: [],
+        activityLog: [],
+        planHistory: [],
+      })
+    if (data.version === 2)
+      return stateSchema.parse({ ...data, version: 3, activityLog: [], planHistory: [] })
+  }
   return stateSchema.parse(data)
 }

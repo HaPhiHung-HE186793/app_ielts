@@ -5,6 +5,7 @@ import { updateState } from '../../data/store'
 import { completeLesson, submitAnswer } from '../../domain/session'
 import type { Exercise, Lesson } from '../../domain/types'
 import { LessonArt } from '../../components/LessonCard'
+import { ActivityMeter } from '../../components/ActivityMeter'
 
 export function ListenButton({ phrase }: { phrase: string }) {
   const [message, setMessage] = useState('')
@@ -193,11 +194,13 @@ export function LessonPlayer({
   draft,
   onStart,
   onExit,
+  planId = null,
 }: {
   lesson: Lesson
   draft: Draft | null
   onStart: () => void
   onExit: () => void
+  planId?: string | null
 }) {
   const [receipt, setReceipt] = useState<{ independent: number } | null>(null)
   const current = draft?.lessonId === lesson.id ? draft : null
@@ -240,7 +243,10 @@ export function LessonPlayer({
   }
 
   return (
-    <section className="lesson-player">
+    <section className="lesson-player" data-study-activity>
+      {current && (
+        <ActivityMeter attemptId={current.id} lessonId={lesson.id} kind="lesson" planId={planId} />
+      )}
       <div className="player-top">
         <button className="text-button" onClick={onExit}>
           <ChevronLeft size={17} /> Tạm dừng

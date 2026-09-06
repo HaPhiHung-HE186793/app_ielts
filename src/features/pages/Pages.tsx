@@ -1,17 +1,6 @@
 import { useState } from 'react'
-import {
-  ArrowRight,
-  ArrowUpRight,
-  BookOpen,
-  Check,
-  Compass,
-  Headphones,
-  Leaf,
-  PenLine,
-  RotateCcw,
-  Sparkles,
-} from 'lucide-react'
-import { lessons, findLesson } from '../../content/lessons'
+import { ArrowRight, BookOpen, Compass, Headphones, Leaf, PenLine, Sparkles } from 'lucide-react'
+import { lessons } from '../../content/lessons'
 import type { StudyState } from '../../data/schema'
 import type { Lesson } from '../../domain/types'
 import { LessonCard } from '../../components/LessonCard'
@@ -144,105 +133,6 @@ export function Practice({ onStart }: { onStart: (lesson: Lesson) => void }) {
           </a>
         </section>
       </div>
-    </>
-  )
-}
-
-export function Progress({ state, onSettings }: { state: StudyState; onSettings: () => void }) {
-  const unique = new Set(state.completions.map((item) => item.lessonId)).size
-  const firstTry = state.completions.reduce((sum, item) => sum + item.independent, 0)
-  const responses = state.completions.length * 3
-  const reviewIndependent = state.reviewLog.filter((item) => item.independent).length
-  return (
-    <>
-      <header className="page-heading">
-        <p className="eyebrow">SO VỚI CHÍNH MÌNH NGÀY HÔM QUA</p>
-        <h1>Mỗi bước đều đáng ghi nhận.</h1>
-        <p>Những gì bạn đã thực sự luyện, được giữ lại ở đây.</p>
-      </header>
-      <div className="stats-grid">
-        <section className="panel stat">
-          <BookOpen size={21} />
-          <strong>
-            {unique}
-            <span> / 7</span>
-          </strong>
-          <span>bài nền tảng đã hoàn thành</span>
-        </section>
-        <section className="panel stat">
-          <Check size={21} />
-          <strong>{responses ? `${Math.round((firstTry / responses) * 100)}%` : '—'}</strong>
-          <span>câu đúng lần đầu, không gợi ý</span>
-        </section>
-        <section className="panel stat">
-          <RotateCcw size={21} />
-          <strong>{state.reviewLog.length}</strong>
-          <span>lượt tự nhớ lại đã thực hiện</span>
-        </section>
-      </div>
-      <p className="small muted">
-        {state.reviewLog.length
-          ? `${reviewIndependent}/${state.reviewLog.length} lượt ôn đúng không cần gợi ý. `
-          : ''}
-        Các chỉ số này phản ánh bài đã luyện, chưa phải mức thành thạo hay band IELTS.
-      </p>
-      <section className="panel history-panel">
-        <div className="section-heading">
-          <h2>Dấu chân trên hành trình</h2>
-          <button className="text-button" onClick={onSettings}>
-            Lưu bản sao <ArrowUpRight size={15} />
-          </button>
-        </div>
-        {state.completions.length ? (
-          <div className="history-list">
-            {[...state.completions]
-              .reverse()
-              .slice(0, 30)
-              .map((item) => {
-                const lesson = findLesson(item.lessonId)!
-                return (
-                  <article key={item.id} className="history-item">
-                    <span className="history-check">
-                      <Check size={17} />
-                    </span>
-                    <div>
-                      <h3>{lesson.title}</h3>
-                      <p>
-                        {new Intl.DateTimeFormat('vi-VN', {
-                          dateStyle: 'medium',
-                          timeStyle: 'short',
-                        }).format(item.completedAt)}{' '}
-                        · {item.independent}/3 câu đúng độc lập
-                      </p>
-                      {item.reflection && (
-                        <blockquote lang="en">
-                          {item.reflection}
-                          <span>Câu bạn tự viết · Chưa chấm</span>
-                        </blockquote>
-                      )}
-                    </div>
-                  </article>
-                )
-              })}
-            {state.completions.length > 30 && (
-              <p className="small muted">
-                Hiển thị 30 lượt gần nhất. Bản sao chứa toàn bộ lịch sử.
-              </p>
-            )}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <span className="round-icon">
-              <Leaf size={29} />
-            </span>
-            <h2>Trang đầu tiên đang chờ bạn.</h2>
-            <p>Hoàn thành một bài học để thấy bước tiến đầu tiên ở đây.</p>
-            <a className="button primary" href="#/discover">
-              Chọn một bài học <ArrowRight size={18} />
-            </a>
-          </div>
-        )}
-      </section>
     </>
   )
 }

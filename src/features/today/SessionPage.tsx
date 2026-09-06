@@ -12,6 +12,8 @@ import {
 } from '../../domain/planner'
 import { navigate } from '../../app/router'
 import { LessonPlayer, ListenButton } from '../lessons/LessonPlayer'
+import { ActivityMeter } from '../../components/ActivityMeter'
+import { formatDuration, measuredTime } from '../../domain/activity'
 
 function PlannedPractice({
   state,
@@ -44,7 +46,13 @@ function PlannedPractice({
     )
   }
   return (
-    <section className="panel session-practice">
+    <section className="panel session-practice" data-study-activity>
+      <ActivityMeter
+        attemptId={item.id}
+        lessonId={item.lessonId}
+        kind={quick ? 'quick' : 'review'}
+        planId={plan.id}
+      />
       <p className="eyebrow">{quick ? 'MỘT CÂU ĐỂ BẮT ĐẦU' : 'GẶP LẠI MỘT CÂU ĐÃ HỌC'}</p>
       <h2>{lesson.title}</h2>
       {quick && plan.practice.stage === 'intro' ? (
@@ -188,8 +196,9 @@ export function SessionPage({ state }: { state: StudyState }) {
           })}
         </div>
         <p className="muted small">
-          Khoảng {totalMinutes} phút là ước tính của kế hoạch, chưa phải thời gian học được đo. Kết
-          quả này không quy đổi thành band IELTS.
+          Đã đo: {formatDuration(measuredTime(state, plan.id))}. Kế hoạch ban đầu khoảng{' '}
+          {totalMinutes} phút. Số đo phản ánh hoạt động trên app, chưa xác nhận mức chú ý hoặc band
+          IELTS.
         </p>
         <a className="button primary" href="#/today">
           Về Hôm nay <ArrowRight size={17} />
@@ -264,6 +273,7 @@ export function SessionPage({ state }: { state: StudyState }) {
         <LessonPlayer
           key={item.id}
           lesson={lesson}
+          planId={plan.id}
           draft={state.draft?.id === item.id ? state.draft : null}
           onExit={() => navigate('/today')}
           onStart={() => {

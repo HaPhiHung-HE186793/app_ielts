@@ -216,7 +216,7 @@ test('version-one data upgrades on write and restores safely through the prefere
     .getByRole('combobox', { name: 'Mục tiêu của bạn', exact: true })
     .selectOption('foundation')
   await page.getByRole('button', { name: 'Lưu lựa chọn' }).click()
-  expect((await saved(page)).version).toBe(2)
+  expect((await saved(page)).version).toBe(3)
   expect((await saved(page)).draft).toEqual(current.draft)
   await page.getByRole('button', { name: 'Chỉnh nhịp học', exact: true }).click()
   page.on('dialog', (dialog) => dialog.accept())

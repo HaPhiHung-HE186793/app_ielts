@@ -64,11 +64,43 @@ export function itemResult(state: StudyState, item: PlanItem) {
   return log.find((entry) => entry.id === item.id && entry.lessonId === item.lessonId)
 }
 
-export function advancePlan(state: StudyState): StudyState {
+export function archivePlan(state: StudyState, now: number): StudyState {
+  const plan = state.plan
+  if (!plan?.items.length || state.planHistory.some((entry) => entry.id === plan.id)) return state
+  const items = plan.items.map((item) => ({ ...item, completed: !!itemResult(state, item) }))
+  return {
+    ...state,
+    planHistory: [
+      ...state.planHistory,
+      {
+        id: plan.id,
+        mode: plan.mode,
+        budget: plan.budget,
+        createdAt: plan.createdAt,
+        endedAt: Math.max(now, plan.createdAt),
+        status: items.every((item) => item.completed) ? 'completed' : 'replaced',
+        items,
+      },
+    ],
+  }
+}
+
+export function replacePlan(
+  state: StudyState,
+  mode: PlanMode,
+  now: number,
+  id: string,
+): StudyState {
+  if (state.plan?.id === id || state.planHistory.some((entry) => entry.id === id)) return state
+  return { ...archivePlan(state, now), plan: buildPlan(state, mode, now, id) }
+}
+
+export function advancePlan(state: StudyState, now = Date.now()): StudyState {
   const plan = state.plan
   const item = plan?.items[plan.cursor]
   if (!plan || !item || !itemResult(state, item)) return state
-  return { ...state, plan: { ...plan, cursor: plan.cursor + 1, practice: freshPractice() } }
+  const next = { ...state, plan: { ...plan, cursor: plan.cursor + 1, practice: freshPractice() } }
+  return next.plan.cursor === plan.items.length ? archivePlan(next, now) : next
 }
 
 export function beginPlannedLesson(state: StudyState): StudyState {

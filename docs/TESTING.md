@@ -26,11 +26,13 @@ npm run test:e2e
 
 ## Phạm vi
 
-- Vitest: 36 ca về chấm đáp án, vòng đời cả bảy bài, tách đúng độc lập với có gợi ý/thử lại, chống hoàn thành/nộp ôn trùng, giữ lịch cũ, khoảng ôn qua nửa đêm/gián đoạn, ghép phiên hữu hạn, tiếp tục đúng lượt và chuyển dữ liệu version 1 sang 2.
+- Vitest: 47 ca về chấm đáp án, vòng đời bảy bài, kết quả có gợi ý/thử lại, lịch ôn, ghép phiên, tiếp tục đúng lượt và đọc dữ liệu version 1/2 sang 3. Có kiểm tra đồng hồ qua ngưỡng bất động, gián đoạn callback/đổi giờ hệ thống, nửa đêm, checkpoint cộng dồn, lưu phiên một lần và giữ giờ cũ là chưa biết.
 - Playwright: luồng học thực trên bản build; giữ bài dở sau reload, giữ cả lựa chọn/câu đang nhập, ôn đến hạn khi đổi ngày, ghi lịch ôn một lần, cài đặt và bản sao xuất/nhập, dữ liệu lỗi, quota, bộ lọc và URL không tồn tại.
-- Tổng 30 ca trình duyệt (15 kịch bản × hai kích thước), gồm mục tiêu/ngày/loại thi chưa quyết định, phiên 2/5/15/buổi đầy đủ, thay phiên có lựa chọn, tiếp tục ôn, nâng kho cũ và nhập bản sao version 1. Ca buổi đầy đủ kiểm tra danh sách/ngân sách, không tự coi bảy bài đã hoàn thành.
+- Tổng 40 ca trình duyệt (20 kịch bản × hai kích thước), gồm mục tiêu/ngày/loại thi chưa quyết định, phiên 2/5/15/buổi đầy đủ, tiếp tục, bản sao và bộ đo/lịch sử tiến bộ. Ca buổi đầy đủ kiểm tra danh sách/ngân sách, không tự coi bảy bài đã hoàn thành.
+- `tests/progress.spec.ts`: không cộng thời gian nghỉ, dừng thủ công/cài đặt/rời bài, reload, giữ kết quả khởi động riêng, lịch sử phiên đổi/hoàn tất, và không ghi trở lại sau import/reset. Test đổi tab tắt focus emulation của Playwright qua CDP để dùng sự kiện blur/focus của trình duyệt.
+- Chrome headless vẫn có thể báo mọi tab là visible; ca visibility/pagehide/pageshow dùng giá trị/sự kiện được điều khiển rõ trong test để kiểm tra handler. Không xem ca mô phỏng này là xác minh lifecycle native trên iOS/Android hoặc thiết bị bị kill.
 - Điều hướng, focus bàn phím, không tràn ngang ở 360px và desktop.
-- Axe: quét các trang chính, trang giới thiệu bài, hộp cài đặt, phiên dài, khởi động/câu hỏi/phản hồi/kết quả với tập luật WCAG A/AA. Kết quả này chỉ là kiểm tra tự động, không phải chứng nhận khả năng tiếp cận đầy đủ.
+- Axe: quét các trang chính, giới thiệu bài, cài đặt, phiên dài, câu khởi động/phản hồi/kết quả và Tiến bộ có dữ liệu với tập luật WCAG A/AA. Kết quả này chỉ là kiểm tra tự động, không phải chứng nhận khả năng tiếp cận đầy đủ.
 
 Kết quả cuối mỗi mốc nằm trong [STATUS.md](STATUS.md) và [SESSION_LOG.md](SESSION_LOG.md). Không báo test đã đạt chỉ vì file test đã tồn tại.
 

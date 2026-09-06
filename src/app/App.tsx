@@ -19,11 +19,13 @@ import { SettingsDialog } from '../components/SettingsDialog'
 import { LessonPlayer } from '../features/lessons/LessonPlayer'
 import { ReviewPage } from '../features/review/ReviewPage'
 import { Today } from '../features/today/Today'
-import { Discover, Practice, Progress } from '../features/pages/Pages'
+import { Discover, Practice } from '../features/pages/Pages'
+import { Progress } from '../features/progress/Progress'
 import { navigate, useRoute } from './router'
 import { useClock } from './clock'
 import { SessionPage } from '../features/today/SessionPage'
 import '../styles/sessions.css'
+import { ActivityGate } from './activity-context'
 
 const navigation = [
   { path: '/today', label: 'Hôm nay', icon: House },
@@ -67,144 +69,146 @@ export function App() {
   }
 
   return (
-    <div className="app-shell">
-      <a
-        className="skip-link"
-        href="#main-content"
-        onClick={(event) => {
-          event.preventDefault()
-          main.current?.focus()
-        }}
-      >
-        Đến nội dung chính
-      </a>
-      <aside className="sidebar">
-        <a href="#/today" className="brand">
-          <span className="brand-mark">
-            <BookOpen size={24} strokeWidth={1.8} />
-          </span>
-          <span>
-            Mỗi ngày<span>một chút tiếng Anh</span>
-          </span>
-        </a>
-        <span className="nav-label">KHÔNG GIAN HỌC</span>
-        <nav aria-label="Điều hướng chính">
-          {navigation.map(({ path, icon: Icon, label }) => (
-            <a
-              key={path}
-              href={`#${path}`}
-              className={`nav-item ${activePath === path ? 'active' : ''}`}
-              aria-current={activePath === path ? 'page' : undefined}
-            >
-              <Icon size={21} strokeWidth={1.7} />
-              <span>{label}</span>
-              {path === '/review' && due > 0 && <span className="nav-badge">{due}</span>}
-            </a>
-          ))}
-        </nav>
-        <div className="sidebar-bottom">
-          <div className="sidebar-note">
-            <Leaf size={21} />
-            <p>
-              Tiến bộ theo nhịp
-              <br />
-              của riêng bạn.
-            </p>
-          </div>
-          <button
-            className="profile-button"
-            aria-label="Mở cài đặt cá nhân"
-            onClick={() => setSettings(true)}
-          >
-            <span className="avatar">{state.profile?.name?.charAt(0).toUpperCase() || 'B'}</span>
-            <span>
-              {state.profile?.name || 'Bạn học mới'}
-              <span>Không gian cá nhân</span>
-            </span>
-            <Settings2 size={17} />
-          </button>
-        </div>
-      </aside>
-      <div className="workspace">
-        <header className="topbar">
-          <div className="breadcrumb">
-            <span>Mỗi ngày</span>
-            <ChevronRight size={14} />
-            <span>{currentNav?.label ?? 'Bài học'}</span>
-          </div>
-          <span className="topbar-date">
-            {new Intl.DateTimeFormat('vi-VN', {
-              weekday: 'long',
-              day: 'numeric',
-              month: 'long',
-            }).format(now)}
-          </span>
-          <button
-            className="icon-button mobile-settings"
-            aria-label="Mở cài đặt"
-            onClick={() => setSettings(true)}
-          >
-            <Settings2 size={20} />
-          </button>
-        </header>
-        <main
-          id="main-content"
-          ref={main}
-          tabIndex={-1}
-          className={`main-content ${isLesson ? 'learning-content' : ''}`}
+    <ActivityGate value={!settings}>
+      <div className="app-shell">
+        <a
+          className="skip-link"
+          href="#main-content"
+          onClick={(event) => {
+            event.preventDefault()
+            main.current?.focus()
+          }}
         >
-          {error && (
-            <div className="storage-warning" role="alert">
-              <p>{error}</p>
-              <button className="text-button" onClick={() => setSettings(true)}>
-                Mở cài đặt và bản sao <ArrowRight size={15} />
-              </button>
-            </div>
-          )}
-          {route === '/today' ? (
-            <Today
-              state={state}
-              now={now}
-              onStart={openLesson}
-              onSettings={() => setSettings(true)}
-            />
-          ) : route === '/discover' ? (
-            <Discover state={state} onStart={openLesson} />
-          ) : route === '/session' ? (
-            <SessionPage state={state} />
-          ) : route === '/practice' ? (
-            <Practice onStart={openLesson} />
-          ) : route === '/review' ? (
-            <ReviewPage state={state} now={now} />
-          ) : route === '/progress' ? (
-            <Progress state={state} onSettings={() => setSettings(true)} />
-          ) : lesson ? (
-            <LessonPlayer
-              key={lesson.id}
-              lesson={lesson}
-              draft={state.draft}
-              onStart={() => openLesson(lesson)}
-              onExit={() => navigate('/today')}
-            />
-          ) : (
-            <section className="panel empty-state">
-              <Compass size={35} />
-              <h1>Mình chưa tìm thấy trang này.</h1>
-              <p>Quay lại Hôm nay để tiếp tục hành trình nhé.</p>
-              <a className="button primary" href="#/today">
-                Về Hôm nay
-              </a>
-            </section>
-          )}
-          <footer className="page-footer">
-            <span>
-              Mỗi ngày <span>·</span> Học theo nhịp của bạn.
+          Đến nội dung chính
+        </a>
+        <aside className="sidebar">
+          <a href="#/today" className="brand">
+            <span className="brand-mark">
+              <BookOpen size={24} strokeWidth={1.8} />
             </span>
-            <span>Nền tảng trước. Tự tin sẽ đến.</span>
-          </footer>
-        </main>
+            <span>
+              Mỗi ngày<span>một chút tiếng Anh</span>
+            </span>
+          </a>
+          <span className="nav-label">KHÔNG GIAN HỌC</span>
+          <nav aria-label="Điều hướng chính">
+            {navigation.map(({ path, icon: Icon, label }) => (
+              <a
+                key={path}
+                href={`#${path}`}
+                className={`nav-item ${activePath === path ? 'active' : ''}`}
+                aria-current={activePath === path ? 'page' : undefined}
+              >
+                <Icon size={21} strokeWidth={1.7} />
+                <span>{label}</span>
+                {path === '/review' && due > 0 && <span className="nav-badge">{due}</span>}
+              </a>
+            ))}
+          </nav>
+          <div className="sidebar-bottom">
+            <div className="sidebar-note">
+              <Leaf size={21} />
+              <p>
+                Tiến bộ theo nhịp
+                <br />
+                của riêng bạn.
+              </p>
+            </div>
+            <button
+              className="profile-button"
+              aria-label="Mở cài đặt cá nhân"
+              onClick={() => setSettings(true)}
+            >
+              <span className="avatar">{state.profile?.name?.charAt(0).toUpperCase() || 'B'}</span>
+              <span>
+                {state.profile?.name || 'Bạn học mới'}
+                <span>Không gian cá nhân</span>
+              </span>
+              <Settings2 size={17} />
+            </button>
+          </div>
+        </aside>
+        <div className="workspace">
+          <header className="topbar">
+            <div className="breadcrumb">
+              <span>Mỗi ngày</span>
+              <ChevronRight size={14} />
+              <span>{currentNav?.label ?? 'Bài học'}</span>
+            </div>
+            <span className="topbar-date">
+              {new Intl.DateTimeFormat('vi-VN', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+              }).format(now)}
+            </span>
+            <button
+              className="icon-button mobile-settings"
+              aria-label="Mở cài đặt"
+              onClick={() => setSettings(true)}
+            >
+              <Settings2 size={20} />
+            </button>
+          </header>
+          <main
+            id="main-content"
+            ref={main}
+            tabIndex={-1}
+            className={`main-content ${isLesson ? 'learning-content' : ''}`}
+          >
+            {error && (
+              <div className="storage-warning" role="alert">
+                <p>{error}</p>
+                <button className="text-button" onClick={() => setSettings(true)}>
+                  Mở cài đặt và bản sao <ArrowRight size={15} />
+                </button>
+              </div>
+            )}
+            {route === '/today' ? (
+              <Today
+                state={state}
+                now={now}
+                onStart={openLesson}
+                onSettings={() => setSettings(true)}
+              />
+            ) : route === '/discover' ? (
+              <Discover state={state} onStart={openLesson} />
+            ) : route === '/session' ? (
+              <SessionPage state={state} />
+            ) : route === '/practice' ? (
+              <Practice onStart={openLesson} />
+            ) : route === '/review' ? (
+              <ReviewPage state={state} now={now} />
+            ) : route === '/progress' ? (
+              <Progress state={state} now={now} onSettings={() => setSettings(true)} />
+            ) : lesson ? (
+              <LessonPlayer
+                key={lesson.id}
+                lesson={lesson}
+                draft={state.draft}
+                onStart={() => openLesson(lesson)}
+                onExit={() => navigate('/today')}
+              />
+            ) : (
+              <section className="panel empty-state">
+                <Compass size={35} />
+                <h1>Mình chưa tìm thấy trang này.</h1>
+                <p>Quay lại Hôm nay để tiếp tục hành trình nhé.</p>
+                <a className="button primary" href="#/today">
+                  Về Hôm nay
+                </a>
+              </section>
+            )}
+            <footer className="page-footer">
+              <span>
+                Mỗi ngày <span>·</span> Học theo nhịp của bạn.
+              </span>
+              <span>Nền tảng trước. Tự tin sẽ đến.</span>
+            </footer>
+          </main>
+        </div>
+        {settings && <SettingsDialog profile={state.profile} onClose={() => setSettings(false)} />}
       </div>
-      {settings && <SettingsDialog profile={state.profile} onClose={() => setSettings(false)} />}
-    </div>
+    </ActivityGate>
   )
 }

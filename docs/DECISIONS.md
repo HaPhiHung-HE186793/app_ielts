@@ -52,7 +52,7 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 ## DEC-008 — Dữ liệu văn bản local với bản sao có kiểm tra
 
 - Ngày: 2026-09-06. Trạng thái: đã triển khai cho mốc 1.
-- Quyết định: dùng localStorage cho lượng dữ liệu văn bản nhỏ, qua store riêng và schema Zod; ban đầu version 1, nâng lên version 2 trong PLAN-001 theo DEC-010. IndexedDB được dành cho gói offline/audio sau này.
+- Quyết định: dùng localStorage cho lượng dữ liệu văn bản nhỏ, qua store riêng và schema Zod; ban đầu version 1, nâng lên version 2 trong PLAN-001 và version 3 trong PROGRESS-001 theo DEC-010/011. IndexedDB được dành cho gói offline/audio sau này.
 - Hệ quả: lưu cả câu chưa nộp, lượt sai/gợi ý, bài tự viết; bản lỗi/khác phiên bản không bị ghi đè. Lỗi quota giữ công việc trong bộ nhớ và hiện cảnh báo. Có xuất JSON và nhập JSON được kiểm tra trước khi thay thế dữ liệu.
 - Giới hạn: một bài dở; local không thay thế sao lưu. Không cam kết giải quyết ghi đồng thời giữa nhiều tab; đồng bộ và quy tắc xung đột cần DATA-002.
 
@@ -73,6 +73,17 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 - Lưu một phiên hiện tại, danh sách cố định lúc tạo, con trỏ hoạt động, câu đang nhập/gợi ý và bài dở. Chuyển bước chỉ sau kết quả thực có cùng ID lượt làm; reload không nộp lại. Tạo phiên mới xác nhận thay danh sách phiên dở và giữ nguyên bài đang học. Lịch sử lượt làm vẫn còn, chưa lưu lịch sử mọi kế hoạch đã thay thế.
 - Schema version 2 bổ sung hồ sơ, `plan`, `quickLog`. Giữ key `moi-ngay.study.v1` để đọc kho cũ. `parseBackup` chuyển version 1 sang version 2 trong bộ nhớ, kiểm tra đầy đủ trước khi dùng; ghi version 2 ở lần thay đổi/khôi phục thành công. Đọc đơn thuần không ghi đè bản gốc. Version không hỗ trợ hoặc dữ liệu lỗi tiếp tục được giữ nguyên theo DEC-008. Bản app cũ không đọc được version 2.
 - Lựa chọn này tạo nền cho PROGRESS-001 (lịch sử phiên và phút hoạt động), không thay thế kế hoạch sáu tháng, kiểm tra đầu vào hoặc học liệu bốn kỹ năng đầy đủ.
+
+## DEC-011 — Đo hoạt động và lưu lịch sử phiên
+
+- Ngày: 2026-09-06. Triển khai trong PROGRESS-001, schema version 3; giữ key kho cũ và đọc version 1/2 mà không bù giờ hoặc tạo các kế hoạch đã mất.
+- Chỉ gắn bộ đo vào bài có draft, câu khởi động và câu ôn đang mở, bao gồm lúc đọc phản hồi. Không gắn ở trang danh sách, cài đặt hoặc kết quả phiên. Đồng hồ chạy khi tài liệu hiển thị và cửa sổ có focus; mở cài đặt, rời hoạt động, ẩn/blur/pagehide hoặc nút dừng đo đều ngừng tính. Sau 60 giây không chạm/gõ/nhập/cuộn thì tự dừng; thao tác tiếp theo mở lại khoảng đo, không cộng thời gian nghỉ.
+- Dùng `performance.now()` cho khoảng thời gian, `Date.now()` cho ngày ghi. Kiểm tra mỗi giây, lưu mốc cộng dồn mỗi năm giây và khi dừng/rời. Nếu callback gián đoạn trên 10 giây hoặc hai đồng hồ lệch trên hai giây, bỏ khoảng chưa chắc chắn và chờ tương tác/focus mới. Tham khảo [Performance.now](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now), [Page Visibility](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API) và [pagehide](https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event).
+- `activityLog` lưu một mốc cộng dồn theo lượt mở hoạt động/ngày địa phương, với UUID, loại hoạt động, ID lượt làm, ID phiên nếu có, ngày, mốc thời gian và mili giây đã đo. Tách khoảng qua nửa đêm theo ngày địa phương lúc ghi. Gửi lại cùng ID dùng số cộng dồn lớn hơn, không cộng delta hai lần. Reload tạo lượt mở mới và không khôi phục đồng hồ đang chạy từ timestamp cũ.
+- Store có epoch trong bộ nhớ tăng khi nhập/xóa/nhận kho khác qua storage event. Timer cũ không được ghi vào bộ dữ liệu vừa thay. Chưa giải quyết hợp nhất đồng thời nhiều tab; chỉ cửa sổ có focus được tính, không tuyên bố tổng dữ liệu nhiều tab an toàn như đồng bộ cloud.
+- `planHistory` giữ danh sách và trạng thái kết quả tại lúc kết thúc/thay phiên. Hoàn tất chỉ khi đủ lượt thực; phiên đổi giữ phần đã làm tại lúc đổi, không nhận thêm kết quả hoàn thành về sau. Lưu một lần theo ID; tạo kế hoạch mới vẫn giữ bài dở. Thời gian phiên tính từ bản ghi có cùng `planId`, độc lập với phút kế hoạch.
+- Giới hạn phép đo: không xác nhận chú ý hoặc chất lượng học. Đọc/nói yên lặng quá 60 giây có thể bị tính thiếu; thao tác không đồng nghĩa đang hiểu bài. Tắt đột ngột/thiết bị kill có thể mất mốc chưa lưu (thông thường tối đa khoảng năm giây); dữ liệu trước bản cập nhật không có số đo. Không suy band từ thời gian.
+- Bước tiếp theo ưu tiên PWA-001 để chuẩn bị mở từ màn hình chính; chưa cần cấu hình dịch vụ ngoài. DATA-001 vẫn cần Supabase và kiểm tra truy cập thật trước khi đóng task.
 
 ## Các giả định/chọn lựa còn mở
 

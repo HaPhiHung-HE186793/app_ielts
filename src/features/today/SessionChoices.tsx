@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowRight, Check, Clock3, SlidersHorizontal } from 'lucide-react'
 import type { PlanMode, StudyState } from '../../data/schema'
-import { buildPlan, itemResult, modeLabels } from '../../domain/planner'
+import { buildPlan, itemResult, modeLabels, replacePlan } from '../../domain/planner'
 import { updateState } from '../../data/store'
 import { navigate } from '../../app/router'
 
@@ -84,10 +84,7 @@ export function SessionChoices({
                 )
               )
                 return
-              updateState((current) => ({
-                ...current,
-                plan: buildPlan(current, mode, Date.now(), crypto.randomUUID()),
-              }))
+              updateState((current) => replacePlan(current, mode, Date.now(), crypto.randomUUID()))
               navigate('/session')
             }}
           >

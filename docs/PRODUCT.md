@@ -12,7 +12,7 @@ Mục tiêu sản phẩm: hỗ trợ tự học có định hướng từ nền 
 
 - Bản đầu phục vụ cá nhân chủ dự án tự học; giả định này chưa được người dùng xác nhận riêng.
 - Giao diện ưu tiên điện thoại, sử dụng được trên máy tính, iOS và Android.
-- Onboarding đã thu thập thời gian dự kiến, mục tiêu/ngày tùy chọn, Academic/General Training/chưa quyết định, sở thích và tự nhận xét nền tảng. Điểm đầu vào, thời gian học đo thực tế và yêu cầu tối thiểu từng kỹ năng vẫn chưa có.
+- Onboarding đã thu thập thời gian dự kiến, mục tiêu/ngày tùy chọn, Academic/General Training/chưa quyết định, sở thích và tự nhận xét nền tảng. Đã đo thời gian hoạt động trong app theo DEC-011; điểm đầu vào và yêu cầu tối thiểu từng kỹ năng vẫn chưa có.
 - Cho phép học trước khi đã quyết định ngày thi; không ép nhập dữ liệu không biết.
 - AI hỗ trợ luyện tập. Đánh giá của giáo viên là nguồn đối chiếu cho các mốc quan trọng khi có điều kiện.
 
@@ -97,6 +97,8 @@ Sau đó bổ sung tài khoản, đồng bộ, AI, học liệu bốn tuần đ�
 - Người học quay lại và tiếp tục sau ngày nghỉ mà không bị quá tải bài ôn.
 - Kết quả bốn kỹ năng theo các đánh giá có nguồn rõ ràng.
 - Theo dõi phút luyện chủ động riêng với thời gian mở ứng dụng.
+
+PROGRESS-001 đã có tổng thời gian hoạt động đo trên thiết bị, biểu đồ bảy ngày, lịch sử phiên và lượt luyện. Bộ đo dựa trên focus/hiển thị/tương tác, không xác nhận mức chú ý. Phút kế hoạch, số đo và dữ liệu cũ chưa được đo hiển thị riêng; không tạo giờ giả để lấp lịch sử.
 
 Chưa đặt ngưỡng thành công định lượng trước khi có dữ liệu thử nghiệm; không dùng số giả như kết quả đo thực.
 

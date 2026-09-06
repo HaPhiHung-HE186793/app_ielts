@@ -28,10 +28,13 @@ npm run test:e2e
 
 - Vitest: 47 ca về chấm đáp án, vòng đời bảy bài, kết quả có gợi ý/thử lại, lịch ôn, ghép phiên, tiếp tục đúng lượt và đọc dữ liệu version 1/2 sang 3. Có kiểm tra đồng hồ qua ngưỡng bất động, gián đoạn callback/đổi giờ hệ thống, nửa đêm, checkpoint cộng dồn, lưu phiên một lần và giữ giờ cũ là chưa biết.
 - Playwright: luồng học thực trên bản build; giữ bài dở sau reload, giữ cả lựa chọn/câu đang nhập, ôn đến hạn khi đổi ngày, ghi lịch ôn một lần, cài đặt và bản sao xuất/nhập, dữ liệu lỗi, quota, bộ lọc và URL không tồn tại.
-- Tổng 40 ca trình duyệt (20 kịch bản × hai kích thước), gồm mục tiêu/ngày/loại thi chưa quyết định, phiên 2/5/15/buổi đầy đủ, tiếp tục, bản sao và bộ đo/lịch sử tiến bộ. Ca buổi đầy đủ kiểm tra danh sách/ngân sách, không tự coi bảy bài đã hoàn thành.
+- Tổng 56 ca trình duyệt (28 kịch bản × hai kích thước), gồm mục tiêu/ngày/loại thi chưa quyết định, phiên 2/5/15/buổi đầy đủ, tiếp tục, bản sao, bộ đo/lịch sử tiến bộ và PWA. Ca buổi đầy đủ kiểm tra danh sách/ngân sách, không tự coi bảy bài đã hoàn thành.
 - `tests/progress.spec.ts`: không cộng thời gian nghỉ, dừng thủ công/cài đặt/rời bài, reload, giữ kết quả khởi động riêng, lịch sử phiên đổi/hoàn tất, và không ghi trở lại sau import/reset. Test đổi tab tắt focus emulation của Playwright qua CDP để dùng sự kiện blur/focus của trình duyệt.
 - Chrome headless vẫn có thể báo mọi tab là visible; ca visibility/pagehide/pageshow dùng giá trị/sự kiện được điều khiển rõ trong test để kiểm tra handler. Không xem ca mô phỏng này là xác minh lifecycle native trên iOS/Android hoặc thiết bị bị kill.
 - Điều hướng, focus bàn phím, không tràn ngang ở 360px và desktop.
+- `tests/install.spec.ts`: đọc manifest/giải mã bốn PNG và `Page.getInstallabilityErrors` bằng hồ sơ Chrome tạm riêng (context ẩn danh mặc định bị Chrome chặn cài). Không bấm cài lên hệ điều hành hoặc dùng profile cá nhân. Kiểm tra start URL mở lại phiên/câu/gợi ý trong cùng kho, điều hướng từ cài đặt và axe cả ba hướng dẫn.
+- Luồng deferred prompt/từ chối/lỗi/chấp nhận/appinstalled và hai tín hiệu standalone được điều khiển rõ trong test; xác minh handler và phản hồi, không phải cài thật. Không kết luận standalone chỉ từ `userChoice: accepted` hoặc `appinstalled`.
+- Đã thử riêng safe-area qua CDP ở 390×844 với top 47/bottom 34, và 844×390 với left/right 47/bottom 21. Không tràn ngang hoặc lỗi runtime; bản ngang thấp dùng thanh điều hướng dưới để cả năm mục vẫn tới được. Đây là mô phỏng CSS insets, chưa phải Safari/thiết bị thật.
 - Axe: quét các trang chính, giới thiệu bài, cài đặt, phiên dài, câu khởi động/phản hồi/kết quả và Tiến bộ có dữ liệu với tập luật WCAG A/AA. Kết quả này chỉ là kiểm tra tự động, không phải chứng nhận khả năng tiếp cận đầy đủ.
 
 Kết quả cuối mỗi mốc nằm trong [STATUS.md](STATUS.md) và [SESSION_LOG.md](SESSION_LOG.md). Không báo test đã đạt chỉ vì file test đã tồn tại.
@@ -40,6 +43,6 @@ Kết quả cuối mỗi mốc nằm trong [STATUS.md](STATUS.md) và [SESSION_L
 
 - Test dùng browser context tách biệt và dữ liệu giả riêng; không dùng hồ sơ học thật của người dùng.
 - Ảnh, trace và báo cáo lỗi nằm trong test-results hoặc .local, được gitignore. Không đưa audio hoặc bản sao cá nhân vào Git.
-- Chưa kiểm thử Safari/iPhone hoặc Android thật, microphone, dịch vụ AI, tài khoản, đồng bộ cloud, PWA install/offline/notification.
+- Chưa kiểm thử Safari/iPhone hoặc Android thật, cài/khởi chạy từ biểu tượng hệ điều hành, microphone, AI, tài khoản, cloud, PWA offline/notification. Quy trình kiểm tra thiết bị nằm trong [INSTALLATION.md](INSTALLATION.md).
 - Giọng SpeechSynthesis tùy thiết bị; không xác minh chất lượng phát âm bằng test trình duyệt.
 - Bộ bảy bài được rà soát nội bộ; test không thay đánh giá của giáo viên hay đo hiệu quả sau thời gian học.

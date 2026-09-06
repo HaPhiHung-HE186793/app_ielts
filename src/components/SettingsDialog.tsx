@@ -77,6 +77,9 @@ export function SettingsDialog({
           <X size={21} />
         </button>
       </div>
+      <a className="settings-install-link" href="#/install" onClick={onClose}>
+        <Download size={17} /> Thêm vào màn hình chính
+      </a>
       <form onSubmit={save}>
         {!profile && (
           <p className="onboarding-intro">

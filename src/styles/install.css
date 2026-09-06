@@ -1,0 +1,144 @@
+.install-page {
+  max-width: 880px;
+  margin: 0 auto;
+}
+.install-back {
+  margin-bottom: 24px;
+}
+.install-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 26px;
+  padding: 30px;
+  border-radius: 20px;
+  background: #eaf0e2;
+  border: 1px solid #dbe4d2;
+}
+.install-icon {
+  flex-shrink: 0;
+  filter: drop-shadow(0 6px 10px #23644e18);
+}
+.install-hero h2 {
+  font-size: 21px;
+  margin-bottom: 10px;
+}
+.install-hero p {
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.install-hero .install-status {
+  margin: 12px 0 0;
+}
+.install-status:empty {
+  display: none;
+}
+.install-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.install-address {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px 4px;
+}
+.install-address svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.install-address p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+.install-guide,
+.install-data {
+  margin-top: 22px;
+  padding: 28px;
+}
+.install-guide-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.install-guide-heading h2 {
+  margin: 0;
+}
+.install-platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.install-platforms button {
+  min-height: 44px;
+}
+.install-steps {
+  list-style: decimal;
+  padding-left: 24px;
+  margin: 0 0 24px;
+}
+.install-steps li {
+  font-size: 13px;
+  line-height: 1.85;
+  padding-left: 8px;
+  margin-bottom: 16px;
+}
+.install-steps li::marker {
+  color: var(--green);
+  font-weight: 600;
+}
+.install-guide > p:last-child,
+.install-data > p:last-child {
+  margin-bottom: 0;
+}
+.install-data p {
+  font-size: 13px;
+}
+.install-data > p:last-child {
+  margin-top: 20px;
+  font-size: 12px;
+}
+.settings-install-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  margin-bottom: 24px;
+  border-radius: 10px;
+  background: #edf3e5;
+  color: var(--green-dark);
+  font-size: 12px;
+}
+.install-footer-link {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+@media (max-width: 760px) {
+  .install-hero {
+    flex-direction: column;
+    gap: 22px;
+    padding: 24px;
+  }
+  .install-icon {
+    width: 72px;
+    height: 72px;
+  }
+  .install-hero h2 {
+    font-size: 19px;
+  }
+  .install-guide,
+  .install-data {
+    padding: 22px;
+  }
+  .install-platforms {
+    gap: 6px;
+  }
+}

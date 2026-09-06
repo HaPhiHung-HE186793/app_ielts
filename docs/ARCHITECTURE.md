@@ -1,10 +1,12 @@
 # Kiến trúc dự kiến
 
-Ngày cập nhật: 2026-09-06. Frontend và luồng học local đã được triển khai; các phần cloud, AI và PWA dưới đây vẫn là kế hoạch. Các quyết định và giả định nằm trong [DECISIONS.md](DECISIONS.md).
+Ngày cập nhật: 2026-09-06. Frontend, luồng học local và cấu hình/hướng dẫn cài PWA đã triển khai; cloud, AI và PWA offline vẫn là kế hoạch. Các quyết định và giả định nằm trong [DECISIONS.md](DECISIONS.md).
 
 ## Hiện có trong code
 
-- React + TypeScript + Vite, điều hướng hash cho năm khu vực, `/lesson/:id` và `/session`; không cần cấu hình rewrite để mở đường dẫn bài học trên static host.
+- React + TypeScript + Vite, điều hướng hash cho năm khu vực, `/lesson/:id`, `/session` và `/install`; không cần cấu hình rewrite để mở đường dẫn bài học trên static host.
+- `public/manifest.webmanifest`, `public/icons`, metadata trong `index.html`: tên, ID ở gốc origin, scope, start URL Hôm nay, standalone và bộ icon do dự án tạo. `scripts/generate-icons.js` tái tạo PNG từ SVG. Chưa có service worker; cài từ web không đồng nghĩa offline.
+- `src/app/installation.ts` nhận sự kiện cài từ lúc khởi động, giữ prompt một lần qua điều hướng và xử lý từ chối/lỗi. Chỉ xác nhận chế độ cửa sổ từ display-mode hoặc navigator.standalone. `features/install/InstallPage.tsx` có hướng dẫn nền tảng và đường đến bản sao; xem [INSTALLATION.md](INSTALLATION.md), DEC-012.
 - `src/content/lessons.ts`: bảy bài thử nghiệm; nguồn và rà soát tại [CONTENT_REVIEW.md](CONTENT_REVIEW.md).
 - `src/domain/learning.ts` và `session.ts`: chấm đáp án đóng, quản lý lượt làm, kết quả độc lập và lịch ôn đơn giản.
 - `src/data/schema.ts`: schema Zod phiên bản 3 và đường đọc version 1/2, xem DEC-010/011. `store.ts`: localStorage vẫn dùng key `moi-ngay.study.v1`, giữ bản lỗi nguyên trạng, xuất/nhập bản sao, phản ánh lỗi ghi. Dữ liệu nhỏ gồm văn bản và tiến độ; chưa dùng IndexedDB/audio cache.
@@ -27,7 +29,7 @@ Các lệnh và phạm vi kiểm tra nằm trong [TESTING.md](TESTING.md). Đọ
 | Dữ liệu local | IndexedDB khi cần lưu bài, lượt làm và tài nguyên offline | Giữ tiến độ giữa các lần mở; không được xem là bản sao lưu đám mây |
 | Tài khoản/backend | Supabase Auth, PostgreSQL, Storage | Đồng bộ tiến độ và quản lý dữ liệu riêng của người học |
 | AI | Dịch vụ phía máy chủ, provider chọn sau thử nghiệm | Quản lý khóa bí mật, ngân sách, phản hồi và audio |
-| Cài lên màn hình chính | PWA: manifest, icons, service worker | Mở như ứng dụng và hỗ trợ các chức năng offline được triển khai |
+| Cài lên màn hình chính | Đã có manifest/icons/standalone; service worker dành cho PWA-002 | Chuẩn bị mở như ứng dụng; offline có phạm vi riêng, chưa triển khai |
 | App Store/Google Play | Capacitor ở giai đoạn sau | Tái sử dụng ứng dụng web, bổ sung tích hợp và quy trình phát hành riêng |
 
 Phiên bản đã chọn nằm trong `package.json` và lockfile: React 19, Vite 8, TypeScript 5.9; CSS trực tiếp và Lucide, không có bộ UI bên ngoài. Điều hướng hash và lịch ôn khởi đầu đã triển khai. Nhà cung cấp AI và nơi deploy chưa chốt. Dùng npm cùng lockfile.

@@ -85,6 +85,17 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 - Giới hạn phép đo: không xác nhận chú ý hoặc chất lượng học. Đọc/nói yên lặng quá 60 giây có thể bị tính thiếu; thao tác không đồng nghĩa đang hiểu bài. Tắt đột ngột/thiết bị kill có thể mất mốc chưa lưu (thông thường tối đa khoảng năm giây); dữ liệu trước bản cập nhật không có số đo. Không suy band từ thời gian.
 - Bước tiếp theo ưu tiên PWA-001 để chuẩn bị mở từ màn hình chính; chưa cần cấu hình dịch vụ ngoài. DATA-001 vẫn cần Supabase và kiểm tra truy cập thật trước khi đóng task.
 
+## DEC-012 — Cài từ web, giữ nguyên dữ liệu local
+
+- Ngày: 2026-09-06. Triển khai PWA-001 bằng manifest tĩnh và tài nguyên trong repo, không thêm dependency. Tên “Mỗi ngày”, ID ổn định tại gốc origin, `start_url` mở `#/today`, scope toàn app và `display: standalone`. Bản build hiện dùng gốc tên miền; nếu chuyển sang thư mục con phải kiểm tra lại Vite base, ID/scope và đường dẫn icon trước khi phát hành.
+- SVG tự tạo dựa trên favicon hiện có; PNG 192/512, maskable 512 nền kín và apple-touch-icon 180. `npm run icons` tái tạo bằng Chrome/Playwright đã có, không tải ảnh ngoài. Nét chính của maskable nằm trong vòng tròn an toàn bán kính 40% cạnh theo [hướng dẫn maskable của Chrome](https://web.dev/articles/maskable-icon).
+- Manifest và HTTPS/localhost là nền cho cài đặt; service worker không phải điều kiện bắt buộc theo [MDN](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable). Chưa thêm service worker/cache; PWA-002 vẫn phụ thuộc DATA-002. Không coi cache HTTP thông thường là học offline được hỗ trợ.
+- Trang `#/install` mở từ cài đặt/cuối trang, không tự bật hộp cài hoặc thông báo. Lắng nghe `beforeinstallprompt` từ lúc khởi động, giữ sự kiện qua điều hướng và chỉ gọi `prompt()` từ thao tác người dùng, một lần cho mỗi sự kiện. Có đường từ chối/lỗi/menu thủ công. Không lưu cờ “đã cài” vào kho học.
+- Phân biệt người dùng đồng ý, trình duyệt phát `appinstalled` và cửa sổ đang standalone. `appinstalled` trên Android có thể đến trước khi hoàn tất thêm app; phản hồi chỉ ghi trình duyệt đã nhận cài đặt. Cửa sổ app nhận qua `display-mode: standalone` hoặc `navigator.standalone`; không kết luận app chưa cài chỉ vì tab web thường không có tín hiệu. Tham khảo [installation prompt](https://web.dev/learn/pwa/installation-prompt) và [detection](https://web.dev/learn/pwa/detection).
+- Nhận diện nền tảng chỉ để chọn hướng dẫn đầu tiên; người học đổi iPhone/iPad, Android hoặc máy tính được. Nút cài trực tiếp dựa trên sự kiện trình duyệt, không dựa user agent. Hướng dẫn lấy từ Apple/Google/Microsoft, nguồn trong [INSTALLATION.md](INSTALLATION.md).
+- Giữ key và schema version 3. Bản cài, trình duyệt khác hoặc địa chỉ mới có thể có kho riêng; có đường tải/khôi phục bản sao. Localhost trên máy tính không phải link điện thoại. Chưa triển khai HTTPS công khai hoặc xác nhận cài trên thiết bị thật.
+- Tiếp theo chọn DATA-001: chuẩn bị Supabase/Auth/migration và chính sách local khi đăng xuất. Chỉ đóng task sau khi có môi trường Supabase chạy thật và kiểm tra quyền bằng hai tài khoản; thiếu cấu hình dịch vụ không ngăn phần code/tài liệu độc lập.
+
 ## Các giả định/chọn lựa còn mở
 
 | Mã | Vấn đề | Mặc định hiện tại | Thời điểm cần làm rõ |

@@ -26,6 +26,7 @@ import { useClock } from './clock'
 import { SessionPage } from '../features/today/SessionPage'
 import '../styles/sessions.css'
 import { ActivityGate } from './activity-context'
+import { InstallPage } from '../features/install/InstallPage'
 
 const navigation = [
   { path: '/today', label: 'Hôm nay', icon: House },
@@ -45,14 +46,18 @@ export function App() {
   const lesson = isLesson ? findLesson(route.slice('/lesson/'.length)) : undefined
   const activePath = isLesson ? '/discover' : route === '/session' ? '/today' : route
   const currentNav = navigation.find((item) => item.path === activePath)
+  const pageTitle =
+    route === '/install'
+      ? 'Thêm vào màn hình chính'
+      : (lesson?.title ?? currentNav?.label ?? 'Không tìm thấy')
   const due = Object.values(state.reviews).filter((card) => card.dueAt <= now).length
 
   useEffect(() => {
-    document.title = `${lesson?.title ?? currentNav?.label ?? 'Không tìm thấy'} · Mỗi ngày`
+    document.title = `${pageTitle} · Mỗi ngày`
     main.current?.focus({ preventScroll: true })
     window.scrollTo({ top: 0, behavior: 'instant' })
     window.speechSynthesis?.cancel()
-  }, [route, lesson?.title, currentNav?.label])
+  }, [route, pageTitle])
   useEffect(() => () => window.speechSynthesis?.cancel(), [])
 
   function openLesson(item: Lesson) {
@@ -133,7 +138,9 @@ export function App() {
             <div className="breadcrumb">
               <span>Mỗi ngày</span>
               <ChevronRight size={14} />
-              <span>{currentNav?.label ?? 'Bài học'}</span>
+              <span>
+                {route === '/install' ? 'Cài ứng dụng' : (currentNav?.label ?? 'Bài học')}
+              </span>
             </div>
             <span className="topbar-date">
               {new Intl.DateTimeFormat('vi-VN', {
@@ -181,6 +188,8 @@ export function App() {
               <ReviewPage state={state} now={now} />
             ) : route === '/progress' ? (
               <Progress state={state} now={now} onSettings={() => setSettings(true)} />
+            ) : route === '/install' ? (
+              <InstallPage onSettings={() => setSettings(true)} />
             ) : lesson ? (
               <LessonPlayer
                 key={lesson.id}
@@ -203,7 +212,9 @@ export function App() {
               <span>
                 Mỗi ngày <span>·</span> Học theo nhịp của bạn.
               </span>
-              <span>Nền tảng trước. Tự tin sẽ đến.</span>
+              <a href="#/install" className="install-footer-link">
+                Thêm vào màn hình chính
+              </a>
             </footer>
           </main>
         </div>

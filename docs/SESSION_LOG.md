@@ -132,3 +132,32 @@ Người dùng yêu cầu tiếp tục; thực hiện PROGRESS-001 từ bàn gia
 - Giữ các giới hạn: phép đo không chứng minh chú ý, có thể mất mốc cuối khi kill, dữ liệu cũ chưa có giờ; không an toàn hợp nhất nhiều tab; chưa iPhone/Safari/Android thật, AI/cloud/PWA hoặc học liệu sáu tháng.
 - Nút dừng đo áp dụng cho lượt mở hoạt động; bản ghi thời gian mới bắt đầu lại khi mở hoạt động mới. Dữ liệu local có bản sao thủ công, không phải cloud.
 - Commit/push sau rà soát diff và tài liệu; hash/kết quả remote được xác minh bằng Git trong bàn giao cuối.
+
+## 2026-09-06 — PWA-001: biểu tượng và hướng dẫn cài từ web
+
+### Phạm vi và kết quả
+
+Người dùng yêu cầu tiếp tục; triển khai PWA-001 theo bàn giao. Giữ ủy quyền commit/push, không thêm dependency hoặc triển khai dịch vụ công khai.
+
+- Thêm manifest tiếng Việt, tên Mỗi ngày, ID/scope gốc origin, start URL Hôm nay, màu và standalone. SVG gốc dựa trên favicon; bốn PNG any 192/512, maskable 512, apple-touch-icon 180, có script tái tạo `npm run icons`.
+- Trang `#/install` từ cài đặt/cuối trang: hướng dẫn iPhone/iPad, Android, máy tính; có chọn lại thiết bị. Nút cài chỉ hiện khi nhận sự kiện hỗ trợ. Giữ prompt qua điều hướng, gọi một lần từ click, xử lý hủy/lỗi và ngăn gọi lại trong khi chờ.
+- Phân biệt chấp nhận cài, appinstalled và chế độ cửa sổ thực tế. Không ghi cờ đã cài vào localStorage hoặc gán standalone từ việc đồng ý. Nhắc bản sao khi chuyển kho, nêu địa chỉ local chưa dùng được ở điện thoại.
+- Thêm viewport-fit và khoảng safe-area. Điện thoại ngang thấp dùng thanh điều hướng dưới để năm mục vẫn tới được. Chưa thêm service worker/cache, offline, quyền thông báo hoặc tài khoản; schema học version 3 không đổi.
+- Có INSTALLATION, DEC-012 và cập nhật README/ARCHITECTURE/TESTING/STATUS/TASKS để session sau tiếp tục đúng DATA-001.
+
+### Kiểm tra và sửa lỗi
+
+- Lint/typecheck/build đạt; Vitest 47 ca đạt. Tái tạo bốn PNG thành công, manifest được phục vụ với MIME `application/manifest+json`.
+- Lượt toàn bộ Playwright 56 ca: 52 đạt; bốn ca mới vướng cấu hình test. Chrome trả `in-incognito` ở context mặc định nên chuyển kiểm tra manifest/installability sang hồ sơ tạm riêng. Sửa locator tiếp tục phiên từ button sang link đúng giao diện. Không bỏ qua lỗi Chrome hoặc dùng profile của người dùng.
+- Chạy lại sáu ca manifest/mở lại/hướng dẫn, tất cả đạt. Chrome đọc manifest, giải mã icon đúng kích thước và trả mảng lỗi installability rỗng ở hồ sơ thử. Phiên/câu/gợi ý giữ nguyên khi mở start URL trong cùng browser context.
+- Sau CSS safe-area, build và chạy sáu ca điều hướng/axe/hướng dẫn trên desktop/mobile, tất cả đạt. Prompt/appinstalled/standalone dùng sự kiện/tín hiệu điều khiển; không phải kiểm tra cài lên hệ điều hành.
+- Xem ảnh desktop/mobile và mô phỏng insets bằng CDP ở 390×844 (top 47, bottom 34), 844×390 (left/right 47, bottom 21). Phát hiện sidebar khó tiếp cận khi máy ngang thấp, chuyển về thanh dưới, kiểm tra lại không tràn ngang/lỗi runtime. Đây là mô phỏng, chưa thay kiểm tra điện thoại thật.
+- Dev server cũ đã dừng; khởi động lại Vite 5173 bằng tiến trình nền ẩn. Log kiểm tra trong `.local` được gitignore; server có thể cần chạy lại ở session sau.
+- Kiểm tra 11 file Markdown, 31 liên kết nội bộ và 24 task: không có lỗi liên kết/phụ thuộc, DATA-001 là READY duy nhất. `git diff --check` đạt.
+
+### Bàn giao
+
+- PWA-001 DONE trong phạm vi manifest/standalone/hướng dẫn và trình duyệt có sẵn. Chưa cài/khởi chạy từ biểu tượng trên iPhone/iPad/Android hoặc cửa sổ app hệ điều hành; còn bước thủ công ghi trong INSTALLATION. Chưa đạt mốc 2.
+- File trọng tâm: `public/manifest.webmanifest`, `public/icons`, `index.html`, `src/app/installation.ts`, `src/features/install/InstallPage.tsx`, `src/styles/install.css`, `tests/install.spec.ts` và INSTALLATION.
+- DATA-001 READY: kiểm tra môi trường Supabase, làm Auth/migration/quyền và chính sách kho khi đăng xuất. Có docker.exe, chưa xác minh engine; chưa thấy CLI trong PATH hoặc được cấp URL/key cloud. Phải kiểm tra hai tài khoản trên môi trường chạy thật trước DONE.
+- Giữ giới hạn local theo origin, chưa đồng bộ/offline/AI/deployment công khai và chưa kiểm duyệt học liệu độc lập. Commit/push sau kiểm tra diff/liên kết; hash và remote được xác minh trong bàn giao cuối.

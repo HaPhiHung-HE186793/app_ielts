@@ -37,9 +37,9 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 
 | ID | Trạng thái | Phụ thuộc | Kết quả và tiêu chí hoàn thành |
 | --- | --- | --- | --- |
-| DATA-001 | TODO | LEARN-002 | Thiết lập Supabase, migration và Auth; `.env.example` chỉ chứa cấu hình mẫu phù hợp. Xác định chính sách dữ liệu local khi đăng xuất; kiểm tra truy cập dữ liệu riêng bằng hai tài khoản. Có tài liệu cấu hình dịch vụ. |
+| DATA-001 | READY | LEARN-002 | Thiết lập Supabase, migration và Auth; `.env.example` chỉ chứa cấu hình mẫu phù hợp. Xác định chính sách dữ liệu local khi đăng xuất; kiểm tra truy cập dữ liệu riêng bằng hai tài khoản. Có tài liệu cấu hình dịch vụ. |
 | DATA-002 | TODO | DATA-001, REVIEW-001, PROGRESS-001 | Đồng bộ lượt làm, tiến độ và trạng thái ôn; nhập tiến độ local sau đăng nhập theo lựa chọn rõ ràng. Kiểm tra hai phiên/thiết bị, mất mạng, gửi lặp, xung đột và đăng xuất; hiển thị trạng thái đồng bộ. |
-| PWA-001 | READY | APP-002, LEARN-002 | Manifest, icons và chế độ standalone; hướng dẫn thêm màn hình chính. Xác minh trên Android/iOS có sẵn, ghi thiết bị chưa kiểm tra; không tuyên bố tương thích chỉ từ responsive preview. |
+| PWA-001 | DONE | APP-002, LEARN-002 | Manifest/icon/standalone, hướng dẫn và prompt tự nguyện; Chrome đọc manifest/icon và không báo lỗi installability trong hồ sơ thử riêng. Luồng prompt/standalone có kiểm tra điều khiển; chưa cài/khởi chạy trên iPhone/Android hoặc cửa sổ app hệ điều hành. Phạm vi và bước xác minh ở INSTALLATION/TESTING. |
 | PWA-002 | TODO | PWA-001, DATA-002 | Tải một gói bài/audio được phép lưu; mở và học offline, chờ gửi khi có mạng. Có quản lý dung lượng/xóa tải xuống; không rò cache giữa tài khoản, không giả lập AI offline. |
 | NOTIFY-001 | TODO | PWA-001, DATA-001, PLAN-001 | Nhắc học tự nguyện, múi giờ và giờ yên lặng, tắt/dời lịch được. Xin quyền từ thao tác người dùng, xử lý từ chối; xác minh nền tảng hỗ trợ, không phụ thuộc thông báo để vào bài. |
 
@@ -67,22 +67,22 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | COACH-001 | TODO | BETA-001 | Nếu người dùng cần: dashboard gia sư, giao bài và nhận xét với quyền truy cập có lựa chọn; kiểm tra học viên khác không xem chéo dữ liệu. |
 | MOBILE-001 | TODO | BETA-001 | Nếu cần cửa hàng ứng dụng: đánh giá Capacitor, build/ký và kiểm thử native, chuẩn bị thông tin phát hành. Tài khoản, thiết bị và quyền phát hành phải có trước khi gửi lên cửa hàng. |
 
-## Chi tiết task tiếp theo: PWA-001
+## Chi tiết task tiếp theo: DATA-001
 
 ### Thực hiện
 
-1. Đọc STATUS, kiến trúc và DEC-011; mốc local đã có học/ôn/phiên/tiến bộ. Giữ dữ liệu version 3 và đường đọc bản sao cũ.
-2. Xác minh yêu cầu cài đặt hiện hành của trình duyệt bằng tài liệu chính thức. Thêm manifest, tên/app ID, start_url/scope phù hợp hash routing, màu, display và bộ icon đủ kích thước/maskable/apple-touch-icon.
-3. Dùng thương hiệu “Mỗi ngày” hiện tại; tạo tài nguyên có quyền sử dụng, giữ nội dung/icon trong repo. Không cần dịch vụ ngoài để làm phần local này.
-4. Có hướng dẫn thêm màn hình chính trên nền tảng hỗ trợ, nhận biết standalone và xử lý khi không có prompt cài. Không ép thông báo hoặc giả lập nút cài đã thành công.
-5. Kiểm tra manifest/icon/đường mở app và phiên đang dở trên trình duyệt sẵn có; kiểm tra thiết bị thật nếu có. Ghi rõ iPhone/Safari và Android còn chưa xác minh; localhost trên máy tính chưa phải link dùng được ở điện thoại.
-6. Giữ giới hạn: dữ liệu theo origin, cài PWA chưa đồng nghĩa đồng bộ/offline. Không tự nhận PWA-002 hoặc phát hành cửa hàng đã hoàn tất.
-7. Chạy lint/typecheck/build/test liên quan, cập nhật docs/task/status và commit/push theo ủy quyền. Chọn task tiếp theo theo phụ thuộc và cấu hình thực tế.
+1. Đọc STATUS, ARCHITECTURE và DEC-008/011/012. Giữ luồng khách và dữ liệu version 3, không đưa tiến độ local lên cloud tự động.
+2. Kiểm tra môi trường Supabase khả dụng. Máy có `docker.exe` trong PATH, chưa kiểm tra Docker engine và chưa thấy Supabase CLI trong PATH; chưa có dự án/URL/key cloud được cung cấp. Ưu tiên chuẩn bị và kiểm tra bằng môi trường local tách biệt nếu chạy được.
+3. Xác minh SDK/CLI hiện hành từ tài liệu chính thức, chọn bản tương thích và lockfile. Tạo migration, cấu hình mẫu công khai và tài liệu chạy. Không đưa khóa dịch vụ vào `VITE_*` hoặc Git.
+4. Làm Auth với trạng thái thiếu cấu hình/lỗi dịch vụ rõ ràng; vẫn dùng được phần học local. Chọn luồng xác thực phù hợp môi trường thật, không trình bày mock đăng nhập là tài khoản thật.
+5. Chốt quy tắc kho local khi đăng nhập/đăng xuất/đổi tài khoản để tránh lộ bài giữa người dùng. Quyền bảng dữ liệu theo chủ sở hữu và RLS cần kiểm tra bằng hai tài khoản; ghi lựa chọn trong DECISIONS.
+6. Test Auth, kiểm tra truy cập chéo và chưa đăng nhập trên Supabase chạy thật (local hoặc dịch vụ được cấu hình). Nếu chưa có môi trường, bàn giao phần code có thể kiểm tra và giữ task chưa DONE; nêu điều kiện cụ thể còn thiếu.
+7. Chạy kiểm tra phù hợp, cập nhật docs/README/task/status, commit/push theo ủy quyền. Đồng bộ toàn bộ lịch sử là DATA-002, chưa tự mở rộng sang AI/offline/deploy.
 
 ### Chưa thuộc task này
 
-Supabase thật, API AI, đăng nhập, thông báo, gói học offline (PWA-002), phát hành cửa hàng và kho học liệu đầy đủ.
+Đồng bộ tiến độ nhiều thiết bị (DATA-002), AI, thông báo, gói offline, deployment công khai, phát hành cửa hàng và kho học liệu đầy đủ.
 
 ### Phần đã có nhưng chưa đóng task khác
 
-PROGRESS-001 đã đóng, đánh dấu mốc 1 local hoàn tất. DATA-001 vẫn TODO vì chưa có cấu hình Supabase và kiểm tra quyền thật. Không đánh dấu mốc 2 đạt chỉ vì cài được biểu tượng PWA.
+Mốc 1 local và PWA-001 đã đóng. DATA-001 READY; DATA-002 và PWA-002 chưa bắt đầu. Chưa đạt mốc 2: cần tài khoản, đồng bộ hai thiết bị và học gói đã tải khi mất mạng. Kiểm tra điện thoại thật còn được ghi rõ trong INSTALLATION và BETA-001.

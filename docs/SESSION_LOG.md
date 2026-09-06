@@ -67,3 +67,35 @@ Người dùng yêu cầu bắt đầu làm app. Sau scaffold, tiếp tục đ�
 - Chưa xác minh iPhone/Safari hay Android thật; chưa có PWA offline/install, API AI, ghi âm hoặc tài khoản.
 - Chỉ một bài dở, dữ liệu local không phải đồng bộ; bộ bài chỉ rà soát nội bộ. Giữ các giới hạn này rõ trong session sau.
 - Các lệnh kiểm tra và đường tiếp tục đã ghi ở TESTING/STATUS/TASKS. Hash commit và trạng thái push cuối mốc được xác minh bằng Git và báo trong kết quả session.
+
+## 2026-09-06 — PLAN-001: mục tiêu và phiên học theo thời gian
+
+### Yêu cầu và phạm vi
+
+Người dùng yêu cầu tiếp tục. Thực hiện task READY kế tiếp trên bản học thử local, giữ tiến độ hiện có và tiếp tục commit/push theo ủy quyền trước đó. Không thêm dịch vụ ngoài hoặc dependency.
+
+### Đã thực hiện
+
+- Mở rộng form cài đặt thành thiết lập ban đầu tùy chọn: mục tiêu, ngày tùy chọn, tự nhận xét nền tảng, cùng tên/sở thích/phút/loại thi cũ. Không có bài đánh giá hoặc điểm đầu vào giả.
+- Hôm nay chọn phiên 2/5/15 phút/buổi đầy đủ và xem lượng học liệu thực sự được xếp. Buổi dài lấy tối đa ba câu đến hạn rồi bài chưa hoàn thành; ưu tiên bài dở. Không lấp thời gian bằng kết quả hoặc học liệu giả.
+- Trang `/session` có danh sách hữu hạn, tạm dừng/tiếp tục, câu đang nhập/gợi ý giữ qua reload và kết thúc rõ ràng. Bài đầy đủ dùng lại LessonPlayer; kết quả gắn với ID lượt làm để không hoàn thành/nộp ôn hai lần.
+- Khởi động ngắn ghi `quickLog`, không tăng completions hoặc đổi lịch ôn. Tạo phiên mới giữ bài dở; khi thay danh sách phiên dở có lựa chọn xác nhận trong giao diện.
+- Schema version 2, đọc/khôi phục version 1 với giá trị mặc định cho trường mới. Key kho cũ giữ nguyên; chỉ đọc không ghi đè bản gốc. Tiếp tục bảo vệ dữ liệu lỗi/phiên bản chưa hỗ trợ và cảnh báo lỗi lưu.
+- Bổ sung quản lý focus khi chuyển câu/nhận phản hồi/kết thúc phiên, dừng giọng đọc khi ẩn câu mẫu. Giao diện giữ phong cách và cách điều hướng hiện tại.
+- Cập nhật PRODUCT/ARCHITECTURE/DECISIONS/README/TESTING và tài liệu bàn giao, ghi quyết định DEC-010.
+
+### Kiểm tra và sửa lỗi
+
+- `npm run lint`, `npm run typecheck`, build đạt; Vitest đạt 36 test.
+- Lượt Playwright toàn bộ chạy 30 ca: 26 đạt, bốn ca bị timeout do selector `getByLabel` so khớp chính xác với nhãn bọc select. Đã đổi các selector đó sang role combobox có tên, chạy lại đúng bốn ca và đều đạt. Không thay logic app để bỏ qua lỗi test.
+- Các ca mới kiểm tra mục tiêu/ngày/loại thi chưa quyết định, 2/5/15/buổi đầy đủ, tiếp tục qua reload, giữ bài dở khi thay phiên, chống nộp lặp, kho cũ và nhập bản sao cũ/lỗi.
+- Axe A/AA không phát hiện vi phạm ở các vùng được quét. Kiểm tra responsive và xem ảnh Hôm nay/phiên khởi động trên Chrome ở 1440×1000 và 360×800; không tràn ngang, không phát hiện lỗi runtime khi mở Hôm nay.
+- Giới hạn kiểm thử: chưa dùng iPhone/Safari hoặc Android thật. Test không xác nhận hiệu quả học tập, chất lượng giọng tổng hợp hay khả năng đạt IELTS.
+
+### Bàn giao
+
+- PLAN-001 DONE; PROGRESS-001 READY. Không có blocker cho việc tiếp tục phần local.
+- File trọng tâm: `src/domain/planner.ts`, `src/data/schema.ts`, `src/features/today/SessionChoices.tsx`, `SessionPage.tsx`, `SettingsDialog.tsx`, hai file kiểm tra planner/planning.
+- Chưa đo thời gian hoạt động; phút trên giao diện là ước tính. Chỉ lưu kế hoạch hiện tại, chưa có lịch sử mọi phiên bị thay thế. Lượt khởi động đã lưu riêng nhưng chưa đưa vào trang Tiến bộ.
+- Tiếp theo: PROGRESS-001 định nghĩa phép đo có xử lý tab ẩn/bất động/tạm dừng/reload, lưu lịch sử phiên và phân biệt dữ liệu thực với ngân sách. Không suy giờ học của dữ liệu cũ từ số bài đã làm.
+- Các giới hạn local, một bài dở, học liệu thử nghiệm, chưa AI/cloud/PWA/install và chưa lộ trình sáu tháng vẫn giữ nguyên. Commit/push sau rà soát; kết quả cuối được báo bằng Git trong bàn giao.

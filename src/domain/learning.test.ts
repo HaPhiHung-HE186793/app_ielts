@@ -131,7 +131,7 @@ describe('backup validation', () => {
   })
   it.each([
     '{not-json',
-    JSON.stringify({ ...emptyState(), version: 2 }),
+    JSON.stringify({ ...emptyState(), version: 99 }),
     JSON.stringify({ ...emptyState(), reviews: { nonexistent: initialReview(now) } }),
     JSON.stringify({ ...emptyState(), reviews: { hello: { ...initialReview(now), dueAt: 1e20 } } }),
     JSON.stringify({

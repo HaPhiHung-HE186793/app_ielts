@@ -52,7 +52,7 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 ## DEC-008 — Dữ liệu văn bản local với bản sao có kiểm tra
 
 - Ngày: 2026-09-06. Trạng thái: đã triển khai cho mốc 1.
-- Quyết định: dùng localStorage cho lượng dữ liệu văn bản nhỏ, qua store riêng và schema Zod version 1; IndexedDB được dành cho gói offline/audio sau này.
+- Quyết định: dùng localStorage cho lượng dữ liệu văn bản nhỏ, qua store riêng và schema Zod; ban đầu version 1, nâng lên version 2 trong PLAN-001 theo DEC-010. IndexedDB được dành cho gói offline/audio sau này.
 - Hệ quả: lưu cả câu chưa nộp, lượt sai/gợi ý, bài tự viết; bản lỗi/khác phiên bản không bị ghi đè. Lỗi quota giữ công việc trong bộ nhớ và hiện cảnh báo. Có xuất JSON và nhập JSON được kiểm tra trước khi thay thế dữ liệu.
 - Giới hạn: một bài dở; local không thay thế sao lưu. Không cam kết giải quyết ghi đồng thời giữa nhiều tab; đồng bộ và quy tắc xung đột cần DATA-002.
 
@@ -63,13 +63,24 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 - Quy tắc: ngày là khoảng 24 giờ tính từ lượt luyện, không phải đổi ngày lúc nửa đêm. Học lại bài không xóa lịch ôn sẵn có; một lượt nộp ôn chỉ được ghi một lần theo ID. Một phiên lấy tối đa 10 mục; xem danh sách không đổi lịch.
 - Giới hạn: đây là lựa chọn kỹ thuật ban đầu, không phải kết luận về khoảng cách tối ưu cho mọi học viên. Không gọi thuật toán này là FSRS hay dự báo thành thạo.
 
+## DEC-010 — Phiên học hữu hạn và nâng dữ liệu lên version 2
+
+- Ngày: 2026-09-06. Trạng thái: triển khai trong PLAN-001.
+- Onboarding mở từ Hôm nay hoặc cài đặt, có thể đóng để học ngay. Tái sử dụng form sẵn có và thêm mục tiêu khám phá/nền tảng/IELTS 6.5, ngày tùy chọn và tự nhận xét nền tảng. Không coi tự nhận xét là đánh giá đầu vào; ngày mục tiêu không kích hoạt dự báo band hay tự chuyển trình độ. Ngày đã qua vẫn giữ để người học chỉnh lại.
+- Phiên 2 phút: đọc/nghe câu mẫu, ẩn mẫu, làm một câu nhớ lại và xem giải thích. Lượt này vào `quickLog`; không hoàn thành bài, không tạo hoặc đổi lịch ôn.
+- Phiên 5 phút: một bài đầy đủ, ưu tiên bài dở rồi bài chưa hoàn thành theo thứ tự học liệu. Phiên 15 phút/buổi đầy đủ: tối đa ba câu đến hạn cũ nhất (ước tính một phút/câu), rồi thêm bài theo ngân sách còn lại. Không tự lặp bài để lấp thời gian. Sở thích tiếp tục ảnh hưởng gợi ý Khám phá/Hôm nay, chưa thay quy tắc kiến thức tiên quyết.
+- Buổi đầy đủ dùng phút/ngày đã khai báo, mặc định 30 nếu chưa thiết lập. Chỉ có bảy bài, vì vậy buổi 60 phút ban đầu chỉ xếp được khoảng 35 phút. Giao diện phân biệt phần đã xếp, ngân sách và phần chưa có học liệu. Không đo phút thực tế trong task này.
+- Lưu một phiên hiện tại, danh sách cố định lúc tạo, con trỏ hoạt động, câu đang nhập/gợi ý và bài dở. Chuyển bước chỉ sau kết quả thực có cùng ID lượt làm; reload không nộp lại. Tạo phiên mới xác nhận thay danh sách phiên dở và giữ nguyên bài đang học. Lịch sử lượt làm vẫn còn, chưa lưu lịch sử mọi kế hoạch đã thay thế.
+- Schema version 2 bổ sung hồ sơ, `plan`, `quickLog`. Giữ key `moi-ngay.study.v1` để đọc kho cũ. `parseBackup` chuyển version 1 sang version 2 trong bộ nhớ, kiểm tra đầy đủ trước khi dùng; ghi version 2 ở lần thay đổi/khôi phục thành công. Đọc đơn thuần không ghi đè bản gốc. Version không hỗ trợ hoặc dữ liệu lỗi tiếp tục được giữ nguyên theo DEC-008. Bản app cũ không đọc được version 2.
+- Lựa chọn này tạo nền cho PROGRESS-001 (lịch sử phiên và phút hoạt động), không thay thế kế hoạch sáu tháng, kiểm tra đầu vào hoặc học liệu bốn kỹ năng đầy đủ.
+
 ## Các giả định/chọn lựa còn mở
 
 | Mã | Vấn đề | Mặc định hiện tại | Thời điểm cần làm rõ |
 | --- | --- | --- | --- |
 | OPEN-001 | Cá nhân hay nhiều học viên | Ưu tiên cá nhân, chưa được xác nhận riêng | Trước tính năng quản lý học viên/kinh doanh |
 | OPEN-002 | Academic hay General Training | Không tự điền loại thi; nền tảng dùng chung | Onboarding và trước xây học liệu luyện thi |
-| OPEN-003 | Đầu vào, thời gian, ngày thi, điểm tối thiểu từng kỹ năng | Chưa biết; mục tiêu sáu tháng cần đánh giá lại | Khi tạo kế hoạch học cá nhân |
+| OPEN-003 | Đầu vào, thời gian, ngày thi, điểm tối thiểu từng kỹ năng | Đã có form thời gian/ngày mục tiêu và tự nhận xét; chưa có đánh giá đầu vào hoặc yêu cầu band từng kỹ năng | Trước kế hoạch luyện thi cá nhân |
 | OPEN-004 | Nhà cung cấp và ngân sách AI | Chưa chọn, không giả định có API key | AI-001 |
 | OPEN-005 | Hosting, dự án Supabase, tên miền | Chưa cấp cấu hình; local trước | DATA-001 và bản triển khai beta |
 | OPEN-006 | Đánh giá lại thuật toán lịch ôn | Đã có lịch khởi đầu DEC-009; cần hiệu chỉnh theo dữ liệu | Sau thử nghiệm sử dụng và trước mở rộng |

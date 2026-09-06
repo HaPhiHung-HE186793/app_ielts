@@ -22,6 +22,8 @@ import { Today } from '../features/today/Today'
 import { Discover, Practice, Progress } from '../features/pages/Pages'
 import { navigate, useRoute } from './router'
 import { useClock } from './clock'
+import { SessionPage } from '../features/today/SessionPage'
+import '../styles/sessions.css'
 
 const navigation = [
   { path: '/today', label: 'Hôm nay', icon: House },
@@ -39,7 +41,7 @@ export function App() {
   const main = useRef<HTMLElement>(null)
   const isLesson = route.startsWith('/lesson/')
   const lesson = isLesson ? findLesson(route.slice('/lesson/'.length)) : undefined
-  const activePath = isLesson ? '/discover' : route
+  const activePath = isLesson ? '/discover' : route === '/session' ? '/today' : route
   const currentNav = navigation.find((item) => item.path === activePath)
   const due = Object.values(state.reviews).filter((card) => card.dueAt <= now).length
 
@@ -168,6 +170,8 @@ export function App() {
             />
           ) : route === '/discover' ? (
             <Discover state={state} onStart={openLesson} />
+          ) : route === '/session' ? (
+            <SessionPage state={state} />
           ) : route === '/practice' ? (
             <Practice onStart={openLesson} />
           ) : route === '/review' ? (

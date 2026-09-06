@@ -27,9 +27,9 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | CONTENT-001 | DONE | APP-001 | Có 7 bài nền tảng với mục tiêu, hoạt động, giải thích và hồ sơ nguồn/rà soát trong CONTENT_REVIEW. Hiển thị học liệu thử nghiệm do trợ lý rà soát nội bộ, chưa có giáo viên độc lập xác nhận; chưa gọi là nội dung chính thức. |
 | LEARN-001 | DONE | APP-002, CONTENT-001 | Chọn bài → làm hoạt động → xem phản hồi → thử lại → hoàn thành; phân biệt đúng độc lập và sau gợi ý. Kiểm tra chấm đáp án, tránh hoàn thành hai lần khi nhấn lặp. |
 | LEARN-002 | DONE | LEARN-001 | Lưu tiến độ và bài dở vào local qua lớp dữ liệu riêng; đóng/mở lại tiếp tục được. Hiển thị giới hạn lưu local, xử lý lỗi lưu và thay đổi phiên bản dữ liệu có chủ đích. |
-| PLAN-001 | READY | LEARN-002 | Onboarding lưu sở thích, thời gian, mục tiêu và loại thi chưa xác định nếu cần; Hôm nay chọn 2/5/15 phút hoặc buổi đầy đủ. Không tự tạo band đầu vào hoặc hứa mục tiêu chưa có đánh giá. |
+| PLAN-001 | DONE | LEARN-002 | Onboarding lưu sở thích, thời gian, mục tiêu và loại thi chưa xác định nếu cần; Hôm nay chọn 2/5/15 phút hoặc buổi đầy đủ. Phiên hữu hạn, lưu qua reload, khởi động tách khỏi bài đầy đủ; đọc dữ liệu version 1 sang 2. Không tự tạo band đầu vào hoặc hứa mục tiêu chưa có đánh giá. |
 | REVIEW-001 | DONE | LEARN-002 | Lịch ôn DEC-009 từ kết quả thật, điền đáp án trước phản hồi; sai/có gợi ý ôn lại sau 10 phút. Kiểm tra qua ngày, reload, nộp trùng và gián đoạn; xem thẻ không đổi lịch. |
-| PROGRESS-001 | TODO | PLAN-001, REVIEW-001 | Tiến bộ từ dữ liệu thật: bài hoàn thành, nhớ lại, lượt luyện; dữ liệu trống có hướng dẫn. Phân biệt thời gian hoạt động, dữ liệu mẫu và ước lượng; không suy band từ XP. |
+| PROGRESS-001 | READY | PLAN-001, REVIEW-001 | Tiến bộ từ dữ liệu thật: bài hoàn thành, nhớ lại, lượt luyện; dữ liệu trống có hướng dẫn. Phân biệt thời gian hoạt động, dữ liệu mẫu và ước lượng; không suy band từ XP. |
 
 Điều kiện đạt mốc 1: một người mở app local, hoàn thành bài, đóng/mở lại, ôn một mục đến hạn và thấy tiến độ được lưu đúng.
 
@@ -67,17 +67,17 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | COACH-001 | TODO | BETA-001 | Nếu người dùng cần: dashboard gia sư, giao bài và nhận xét với quyền truy cập có lựa chọn; kiểm tra học viên khác không xem chéo dữ liệu. |
 | MOBILE-001 | TODO | BETA-001 | Nếu cần cửa hàng ứng dụng: đánh giá Capacitor, build/ký và kiểm thử native, chuẩn bị thông tin phát hành. Tài khoản, thiết bị và quyền phát hành phải có trước khi gửi lên cửa hàng. |
 
-## Chi tiết task tiếp theo: PLAN-001
+## Chi tiết task tiếp theo: PROGRESS-001
 
 ### Thực hiện
 
-1. Đọc STATUS, DECISIONS và code thực tế. Đã có form cài đặt tên, sở thích, loại thi và phút dự kiến; không viết lại phần này mà thiếu nhu cầu.
-2. Thiết kế onboarding ngắn cho mục tiêu/ngày thi tùy chọn, thời gian thực và thông tin nền tảng. Nếu thêm đánh giá ngắn, ghi rõ chưa đủ để suy band IELTS.
-3. Làm lựa chọn 2/5/15 phút và buổi đầy đủ trên Hôm nay với hành vi thực sự khác nhau. Phiên khởi động không tự đánh dấu toàn bộ bài hoàn thành hoặc đủ khối lượng luyện thi.
-4. Giữ một luồng tiếp tục rõ ràng, bảo toàn bài dở và lịch ôn hiện có; nếu đổi schema, có đường đọc dữ liệu version 1/bản sao cũ.
-5. Hiển thị kế hoạch dự kiến riêng với kết quả đã thực hiện. Chưa có bài phù hợp thì nêu giới hạn, không tạo tiến độ giả.
-6. Thêm test hành vi chọn thời gian, quay lại bài dở và tương thích dữ liệu; chạy lint/typecheck/unit/e2e liên quan.
-7. Cập nhật task/status/nhật ký, tiếp tục PROGRESS-001 để hoàn thiện tiến bộ gắn với kế hoạch và phút học chủ động.
+1. Đọc STATUS, DEC-010, schema version 2, planner và trang Progress trong `src/features/pages/Pages.tsx`. Kết quả bài/ôn đã có; kế hoạch hiện tại và quickLog đã lưu.
+2. Định nghĩa phép đo phút hoạt động: chỉ trong hoạt động học, dừng khi tab ẩn/tạm dừng hoặc không tương tác quá ngưỡng có giải thích. Xử lý chuyển route, reload, đóng tab và tránh cộng thời gian hai lần. Không gọi thời gian mở app là thời gian học có chú ý.
+3. Lưu lịch sử phiên hoàn tất/đã thay thế để người học nhìn lại, phân biệt hoạt động đã làm với số dự kiến. Giữ một bài dở và đường đọc bản sao version 1/2 nếu nâng schema.
+4. Đưa lượt khởi động, bài đầy đủ, ôn, câu tự viết và thời gian đo vào Tiến bộ. Tách đúng độc lập với có gợi ý/sai. Dữ liệu cũ chưa đo giờ phải ghi chưa có dữ liệu, không suy từ `minutes` trong học liệu.
+5. Có trạng thái chưa học và gợi ý bước tiếp theo, chỉ dùng dữ liệu thật; không suy band từ số phút hoặc lượt luyện.
+6. Kiểm tra phép đo qua khoảng nghỉ/tab ẩn/reload, chống trùng, phiên ngắn không tăng số bài và khôi phục bản sao; chạy lint/typecheck/unit/e2e liên quan.
+7. Cập nhật task/status/nhật ký và chọn một task mốc 2 đủ phụ thuộc/cấu hình làm bước tiếp theo. Cloud hoặc PWA chưa thuộc PROGRESS-001.
 
 ### Chưa thuộc task này
 
@@ -85,4 +85,4 @@ Supabase thật, API AI, đăng nhập, thông báo, PWA offline, phát hành l�
 
 ### Phần đã có nhưng chưa đóng task khác
 
-PROGRESS-001 đã có trang thống kê bài/lượt ôn và lịch sử câu tự viết từ dữ liệu thật; chưa có liên kết kế hoạch hoặc đo phút học chủ động. Không đánh dấu task này DONE chỉ vì trang đã hiển thị.
+PLAN-001 đã đóng, có kết quả riêng cho phiên hiện tại. PROGRESS-001 chưa đóng: trang Tiến bộ vẫn chỉ có phần thống kê bài/lượt ôn và câu tự viết; cần lịch sử phiên và đo thời gian theo tiêu chí trên.

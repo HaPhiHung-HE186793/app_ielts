@@ -18,6 +18,7 @@ import type { Lesson } from '../../domain/types'
 import { BookScene } from '../../components/BookScene'
 import { LessonCard } from '../../components/LessonCard'
 import { navigate } from '../../app/router'
+import { SessionChoices } from './SessionChoices'
 
 export function Today({
   state,
@@ -36,6 +37,8 @@ export function Today({
     lessons.find((lesson) => !completed.has(lesson.id)) ||
     lessons[0]
   const due = Object.values(state.reviews).filter((card) => card.dueAt <= now).length
+  const localDate = new Date(now)
+  const todayKey = `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`
   const picks = [...lessons]
     .sort(
       (a, b) =>
@@ -53,6 +56,17 @@ export function Today({
         <h1>Chào {state.profile?.name || 'bạn'}, mình học một chút nhé.</h1>
         <p>Không cần hoàn hảo. Chỉ cần bắt đầu từ điều vừa sức.</p>
       </header>
+      {!state.profile && (
+        <section className="welcome-strip">
+          <div>
+            <strong>Để hành trình hợp với bạn hơn</strong>
+            <p>Chọn mục tiêu, sở thích và thời gian thực sự có thể dành cho việc học.</p>
+          </div>
+          <button className="button secondary small-button" onClick={onSettings}>
+            Thiết lập nhịp học <ArrowRight size={16} />
+          </button>
+        </section>
+      )}
       <div className="dashboard-grid">
         <div className="dashboard-main">
           <section className="hero">
@@ -79,6 +93,7 @@ export function Today({
             </div>
             <BookScene />
           </section>
+          <SessionChoices state={state} now={now} onSettings={onSettings} />
           <section className="daily-section">
             <div className="section-heading">
               <h2>Một nhịp học cho hôm nay</h2>
@@ -194,6 +209,32 @@ export function Today({
             </span>
             <Settings2 size={17} />
           </button>
+          {state.profile && (
+            <div className="goal-detail small">
+              <strong>
+                {state.profile.goal === 'ielts65'
+                  ? 'Mục tiêu: IELTS 6.5'
+                  : state.profile.goal === 'foundation'
+                    ? 'Mục tiêu: xây lại nền tảng'
+                    : 'Khám phá nhịp học phù hợp'}
+              </strong>
+              {state.profile.targetDate && (
+                <p>
+                  Ngày bạn chọn:{' '}
+                  {new Intl.DateTimeFormat('vi-VN').format(
+                    new Date(`${state.profile.targetDate}T12:00:00`),
+                  )}
+                  .
+                </p>
+              )}
+              {state.profile.targetDate && state.profile.targetDate < todayKey && (
+                <p>Ngày mục tiêu đã qua. Bạn có thể chọn lại nhịp và ngày phù hợp.</p>
+              )}
+              <p className="muted">
+                Nền tảng do bạn tự nhận xét. Chưa có đánh giá đầu vào hoặc dự báo band.
+              </p>
+            </div>
+          )}
           <p className="local-note">
             <span className="local-dot" /> Bản học thử · Tiến độ lưu trên thiết bị
           </p>

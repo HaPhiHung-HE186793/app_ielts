@@ -18,6 +18,11 @@ export function SettingsDialog({
   const [minutes, setMinutes] = useState(profile?.dailyMinutes ?? 30)
   const [exam, setExam] = useState(profile?.exam ?? 'undecided')
   const [interests, setInterests] = useState<Profile['interests']>(profile?.interests ?? [])
+  const [goal, setGoal] = useState<Profile['goal']>(profile?.goal ?? 'explore')
+  const [foundation, setFoundation] = useState<Profile['foundation']>(
+    profile?.foundation ?? 'unsure',
+  )
+  const [targetDate, setTargetDate] = useState(profile?.targetDate ?? '')
   useEffect(() => {
     const element = dialog.current!
     element.showModal()
@@ -32,9 +37,12 @@ export function SettingsDialog({
       dailyMinutes: Number(form.get('minutes')),
       exam: form.get('exam'),
       interests,
+      goal,
+      foundation,
+      targetDate: targetDate || null,
     })
     if (!result.success) {
-      setMessage('Hãy kiểm tra lại tên và thời gian học.')
+      setMessage('Hãy kiểm tra lại tên, thời gian và ngày mục tiêu (nếu có).')
       return
     }
     updateState((state) => ({ ...state, profile: result.data }))
@@ -70,6 +78,12 @@ export function SettingsDialog({
         </button>
       </div>
       <form onSubmit={save}>
+        {!profile && (
+          <p className="onboarding-intro">
+            Một phút để chọn điểm bắt đầu. Bạn có thể đóng phần này để học thử ngay, rồi quay lại
+            thay đổi bất cứ lúc nào.
+          </p>
+        )}
         <label className="field">
           Mình gọi bạn là gì?
           <input
@@ -111,6 +125,42 @@ export function SettingsDialog({
             </select>
           </label>
         </div>
+        <div className="field-grid">
+          <label className="field">
+            Mục tiêu của bạn
+            <select
+              value={goal}
+              onChange={(event) => setGoal(event.target.value as Profile['goal'])}
+            >
+              <option value="explore">Mình đang khám phá</option>
+              <option value="foundation">Xây lại nền tảng tiếng Anh</option>
+              <option value="ielts65">Hướng đến IELTS 6.5</option>
+            </select>
+          </label>
+          <label className="field">
+            Ngày mục tiêu (không bắt buộc)
+            <input
+              type="date"
+              value={targetDate}
+              max="9999-12-31"
+              onChange={(event) => setTargetDate(event.target.value)}
+            />
+          </label>
+        </div>
+        <label className="field">
+          Bạn thấy nền tảng hiện tại thế nào?
+          <select
+            value={foundation}
+            onChange={(event) => setFoundation(event.target.value as Profile['foundation'])}
+          >
+            <option value="unsure">Mình chưa biết rõ</option>
+            <option value="starting">Mình cần học lại từ đầu</option>
+            <option value="some">Mình hiểu được một số câu đơn giản</option>
+          </select>
+        </label>
+        <p className="muted small">
+          Đây là tự nhận xét để ghi lại điểm bắt đầu, chưa phải bài đánh giá trình độ.
+        </p>
         <fieldset className="interest-field">
           <legend>Bạn thích tìm hiểu điều gì?</legend>
           <div className="chips">
@@ -134,8 +184,9 @@ export function SettingsDialog({
           </div>
         </fieldset>
         <p className="muted small">
-          Đây là sở thích và thời gian dự kiến. Kế hoạch cá nhân và đánh giá đầu vào sẽ được bổ sung
-          sau; thời lượng này chưa xác nhận khả năng đạt 6.5 trong sáu tháng.
+          Thời gian bạn chọn dùng để ghép buổi học từ bài hiện có. Mục tiêu và ngày dự kiến không
+          phải dự báo kết quả; vài phút duy trì chưa đủ khối lượng luyện IELTS. App chưa có đánh giá
+          đầu vào.
         </p>
         <button className="button primary full-width" type="submit">
           Lưu lựa chọn
@@ -185,6 +236,9 @@ export function SettingsDialog({
               setMinutes(restored.profile?.dailyMinutes ?? 30)
               setExam(restored.profile?.exam ?? 'undecided')
               setInterests(restored.profile?.interests ?? [])
+              setGoal(restored.profile?.goal ?? 'explore')
+              setFoundation(restored.profile?.foundation ?? 'unsure')
+              setTargetDate(restored.profile?.targetDate ?? '')
               navigate('/today')
               setMessage('Đã khôi phục tiến độ từ bản sao.')
             } catch {

@@ -6,8 +6,9 @@ import { completeLesson, submitAnswer } from '../../domain/session'
 import type { Exercise, Lesson } from '../../domain/types'
 import { LessonArt } from '../../components/LessonCard'
 
-function ListenButton({ phrase }: { phrase: string }) {
+export function ListenButton({ phrase }: { phrase: string }) {
   const [message, setMessage] = useState('')
+  useEffect(() => () => window.speechSynthesis?.cancel(), [])
   return (
     <>
       <button

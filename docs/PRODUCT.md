@@ -12,7 +12,7 @@ Mục tiêu sản phẩm: hỗ trợ tự học có định hướng từ nền 
 
 - Bản đầu phục vụ cá nhân chủ dự án tự học; giả định này chưa được người dùng xác nhận riêng.
 - Giao diện ưu tiên điện thoại, sử dụng được trên máy tính, iOS và Android.
-- Chưa biết điểm đầu vào, thời gian học thực tế, ngày thi, Academic/General Training hoặc yêu cầu tối thiểu từng kỹ năng. Onboarding sẽ thu thập các thông tin này.
+- Onboarding đã thu thập thời gian dự kiến, mục tiêu/ngày tùy chọn, Academic/General Training/chưa quyết định, sở thích và tự nhận xét nền tảng. Điểm đầu vào, thời gian học đo thực tế và yêu cầu tối thiểu từng kỹ năng vẫn chưa có.
 - Cho phép học trước khi đã quyết định ngày thi; không ép nhập dữ liệu không biết.
 - AI hỗ trợ luyện tập. Đánh giá của giáo viên là nguồn đối chiếu cho các mốc quan trọng khi có điều kiện.
 
@@ -34,6 +34,8 @@ Mục tiêu sản phẩm: hỗ trợ tự học có định hướng từ nền 
 Chọn mục tiêu và sở thích → khai báo thời gian → đánh giá nền tảng theo phần ngắn → nhận kế hoạch tuần đầu → hoàn thành một bài vừa sức.
 
 Không gán band IELTS từ một bài kiểm tra nền tảng ngắn. Cho phép bỏ qua phần chưa thể làm; ghi nhận mức độ thiếu dữ liệu.
+
+Hiện thực trong PLAN-001: form thiết lập có thể bỏ qua, sau đó chọn một phiên từ bảy bài hiện có. Chưa triển khai bài đánh giá hoặc kế hoạch tuần/sáu tháng cá nhân. Phiên 2 phút có kết quả khởi động riêng; phiên 5 phút là bài đầy đủ, phiên 15 phút/buổi đầy đủ ghép bài và tối đa ba câu đến hạn. Chi tiết thời lượng và giới hạn ở DEC-010.
 
 ### Mỗi ngày
 

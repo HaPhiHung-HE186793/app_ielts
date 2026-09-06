@@ -23,7 +23,53 @@ export const profileSchema = z.object({
   ]),
   exam: z.enum(['undecided', 'academic', 'general']),
   interests: z.array(z.enum(['Đời sống', 'Giải trí', 'Ăn uống', 'Học tập'])).max(4),
+  goal: z.enum(['foundation', 'ielts65', 'explore']).default('explore'),
+  foundation: z.enum(['starting', 'some', 'unsure']).default('unsure'),
+  targetDate: z.iso.date().nullable().default(null),
 })
+
+const planItemSchema = z.object({
+  id: z.string().min(1).max(120),
+  kind: z.enum(['quick', 'lesson', 'review']),
+  lessonId,
+  minutes: z.number().int().min(1).max(5),
+})
+
+const planSchema = z
+  .object({
+    id: z.string().min(1).max(100),
+    mode: z.enum(['2', '5', '15', 'full']),
+    budget: z.number().int().min(2).max(180),
+    createdAt: timestamp,
+    items: z.array(planItemSchema).max(10),
+    cursor: z.number().int().nonnegative(),
+    practice: z.object({
+      stage: z.enum(['intro', 'recall']),
+      answer: z.string().max(500),
+      hinted: z.boolean(),
+    }),
+  })
+  .superRefine((plan, ctx) => {
+    if (
+      plan.cursor > plan.items.length ||
+      new Set(plan.items.map((item) => item.id)).size !== plan.items.length
+    )
+      ctx.addIssue({ code: 'custom', message: 'Phiên học không hợp lệ' })
+    if (plan.items.reduce((sum, item) => sum + item.minutes, 0) > plan.budget)
+      ctx.addIssue({ code: 'custom', message: 'Phiên học vượt thời gian dự kiến' })
+    const expected = { quick: 2, lesson: 5, review: 1 }
+    if (plan.items.some((item) => item.minutes !== expected[item.kind]))
+      ctx.addIssue({ code: 'custom', message: 'Thời lượng hoạt động không hợp lệ' })
+    if (
+      (plan.mode !== 'full' && plan.budget !== Number(plan.mode)) ||
+      (plan.mode === 'full' && ![15, 30, 60, 120, 180].includes(plan.budget)) ||
+      (plan.mode === '2' && (plan.items.length !== 1 || plan.items[0]?.kind !== 'quick')) ||
+      (plan.mode !== '2' && plan.items.some((item) => item.kind === 'quick')) ||
+      (plan.mode === '5' && plan.items.some((item) => item.kind !== 'lesson')) ||
+      plan.items.filter((item) => item.kind === 'review').length > 3
+    )
+      ctx.addIssue({ code: 'custom', message: 'Hoạt động không phù hợp loại phiên' })
+  })
 
 const draftSchema = z.object({
   id: z.string().min(1).max(100),
@@ -37,9 +83,21 @@ const draftSchema = z.object({
 
 export const stateSchema = z
   .object({
-    version: z.literal(1),
+    version: z.literal(2),
     profile: profileSchema.nullable(),
     draft: draftSchema.nullable(),
+    plan: planSchema.nullable(),
+    quickLog: z
+      .array(
+        z.object({
+          id: z.string().min(1).max(120),
+          lessonId,
+          completedAt: timestamp,
+          correct: z.boolean(),
+          independent: z.boolean(),
+        }),
+      )
+      .max(50_000),
     completions: z
       .array(
         z.object({
@@ -81,6 +139,30 @@ export const stateSchema = z
     const reviewIds = state.reviewLog.map((item) => item.id)
     if (new Set(reviewIds).size !== reviewIds.length)
       ctx.addIssue({ code: 'custom', message: 'Trùng lượt ôn' })
+    const quickIds = state.quickLog.map((item) => item.id)
+    if (new Set(quickIds).size !== quickIds.length)
+      ctx.addIssue({ code: 'custom', message: 'Trùng lượt khởi động' })
+    for (const item of [...state.reviewLog, ...state.quickLog]) {
+      if (item.independent && !item.correct)
+        ctx.addIssue({ code: 'custom', message: 'Kết quả độc lập không hợp lệ' })
+    }
+    if (state.plan) {
+      for (const [index, item] of state.plan.items.entries()) {
+        const logs =
+          item.kind === 'lesson'
+            ? state.completions
+            : item.kind === 'review'
+              ? state.reviewLog
+              : state.quickLog
+        if (
+          index < state.plan.cursor &&
+          !logs.some((log) => log.id === item.id && log.lessonId === item.lessonId)
+        )
+          ctx.addIssue({ code: 'custom', message: 'Thiếu kết quả của bước đã qua' })
+        if (item.kind === 'review' && !state.reviews[item.lessonId])
+          ctx.addIssue({ code: 'custom', message: 'Thiếu mục ôn trong phiên' })
+      }
+    }
     if (state.draft) {
       const lesson = findLesson(state.draft.lessonId)!
       for (const [id, answer] of Object.entries(state.draft.responses)) {
@@ -100,10 +182,15 @@ export const stateSchema = z
 export type StudyState = z.infer<typeof stateSchema>
 export type Profile = z.infer<typeof profileSchema>
 export type Draft = NonNullable<StudyState['draft']>
+export type StudyPlan = NonNullable<StudyState['plan']>
+export type PlanItem = StudyPlan['items'][number]
+export type PlanMode = StudyPlan['mode']
 export const emptyState = (): StudyState => ({
-  version: 1,
+  version: 2,
   profile: null,
   draft: null,
+  plan: null,
+  quickLog: [],
   completions: [],
   reviews: {},
   reviewLog: [],
@@ -111,5 +198,9 @@ export const emptyState = (): StudyState => ({
 
 export function parseBackup(raw: string): StudyState {
   if (raw.length > 5_000_000) throw new Error('Bản sao vượt quá 5 MB. Hãy chọn bản sao nhỏ hơn.')
-  return stateSchema.parse(JSON.parse(raw))
+  const data: unknown = JSON.parse(raw)
+  // Keep the storage key stable. Validate migrated data before any write occurs.
+  if (typeof data === 'object' && data !== null && 'version' in data && data.version === 1)
+    return stateSchema.parse({ ...data, version: 2, plan: null, quickLog: [] })
+  return stateSchema.parse(data)
 }

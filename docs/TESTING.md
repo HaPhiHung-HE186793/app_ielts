@@ -26,10 +26,11 @@ npm run test:e2e
 
 ## Phạm vi
 
-- Vitest: 26 ca về chấm đáp án, vòng đời cả bảy bài, tách đúng độc lập với có gợi ý/thử lại, chống hoàn thành/nộp ôn trùng, giữ lịch cũ, khoảng ôn qua nửa đêm/gián đoạn và kiểm tra bản sao lỗi.
+- Vitest: 36 ca về chấm đáp án, vòng đời cả bảy bài, tách đúng độc lập với có gợi ý/thử lại, chống hoàn thành/nộp ôn trùng, giữ lịch cũ, khoảng ôn qua nửa đêm/gián đoạn, ghép phiên hữu hạn, tiếp tục đúng lượt và chuyển dữ liệu version 1 sang 2.
 - Playwright: luồng học thực trên bản build; giữ bài dở sau reload, giữ cả lựa chọn/câu đang nhập, ôn đến hạn khi đổi ngày, ghi lịch ôn một lần, cài đặt và bản sao xuất/nhập, dữ liệu lỗi, quota, bộ lọc và URL không tồn tại.
+- Tổng 30 ca trình duyệt (15 kịch bản × hai kích thước), gồm mục tiêu/ngày/loại thi chưa quyết định, phiên 2/5/15/buổi đầy đủ, thay phiên có lựa chọn, tiếp tục ôn, nâng kho cũ và nhập bản sao version 1. Ca buổi đầy đủ kiểm tra danh sách/ngân sách, không tự coi bảy bài đã hoàn thành.
 - Điều hướng, focus bàn phím, không tràn ngang ở 360px và desktop.
-- Axe: quét các trang chính, trang giới thiệu bài và hộp cài đặt với tập luật WCAG A/AA. Kết quả này chỉ là kiểm tra tự động, không phải chứng nhận khả năng tiếp cận đầy đủ.
+- Axe: quét các trang chính, trang giới thiệu bài, hộp cài đặt, phiên dài, khởi động/câu hỏi/phản hồi/kết quả với tập luật WCAG A/AA. Kết quả này chỉ là kiểm tra tự động, không phải chứng nhận khả năng tiếp cận đầy đủ.
 
 Kết quả cuối mỗi mốc nằm trong [STATUS.md](STATUS.md) và [SESSION_LOG.md](SESSION_LOG.md). Không báo test đã đạt chỉ vì file test đã tồn tại.
 

@@ -4,14 +4,16 @@ Ngày cập nhật: 2026-09-06. Frontend và luồng học local đã được t
 
 ## Hiện có trong code
 
-- React + TypeScript + Vite, điều hướng hash cho năm khu vực và `/lesson/:id`; không cần cấu hình rewrite để mở đường dẫn bài học trên static host.
+- React + TypeScript + Vite, điều hướng hash cho năm khu vực, `/lesson/:id` và `/session`; không cần cấu hình rewrite để mở đường dẫn bài học trên static host.
 - `src/content/lessons.ts`: bảy bài thử nghiệm; nguồn và rà soát tại [CONTENT_REVIEW.md](CONTENT_REVIEW.md).
 - `src/domain/learning.ts` và `session.ts`: chấm đáp án đóng, quản lý lượt làm, kết quả độc lập và lịch ôn đơn giản.
-- `src/data/schema.ts`: schema Zod phiên bản 1. `store.ts`: localStorage với key `moi-ngay.study.v1`, giữ bản lỗi nguyên trạng, xuất/nhập bản sao, phản ánh lỗi ghi. Dữ liệu nhỏ gồm văn bản và tiến độ; chưa dùng IndexedDB/audio cache.
+- `src/data/schema.ts`: schema Zod phiên bản 2 và đường đọc version 1, xem DEC-010. `store.ts`: localStorage vẫn dùng key `moi-ngay.study.v1`, giữ bản lỗi nguyên trạng, xuất/nhập bản sao, phản ánh lỗi ghi. Dữ liệu nhỏ gồm văn bản và tiến độ; chưa dùng IndexedDB/audio cache.
+- `src/domain/planner.ts`: ghép phiên 2/5/15 phút/buổi đầy đủ từ học liệu và mục đến hạn, tra kết quả theo ID, chuyển bước và ghi lượt khởi động. Giao diện ở `SessionChoices.tsx`, `SessionPage.tsx`; form cài đặt mở rộng thành điểm bắt đầu tùy chọn.
 - `src/app/clock.ts`: đọc thời gian mới khi render/đổi trang, thông báo cập nhật sau 30 giây hoặc khi tab lấy lại focus/hiển thị. Lịch ôn lưu thời điểm tuyệt đối; ngày hiển thị theo múi giờ trình duyệt.
 - SpeechSynthesis cho câu mẫu tùy khả năng thiết bị; font và minh họa được đóng gói local. Không có lời gọi API AI.
 - Một bài dở tại một thời điểm. Chuyển sang bài khác cần xác nhận trong giao diện; tiếp tục cùng bài giữ câu đang nhập, đáp án/gợi ý và bài tự viết.
-- Thống kê từ lượt hoàn thành/ôn thật; chưa đo phút hoạt động hoặc xây lịch ngày hoàn chỉnh. Chưa hỗ trợ chỉnh sửa đồng thời an toàn từ nhiều tab hay đồng bộ nhiều thiết bị.
+- Một phiên có danh sách hoạt động cố định, câu ôn/khởi động đang nhập, gợi ý và con trỏ lưu qua reload. Bài đầy đủ dùng lại LessonPlayer và draft cũ. Kết quả khởi động tách khỏi completions/reviewLog; chỉ chuyển bước khi có lượt thực tương ứng. Phiên mới giữ bài dở và kết quả, thay kế hoạch hiện tại; chưa lưu lịch sử mọi kế hoạch.
+- Thống kê từ lượt hoàn thành/ôn thật; có phiên theo thời gian nhưng chưa đo phút hoạt động hoặc xây lịch sáu tháng cá nhân. Chưa hỗ trợ chỉnh sửa đồng thời an toàn từ nhiều tab hay đồng bộ nhiều thiết bị.
 
 Các lệnh và phạm vi kiểm tra nằm trong [TESTING.md](TESTING.md). Đọc STATUS để biết phần nào đã đạt tiêu chí task.
 

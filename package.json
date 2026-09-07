@@ -22,6 +22,8 @@
     "dev:local": "node scripts/dev-local.js",
     "preview:local": "node scripts/preview-local.js",
     "audio": "node scripts/generate-audio.js",
+    "reminders:local": "node scripts/reminders-local.js",
+    "reminders:verify": "node scripts/verify-reminder-push.js",
     "test:auth": "node scripts/test-auth.js"
   },
   "dependencies": {
@@ -31,6 +33,7 @@
     "lucide-react": "1.41.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "web-push": "3.6.7",
     "zod": "4.5.4"
   },
   "devDependencies": {

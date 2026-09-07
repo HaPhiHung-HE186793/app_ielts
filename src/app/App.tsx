@@ -28,6 +28,7 @@ import '../styles/sessions.css'
 import { ActivityGate } from './activity-context'
 import { InstallPage } from '../features/install/InstallPage'
 import { AccountPage } from '../features/account/AccountPage'
+import { RemindersPage } from '../features/reminders/RemindersPage'
 import { getAuthSnapshot, subscribeAuth } from './auth'
 import { getSyncSnapshot, subscribeSync, suspendSync, syncLabels } from './sync'
 
@@ -55,11 +56,13 @@ export function App() {
   const activePath = isLesson ? '/discover' : route === '/session' ? '/today' : route
   const currentNav = navigation.find((item) => item.path === activePath)
   const pageTitle =
-    route === '/account'
-      ? 'Tài khoản'
-      : route === '/install'
-        ? 'Thêm vào màn hình chính'
-        : (lesson?.title ?? currentNav?.label ?? 'Không tìm thấy')
+    route === '/reminders'
+      ? 'Nhắc học'
+      : route === '/account'
+        ? 'Tài khoản'
+        : route === '/install'
+          ? 'Thêm vào màn hình chính'
+          : (lesson?.title ?? currentNav?.label ?? 'Không tìm thấy')
   const due = Object.values(state.reviews).filter((card) => card.dueAt <= now).length
 
   useEffect(() => {
@@ -159,11 +162,13 @@ export function App() {
               <span>Mỗi ngày</span>
               <ChevronRight size={14} />
               <span>
-                {route === '/account'
-                  ? 'Tài khoản'
-                  : route === '/install'
-                    ? 'Cài ứng dụng'
-                    : (currentNav?.label ?? 'Bài học')}
+                {route === '/reminders'
+                  ? 'Nhắc học'
+                  : route === '/account'
+                    ? 'Tài khoản'
+                    : route === '/install'
+                      ? 'Cài ứng dụng'
+                      : (currentNav?.label ?? 'Bài học')}
               </span>
             </div>
             <span className="topbar-date">
@@ -201,7 +206,7 @@ export function App() {
                 </button>
               </div>
             )}
-            {studyBlocked && route !== '/account' && route !== '/install' ? (
+            {studyBlocked && !['/account', '/install', '/reminders'].includes(route) ? (
               <section className="panel account-panel">
                 <h1>{syncLabels[syncStatus.phase]}</h1>
                 <p>
@@ -232,6 +237,8 @@ export function App() {
               <Progress state={state} now={now} onSettings={() => setSettings(true)} />
             ) : route === '/install' ? (
               <InstallPage onSettings={() => setSettings(true)} />
+            ) : route === '/reminders' ? (
+              <RemindersPage />
             ) : route === '/account' ? (
               <AccountPage onSettings={() => setSettings(true)} />
             ) : lesson ? (
@@ -258,6 +265,9 @@ export function App() {
               </span>
               <a href="#/install" className="install-footer-link">
                 Thêm vào màn hình chính
+              </a>
+              <a href="#/reminders" className="install-footer-link">
+                Nhắc học
               </a>
             </footer>
           </main>

@@ -269,3 +269,32 @@ Người dùng yêu cầu tiếp tục. Đọc bàn giao và code tại `1dffddb
 - File chính: `src/offline/worker.js`, `range.js`, `src/app/offline.ts`, `OfflinePanel.tsx`, `ListenButton.tsx`, `scripts/offline-build.js`, `generate-audio.js`, `preview-local.js`, `public/packs/foundation-v1/` và các test offline.
 - Chưa có hosted/SMTP ngoài máy, public HTTPS, push/AI, kiểm thử iPhone/Safari/Android thật/cửa sổ OS hoặc giáo viên duyệt âm thanh. Cache có thể bị thu hồi, local chưa mã hóa, không đồng bộ khi app bị OS đóng. Bảy bài chưa đủ bốn tuần hoặc lộ trình sáu tháng.
 - Commit/push main sau rà soát; lấy hash và xác minh remote bằng Git trong bàn giao cuối, không tự sửa lịch sử/force-push.
+
+## 2026-09-07 — NOTIFY-001: nhắc học tự nguyện qua Web Push
+
+### Kết quả
+
+- Tiếp tục main sạch sau e274188, đọc tài liệu và code, đánh dấu NOTIFY-001 IN_PROGRESS rồi triển khai đúng phạm vi. Không dùng sub-agent, không triển khai hosted/AI/native. Quyền commit/push tiếp tục từ yêu cầu đã có.
+- Trang Nhắc học tiếng Việt có mặc định tắt, giờ/ngày/IANA timezone, giờ yên lặng, dời lượt tới 30 phút và tắt. Quyền chỉ xin từ nút bật; người từ chối vẫn vào bài. Lịch theo thiết bị/tài khoản, giữ StudyState/bản sao version 3 và sync cũ.
+- PostgreSQL tính ngày/lịch/DST; RLS/owner/CAS bảo vệ sửa, chỉ server claim/prepare/finish. Receipt duy nhất theo thiết bị/ngày, bỏ quá một phút/yên lặng; revision cũ không gửi. Đã áp dụng bốn migration bổ sung, không reset database: bảng/RPC, chặn null/endpoint sai, thống nhất thứ tự khóa, claim riêng thiết bị thử.
+- Bộ gửi Node dùng web-push 3.6.7 (khóa phiên bản/lockfile, Node 22 phù hợp; npm audit lúc cài 0 lỗ hổng). VAPID chỉ tạo một lần trong .local, public key/heartbeat ở database, service key ở Node. Host endpoint có allowlist HTTPS. Ghi attempt trước HTTP, TTL 0, không retry kết quả chưa rõ; 404/410 tắt endpoint cùng revision.
+- Worker ghép trong build hiện có, giữ update chờ cửa sổ cũ đóng. IndexedDB chỉ thêm binding/ngày nhắc, transaction chặn hiển thị lặp; không chuyển kho học hoặc thêm token/subscription vào Cache Storage. Push không có dữ liệu học cá nhân, click chỉ về Hôm nay cùng origin.
+- Client dùng Web Lock riêng, generation/owner guard, giới hạn chờ subscribe 15 giây và dọn kết quả tới muộn. Logout hủy local trước rời Auth; đổi chủ hoặc mất phiên ở lần mở mới dọn binding. Không cản logout vì request dọn bị lỗi; không hứa thu hồi thông báo đang tới.
+- Thêm reminders:local, --setup và reminders:verify. Probe mạng thật chỉ tạo/dùng/xóa tài khoản thử, hồ sơ Chrome tạm và claim đúng ID thiết bị của nó; không gửi hoặc sửa lịch của tài khoản local khác.
+
+### Kiểm tra và giới hạn bằng chứng
+
+- Lint/typecheck/build đạt, Vitest 82/82. Toàn bộ 68/68 ca khách và 39/39 Auth/API/UI/sync/offline/nhắc học đạt trên Chrome desktop 1440×1000 và viewport 360×800. Các luồng học, quota, bản sao, update worker và outbox cũ giữ nguyên qua hồi quy. Bundle chính khoảng 648 kB/186 kB gzip còn cảnh báo chia route.
+- Bốn ca API nhắc kiểm tra quyền, null/validation, CAS đồng thời, qua ngày/ngày tuần, DST tiến/lùi, quiet boundary, claim idempotency, dời/hủy revision, endpoint hết hạn và tránh tắt revision mới do receipt cũ. Sau thêm phạm vi claim thiết bị thử, chạy lại cả bốn và đạt.
+- Tám ca UI nhắc dùng permission/subscription có điều khiển, backend/worker/IndexedDB thật: từ chối, lưu qua reload, bật/dời/tắt, mất response sau server nhận, đổi chủ khi enable đang gửi, logout, push cũ/lặp và click an toàn. CDP injection kiểm tra handler, không gọi là đường mạng push thật. Axe A/AA không báo vi phạm vùng quét, không tràn ngang; xem ảnh giao diện.
+- Đã kiểm tra riêng subscription/gửi mã hóa qua FCM thật trong Chrome headless Windows. Một lượt khi trang còn mở và một lượt với 0 trang app mở đều accepted=1, worker getNotifications() có thông báo. Probe tái lập dùng hồ sơ tạm lần đầu accepted=1 nhưng chưa thấy thông báo trong 15 giây; không đổi kết quả này thành thành công. Bổ sung 3 giây để kết nối push mới ổn định và chờ quan sát tối đa 30 giây; chạy lại tài khoản/hồ sơ thử mới đạt với 0 trang app mở, accepted=1, browserNotificationRegistered=true. Không gửi lại receipt cũ.
+- Việc chờ ổn định không chứng minh đã xử lý mọi nguyên nhân mất thông báo. TTL 0/Focus/network/OS vẫn có thể bỏ lượt. Chưa quan sát thông báo ở màn hình OS, tắt toàn bộ tiến trình Chrome, iPhone/Safari/Android thật hoặc host chạy liên tục. Tách accepted khỏi hiển thị trong UI/tài liệu.
+- Sửa trong triển khai: validation SQL cần chặn null để CAS không bị bỏ qua; regex host cần dấu chấm literal; lần khởi động ở khách cũng phải dọn binding cũ; React dùng đồng hồ hook thay Date.now trong render. Các bộ đạt nêu trên chạy sau sửa liên quan, không dùng test pass trước sửa làm bằng chứng thay thế.
+
+### Bàn giao
+
+- NOTIFY-001 DONE; AI-001 READY với bước tiếp theo cụ thể trong TASKS. README/STATUS/ARCHITECTURE/DECISIONS/BACKEND/INSTALLATION/TESTING cùng cập nhật; NOTIFICATIONS mô tả dùng, dữ liệu, giới hạn và probe thật.
+- File chính: features/reminders, src/reminders, scripts/reminder-sender.js/reminders-local.js/verify-reminder-push.js, bốn migration 20260907 và hai test Auth nhắc. .local/log/profile/khóa/dữ liệu thử không commit.
+- Chưa có hosted/SMTP/HTTPS, UI quản lý thiết bị từ xa/retention receipt, giáo viên duyệt audio hoặc chương trình bốn tuần/sáu tháng. Giữ giới hạn sync/offline/local chưa mã hóa như mốc trước.
+- Rà soát diff, kiểm tra tài liệu/secret/build/staged, commit và push main; hash/remote xác minh bằng Git ở bàn giao cuối, không force-push hoặc sửa lịch sử.
+- Rà soát cuối: 15 Markdown/72 liên kết nội bộ/24 task hợp lệ, AI-001 READY duy nhất; diff --check đạt. Build từ chối cấu hình secret, quét auth build/worker và 37 file staged không thấy service key hoặc VAPID private key. Sau test/probe, Auth user, profile, snapshot, commit, reminder device/receipt và Mailpit đều 0; chỉ giữ cấu hình công khai/khóa local để dùng tiếp. Preview 4175 có worker nhắc; mở máy nhắc Node ẩn sau khi dọn test (log riêng trong .local).

@@ -26,7 +26,7 @@ npm run test:e2e
 
 ## Phạm vi
 
-- Vitest: 78 ca về chấm đáp án, vòng đời bảy bài, lịch ôn, ghép phiên, thời gian và tương thích version 1/2/3. Có kiểm tra kho theo chủ, quota, dữ liệu lỗi và cấu hình công khai. DATA-002 thêm 8 ca gộp ba phía/lượt trùng/lịch ôn/checkpoint/xung đột và 9 ca engine: bật tự nguyện, outbox qua reload, mất phản hồi, thay đổi trong lúc gửi, offline, quota, đổi chủ, reset/import và hoãn khi mở cài đặt.
+- Vitest: 82 ca về chấm đáp án, vòng đời bảy bài, lịch ôn, ghép phiên, thời gian và tương thích version 1/2/3. Có kiểm tra kho theo chủ, quota, dữ liệu lỗi và cấu hình công khai. DATA-002 thêm 8 ca gộp ba phía/lượt trùng/lịch ôn/checkpoint/xung đột và 9 ca engine: bật tự nguyện, outbox qua reload, mất phản hồi, thay đổi trong lúc gửi, offline, quota, đổi chủ, reset/import và hoãn khi mở cài đặt.
 - Playwright: luồng học thực trên bản build; giữ bài dở sau reload, giữ cả lựa chọn/câu đang nhập, ôn đến hạn khi đổi ngày, ghi lịch ôn một lần, cài đặt và bản sao xuất/nhập, dữ liệu lỗi, quota, bộ lọc và URL không tồn tại.
 - Tổng 68 ca trình duyệt chế độ khách (34 kịch bản × hai kích thước), gồm mục tiêu/ngày/loại thi chưa quyết định, phiên 2/5/15/buổi đầy đủ, tiếp tục, bản sao, bộ đo/lịch sử tiến bộ và PWA/offline. Có trang tài khoản chưa cấu hình, đường tiếp tục học/focus/axe. Ca buổi đầy đủ kiểm tra danh sách/ngân sách, không tự coi bảy bài đã hoàn thành.
 - `tests/progress.spec.ts`: không cộng thời gian nghỉ, dừng thủ công/cài đặt/rời bài, reload, giữ kết quả khởi động riêng, lịch sử phiên đổi/hoàn tất, và không ghi trở lại sau import/reset. Test đổi tab tắt focus emulation của Playwright qua CDP để dùng sự kiện blur/focus của trình duyệt.
@@ -49,7 +49,7 @@ npm run test:auth
 
 Cần Docker và Supabase local của repo đang chạy; xem [BACKEND.md](BACKEND.md). Runner tự build vào `.local/auth-dist` chỉ với cấu hình công khai, mở preview 4174 và dùng `playwright.auth.config.ts`. Chạy tuần tự một worker, tách khỏi 68 ca khách; không cần `.env`. Khi chạy bộ khách, để hai biến Supabase trống vì ca chưa cấu hình kiểm tra chính trạng thái này.
 
-- 27 ca: ba ca API và mười hai kịch bản UI ở mỗi kích thước 1440×1000/360×800. Dùng Auth/PostgreSQL thật và thư từ Mailpit, không thay phản hồi đăng nhập thành công bằng mock.
+- 39 ca: bảy ca API và mười sáu kịch bản UI ở mỗi kích thước 1440×1000/360×800. Dùng Auth/PostgreSQL thật và thư từ Mailpit, không thay phản hồi đăng nhập thành công bằng mock.
 - `tests/auth/rls.spec.ts`: hai người dùng thực có phiên riêng; đọc/tạo/sửa/xóa của mình, chặn đọc/ghi/đổi chủ/xóa của người khác, chặn chưa đăng nhập và sửa thời điểm tạo, giới hạn tên. Xóa hàng của mình được kiểm tra ở API; app chưa có giao diện xóa tài khoản.
 - `tests/auth/account.spec.ts`: đăng ký bằng OTP, mã sai, lưu tên và khôi phục phiên sau reload; tách kho khách/A/B qua hai tab; tiến độ của A được giữ và bộ đo không tạo dữ liệu cho B; import đang đọc file không vượt qua lần đăng xuất.
 - `tests/auth/sync-api.spec.ts`: quyền đọc theo chủ/chặn chưa đăng nhập, RPC khác chủ và ghi bảng trực tiếp, payload sai, hai commit đồng thời chỉ một được ghi, retry song song không tăng revision, không tái dùng UUID cho payload khác, receipt cũ không làm lùi snapshot. Kiểm tra nhật ký chỉ ghi trường đã đổi và hash payload.
@@ -64,7 +64,7 @@ Cần Docker và Supabase local của repo đang chạy; xem [BACKEND.md](BACKEN
 
 ## PWA offline trên bản build
 
-- `src/offline/range.test.ts`: hai ca đơn vị cho khoảng byte có chặn biên, suffix, EOF và khoảng sai/nhiều khoảng. Tổng Vitest 78 ca.
+- `src/offline/range.test.ts`: hai ca đơn vị cho khoảng byte có chặn biên, suffix, EOF và khoảng sai/nhiều khoảng. Mốc PWA-002 có 78 ca; tổng hiện tại 82 ca sau NOTIFY-001.
 - `tests/offline.spec.ts`: năm kịch bản × desktop/mobile = 10 ca, gồm tải/đóng cửa sổ/mở mới khi context offline/phát WAV thật, trả HTTP 206/416, hoàn thành và lưu bài/lịch ôn; xóa gói giữ tiến độ/shell/cache khác; integrity thất bại/reload/thử lại và file bị thu hồi; giả lập `QuotaExceededError` ở worker rồi tải lại; allowlist loại request cá nhân.
 - Kịch bản nâng phiên bản dùng `tests/offline-update-server.ts`, HTTP server riêng/port ngẫu nhiên cho từng ca, phục vụ hai bộ shell/pack manifest khác nhau từ bản build thật. Worker cũ chờ các cửa sổ đóng; test đợi trạng thái activation thực rồi mở bản mới, kiểm tra nguyên văn draft/outbox ở cả key khách/tài khoản fixture, dọn cache cũ, tải gói mới và reload offline. Không sửa dist của test khác hoặc gọi skipWaiting trong fixture.
 - `tests/auth/offline.spec.ts`: hai kịch bản × hai kích thước = bốn ca, mở mới offline với `expires_at` của phiên SDK đã qua hạn (JWT server vẫn do Auth cấp), làm/nộp khởi động, kết nối lại, nhận 503 sau commit thật rồi reload/gửi lại đúng UUID. Kiểm tra riêng A/B dùng chung gói công khai nhưng cache không chứa response/token/nội dung riêng và B không thấy tiến độ A.
@@ -79,3 +79,11 @@ Cần Docker và Supabase local của repo đang chạy; xem [BACKEND.md](BACKEN
 - Chưa kiểm thử Safari/iPhone hoặc Android thật, cài/khởi chạy từ biểu tượng hệ điều hành, microphone, AI, tài khoản trên cloud hosted, notification. PWA offline đã kiểm tra trên Chrome như bên dưới. Auth/RLS local đã kiểm tra riêng ở trên. Quy trình kiểm tra thiết bị nằm trong [INSTALLATION.md](INSTALLATION.md).
 - Bảy WAV eSpeak NG giải mã/phát được trong Chrome, chưa được giáo viên nghe duyệt; không xác minh chất lượng phát âm bằng test trình duyệt.
 - Bộ bảy bài được rà soát nội bộ; test không thay đánh giá của giáo viên hay đo hiệu quả sau thời gian học.
+
+## Nhắc học
+
+- `src/features/reminders/reminders.test.ts`: thêm bốn ca validation/giờ yên lặng/bộ lọc worker/host endpoint và thứ tự ghi attempt trước gửi, không retry kết quả chưa rõ.
+- `tests/auth/reminders-api.spec.ts`: bốn ca với PostgreSQL thật về quyền/RLS/CAS/null/endpoint, lịch ngày/múi giờ/DST, claim đồng thời/một lượt/ngày/skip quá giờ và yên lặng, dời/hủy revision cũ/endpoint hết hạn. Claim có tham số service-only giới hạn đúng thiết bị thử để không thay lịch của người dùng khác.
+- `tests/auth/reminders.spec.ts`: bốn kịch bản × hai viewport. Không tự hỏi quyền; từ chối vẫn học; lưu qua reload; bật/dời/tắt/đăng xuất; mất response và đổi chủ trong request đã được nhận. Permission/subscription được điều khiển rõ, RPC/IndexedDB/worker thật. CDP đưa payload vào worker để thử thông báo chung, chặn revision/lượt trùng và click chỉ về Hôm nay. Axe A/AA và không tràn ngang; chưa thay thiết bị thật.
+- `npm run test:auth` thêm bước `reminders:local -- --setup`, tạo/đọc khóa ở `.local`, chưa chạy vòng gửi. Không commit file khóa, trace Auth, profile hoặc ảnh dữ liệu thử.
+- `npm run reminders:verify` kiểm tra Web Push qua mạng thật riêng: tài khoản local/hồ sơ Chrome tạm, subscription thật, đóng các trang app, gửi chỉ cho ID thiết bị thử, xác nhận `getNotifications()`, hủy và dọn tài khoản. Đã đạt trên Chrome Windows với 0 trang mở. Chưa xác minh màn hình OS, tắt toàn bộ Chrome, iPhone/Android, public HTTPS hoặc máy gửi hosted. Cách chạy/giới hạn ở [NOTIFICATIONS.md](NOTIFICATIONS.md).

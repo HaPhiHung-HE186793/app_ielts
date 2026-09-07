@@ -299,6 +299,9 @@ export function AccountPage({ onSettings }: { onSettings: () => void }) {
           </section>
           {auth.status !== 'offline' && <AccountProfile userId={auth.user.id} />}
           <SyncPanel />
+          <a className="text-button" href="#/reminders">
+            Chọn lịch nhắc học trên thiết bị này <ArrowRight size={16} />
+          </a>
         </>
       ) : publicConfig.status !== 'ready' ? (
         <section className="panel account-panel">

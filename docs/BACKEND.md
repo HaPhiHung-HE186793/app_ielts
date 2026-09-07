@@ -36,6 +36,8 @@ Mở http://127.0.0.1:5173/#/account hoặc chọn **Tài khoản và đăng nh�
 
 CLI quản lý migration trong database; `db:start` khởi tạo stack mới, `npm run db:migrate` áp dụng migration còn thiếu vào stack local đã tồn tại. DATA-002 thêm migration 002/003 cho snapshot, nhật ký thay đổi và RPC ghi có kiểm tra phiên bản; quyền và cấu trúc ở SYNC. Không chạy `db reset` trên dữ liệu muốn giữ.
 
+NOTIFY-001 thêm bốn migration ngày 20260907: bảng lịch/receipt/cấu hình công khai và RPC, validation null/endpoint, thứ tự khóa, tham số service-only để probe chỉ chạm thiết bị thử. `npm run reminders:local` dùng service key trong Node và VAPID riêng ở `.local`, không đưa khóa riêng vào database/client. Lịch không thuộc snapshot học. Hướng dẫn và giới hạn ở [NOTIFICATIONS.md](NOTIFICATIONS.md).
+
 ## Khi có dự án cloud
 
 Phần này là hướng dẫn chuẩn bị, chưa triển khai hoặc xác minh dịch vụ hosted:

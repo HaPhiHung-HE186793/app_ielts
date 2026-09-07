@@ -12,7 +12,8 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 - Thiết lập mục tiêu/ngày tùy chọn và tự nhận xét nền tảng; chọn phiên 2/5/15 phút hoặc buổi đầy đủ, tạm dừng và tiếp tục phiên.
 - Tiến bộ có thời gian hoạt động đo được, biểu đồ bảy ngày, lịch sử phiên hoàn tất/đã đổi và bộ lọc bài học/ôn/khởi động.
 - Hoàn thành mốc 1 local, PWA-001/002, DATA-001/002: đăng nhập, kho riêng, đồng bộ có lựa chọn, chống gửi trùng và xử lý xung đột. Đã kiểm tra hai phiên trình duyệt độc lập trên Supabase Docker local.
-- Có gói bảy bài/bảy file nghe tải trước để mở lại và học offline; quản lý dung lượng, thử lại và xóa tải xuống riêng với tiến độ. Task tiếp theo: **NOTIFY-001 — nhắc học tự nguyện**. Chưa có Supabase hosted, AI, thông báo hoặc bản triển khai công khai.
+- Có gói bảy bài/bảy file nghe tải trước để mở lại và học offline; quản lý dung lượng, thử lại và xóa tải xuống riêng với tiến độ.
+- NOTIFY-001: nhắc học tự nguyện theo thiết bị, múi giờ/ngày/giờ yên lặng, dời và tắt; Web Push thật đã nhận trong Chrome thử nghiệm khi đóng các trang app. Chưa xác minh điện thoại thật hoặc màn hình OS. Task tiếp theo: **AI-001 — nền tảng gia sư AI**; chưa có AI, Supabase hosted hoặc bản triển khai công khai.
 - Trạng thái chi tiết và bước tiếp theo luôn được cập nhật tại [docs/STATUS.md](docs/STATUS.md).
 
 ## Bắt đầu hoặc tiếp tục phát triển
@@ -26,7 +27,7 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 5. [Các quyết định](docs/DECISIONS.md): lý do chọn hướng triển khai và các giả định chưa xác nhận.
 6. [Nhật ký bàn giao](docs/SESSION_LOG.md): những thay đổi quan trọng qua từng session.
 
-Tài liệu bổ sung: [tài khoản và backend](docs/BACKEND.md), [đồng bộ và xung đột](docs/SYNC.md), [kiểm tra ứng dụng](docs/TESTING.md), [cài lên màn hình chính](docs/INSTALLATION.md), [tải gói offline](docs/OFFLINE.md), [nguồn và rà soát học liệu](docs/CONTENT_REVIEW.md).
+Tài liệu bổ sung: [tài khoản và backend](docs/BACKEND.md), [đồng bộ và xung đột](docs/SYNC.md), [kiểm tra ứng dụng](docs/TESTING.md), [cài lên màn hình chính](docs/INSTALLATION.md), [tải gói offline](docs/OFFLINE.md), [nhắc học](docs/NOTIFICATIONS.md), [nguồn và rà soát học liệu](docs/CONTENT_REVIEW.md).
 
 Trước khi sửa, kiểm tra `git status --short --branch` và `git log -5 --oneline`. Đối chiếu tài liệu với code thực tế; không coi tính năng trong kế hoạch là tính năng đã tồn tại.
 
@@ -52,7 +53,7 @@ npm run preview
 
 `build` tạo `dist/`; `preview` dùng để kiểm tra bản build local, không phải máy chủ production.
 
-`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 78 unit test, 68 ca trình duyệt khách và 27 ca Auth/RLS/đồng bộ/offline trên Supabase local. Kết quả thực tế ở STATUS/SESSION_LOG.
+`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 82 unit test, 68 ca trình duyệt khách và 39 ca Auth/RLS/đồng bộ/offline/nhắc học trên Supabase local. Kết quả thực tế ở STATUS/SESSION_LOG.
 
 Để thử tài khoản, mở Docker rồi chạy:
 
@@ -65,6 +66,8 @@ npm run dev:local
 Dừng dev server cũ của dự án nếu đang chiếm cổng 5173. Mở http://127.0.0.1:5173/#/account, nhập email thử và lấy mã tại [hộp thư thử trên máy](http://127.0.0.1:54324). Không gửi email ra ngoài. `dev:local` tự lấy cấu hình công khai từ CLI, không cần tạo `.env`. `npm run test:auth` kiểm tra backend thật; `npm run db:stop` dừng stack và giữ database. Hướng dẫn cấu hình cloud và các giới hạn ở [BACKEND.md](docs/BACKEND.md).
 
 Để thử cả offline và tài khoản, sau khi backend chạy hãy dùng `npm run preview:local`, mở http://127.0.0.1:4175/#/install rồi chọn **Tải gói để học offline**. Cổng 4175 có kho khác 5173: chuyển tiến độ bằng đồng bộ hoặc JSON. Dev không bật service worker. Xem [OFFLINE.md](docs/OFFLINE.md).
+
+Để thử nhắc học, giữ preview 4175 và chạy `npm run reminders:local` ở terminal khác. Mở http://127.0.0.1:4175/#/reminders, đăng nhập, tải lại trạng thái, chọn lịch và bật quyền. Máy gửi/Docker cần tiếp tục chạy; chưa có máy gửi hosted. Hướng dẫn, khóa local và lệnh kiểm tra push thật `npm run reminders:verify` ở [NOTIFICATIONS.md](docs/NOTIFICATIONS.md).
 
 ## Dùng thử
 

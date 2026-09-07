@@ -4,50 +4,43 @@ Cập nhật: 2026-09-07, múi giờ Asia/Saigon.
 
 ## Đang ở đâu
 
-**PWA-002 hoàn thành. Task tiếp theo: NOTIFY-001 — nhắc học tự nguyện.** Mốc 1 local, PWA-001/002 và DATA-001/002 đã có code/kiểm tra; chưa hoàn thành beta hoặc chương trình sáu tháng.
+**NOTIFY-001 hoàn thành. Task tiếp theo: AI-001 — nền tảng gia sư AI.** Mốc 1 local, PWA-001/002 và DATA-001/002 đã hoàn thành. Chưa có beta hoàn chỉnh, AI thật hoặc chương trình sáu tháng.
 
-- Branch `main`, origin `https://github.com/HaPhiHung-HE186793/app_ielts.git`. Xác minh commit/remote bằng Git.
-- Bảy bài nền tảng và bảy WAV câu mẫu có gói tải trước; mở lại bản build khi offline, nghe/làm/lưu bài, xóa file tải riêng với tiến độ. Gói 740.035 byte (~0,74 MB), shell ~1,07 MB; cache công khai không giữ Auth hoặc câu trả lời.
-- Auth/email OTP, RLS và đồng bộ tự nguyện đã kiểm tra trên Supabase Docker local. Giữ outbox qua reload/mất response, gộp lịch sử, chọn xung đột và nhập phần khách có lựa chọn; xem [SYNC.md](SYNC.md).
-- Chưa có hosted/SMTP ngoài máy, thông báo, AI, deployment HTTPS công khai hoặc kiểm thử iPhone/Android thật.
+- Branch `main`, origin `https://github.com/HaPhiHung-HE186793/app_ielts.git`; xác minh commit/remote bằng Git.
+- Nhắc học mặc định tắt theo tài khoản/trình duyệt, có giờ/ngày/múi giờ/giờ yên lặng, dời lượt tới và tắt. Quyền chỉ xin từ nút bật; từ chối vẫn học được. Lịch tách khỏi tiến độ/sync/bản sao version 3.
+- Web Push qua FCM thật đã được Chrome headless Windows nhận khi không còn trang app mở. Xác nhận bằng `getNotifications()`, chưa quan sát màn hình OS, tắt toàn bộ Chrome hoặc thử iPhone/Android thật. Gửi được một lượt không bảo đảm mọi lượt hiện; xem [NOTIFICATIONS.md](NOTIFICATIONS.md).
+- Giữ bảy bài/bảy WAV tải offline, Auth/email OTP local, RLS, sync tự nguyện/outbox/CAS/gộp/xung đột. Chưa có hosted/SMTP ngoài máy/public HTTPS.
 
 ## Chạy và dùng ngay
 
-- **Bản đủ tài khoản + offline:** Docker đang chạy → `npm run db:start` → `npm run db:migrate` → `npm run preview:local`. Mở http://127.0.0.1:4175/#/install, chọn **Tải gói để học offline**, chờ **Sẵn sàng học offline**. Email thử chỉ ở http://127.0.0.1:54324. Hướng dẫn [OFFLINE.md](OFFLINE.md), [BACKEND.md](BACKEND.md).
-- Preview 4175 đã được mở bằng launcher Node ẩn trong session này; có thể cần chạy lại ở session mới. Log `.local/preview.stdout.log`/`preview.stderr.log` không chứa cấu hình bí mật.
-- **Phát triển:** `npm ci`, `npm run dev` (khách) hoặc `npm run dev:local` (Auth local), http://127.0.0.1:5173. Dev không đăng ký worker. **Preview khách:** `npm run build`, `npm run preview`, http://127.0.0.1:4173.
-- Các cổng/origin có kho khác nhau: dùng sync hoặc xuất/nhập JSON để chuyển; không xóa dữ liệu đang có. Preview chỉ dùng trên máy, không phải host cho điện thoại.
-- Phiên 2/5/15 phút/buổi đầy đủ, bảy bài/ba hoạt động/phản hồi, lưu câu chưa nộp. Khởi động tách khỏi hoàn thành bài; SRS 1/3/7/14/30 ngày, sai/gợi ý quay lại sau 10 phút.
-- Tiến bộ đo focus/visibility/idle 60 giây, checkpoint 5 giây; lịch sử, biểu đồ và bộ lọc. Không suy band từ phút/lượt/XP. Bản sao đọc version 1/2/3, xuất 3; giữ bản lỗi/quota và hiện cảnh báo.
-- Tài khoản chủ động **Bật đồng bộ phần học này**; chờ **Đã đồng bộ** trước đổi máy. Một tab sửa cùng tài khoản/origin theo Web Locks; tab khác chờ. Hai context/thiết bị khác dùng merge/xung đột server.
-- Bản mới không reload cưỡng bức, chờ đóng tất cả cửa sổ cũ rồi kích hoạt; giữ draft/outbox. Gói đổi phiên bản cần tải lại. Xóa gói giữ shell/tiến độ; reset/nhập JSON dừng sync ở máy và không xóa server.
+1. Docker chạy → `npm run db:start` → `npm run db:migrate` → `npm run preview:local`. Mở http://127.0.0.1:4175/#/reminders hoặc `#/install` để tải gói offline. Email thử ở http://127.0.0.1:54324, không gửi ra ngoài.
+2. Terminal khác: `npm run reminders:local`. Trang nhắc học → đăng nhập → tải lại lịch/trạng thái → chọn giờ/ngày/múi giờ → bật quyền. Máy gửi/Docker/Internet cần tiếp tục chạy; lượt quá giờ bị bỏ qua. File khóa `.local/reminder-vapid.json` chỉ ở máy, không commit hoặc tạo đè.
+3. `npm run dev` (khách) hoặc `npm run dev:local` (Auth) dùng 5173, không đăng ký worker. Preview khách: build/preview ở 4173. Các origin có kho riêng; chuyển tiến độ bằng sync/JSON, không xóa dữ liệu đang có.
 
-## File cần biết
+Preview 4175 và máy nhắc local được mở bằng tiến trình Node ẩn trong session này; log `.local/preview.stdout.log`/`preview.stderr.log` và `.local/reminders.stdout.log`/`reminders.stderr.log`. Tiến trình có thể dừng giữa các session, kiểm tra tiến trình hiện có trước khi mở thêm. Chi tiết [BACKEND.md](BACKEND.md), [OFFLINE.md](OFFLINE.md), [SYNC.md](SYNC.md), [NOTIFICATIONS.md](NOTIFICATIONS.md).
 
-- [OFFLINE.md](OFFLINE.md), DEC-015 trong [DECISIONS.md](DECISIONS.md): phạm vi/quyền audio, cache và nâng phiên bản.
-- `scripts/offline-build.js` sinh worker/manifest từ build và kiểm tra byte/hash; `src/offline/worker.js` lưu allowlist, marker gói, xếp lệnh tải/xóa, range WAV; `range.js` có unit test.
-- `src/app/offline.ts`, `features/install/OfflinePanel.tsx`, `components/ListenButton.tsx`: đăng ký, trạng thái, giao diện tải và phát nghe. `src/content/offline-pack.json`, `public/packs/foundation-v1/`: metadata, JSON học liệu và bảy WAV. `npm run audio` tái tạo khi thay nội dung, không chạy mỗi build.
-- `src/app/auth.ts` mở chủ local trước refresh; `app/sync.ts` chờ SDK xác nhận để gửi, đánh thức ở task sau callback Auth. `services/supabase.ts` dùng khóa phiên cố định theo backend.
-- `src/domain/*`, `src/data/schema.ts`, `study-store.ts`, `sync-engine.ts`, `sync-schema.ts` giữ logic học/phiên/ôn/đồng bộ. Schema vẫn version 3, key khách `moi-ngay.study.v1`; metadata `_sync` không nằm trong bản sao hợp lệ.
-- Backend: ba migration trong `supabase/migrations` cho tên, snapshot/RPC/CAS và receipt hash/thay đổi. Không reset database trong task này.
-- `tests/offline.spec.ts`, `offline-update-server.ts`, `tests/auth/offline.spec.ts`; phạm vi suite ở [TESTING.md](TESTING.md).
+## File quan trọng
+
+- `src/features/reminders/RemindersPage.tsx`, `schema.ts`, `service.ts`: UI/validation/API/permission, binding theo chủ, Web Lock riêng và timeout đăng ký 15 giây. `src/app/auth.ts` dọn nhắc trước logout, không gọi SDK trong callback Auth.
+- `src/reminders/push-store.js`, `push-worker.js`: IndexedDB cho binding/ngày hiển thị, kiểm tra revision/ngày/hạn/yên lặng, nội dung chung và click cùng origin. Build ghép vào worker; giữ cơ chế chờ cửa sổ cũ đóng của PWA.
+- `scripts/reminder-sender.js`, `reminders-local.js`, `verify-reminder-push.js`: bộ gửi, khóa/heartbeat local và probe mạng thật trên tài khoản/hồ sơ thử. Khóa riêng không vào Vite/database/log.
+- Bốn migration `20260907…`: bảng/RLS/RPC lịch, validation null/endpoint, khóa thiết bị trước receipt và claim riêng cho probe. Ba migration `20260906…` của Auth/sync giữ nguyên; không reset DB.
+- `tests/auth/reminders-api.spec.ts`, `reminders.spec.ts`, `src/features/reminders/reminders.test.ts`; phạm vi tại [TESTING.md](TESTING.md), quyết định DEC-016 tại [DECISIONS.md](DECISIONS.md).
+- Learning: `src/domain/*`, `src/data/schema.ts`, `study-store.ts`, `sync-engine.ts`. Bản sao vẫn version 3, đọc 1/2/3. Cache chỉ công khai, không chứa token/câu trả lời. Gói offline 740.035 byte, bảy WAV eSpeak NG thử nghiệm chưa có giáo viên duyệt.
 
 ## Kiểm tra đã đạt
 
-- Node 22.18.0/npm 10.9.3, Docker/Supabase local hiện hữu. Không thêm dependency; package chỉ thêm lệnh audio/preview.
-- Lint, typecheck, build đạt; Vitest **78 ca** đạt. Build có cảnh báo bundle chính ~632 kB minified/181 kB gzip; chưa chia route.
-- Toàn bộ **68 ca khách** đạt trên Chrome 1440×1000/360×800: học/ôn/lưu/khôi phục/cài đặt và 10 ca offline. Toàn bộ **27 ca Auth/API/sync** đạt trên backend local thật, gồm bốn ca offline có tài khoản.
-- Tải đủ → đóng/mở trang mới offline → phát WAV thật, HTTP range 206/416 → hoàn thành bài/lưu lịch ôn; file lỗi/quota giả lập/thử lại/thu hồi một file; cache riêng không chứa response/token/nội dung riêng A/B.
-- Server kiểm thử phiên bản riêng cho mỗi ca: worker chờ cửa sổ đóng, activation thật, giữ nguyên draft/outbox fixture, dọn cache cũ và tải gói mới. Không skipWaiting trong test.
-- Auth: ép thời điểm hết hạn trong phiên SDK lưu local (không sửa JWT server), mở mới offline, nộp bài; khi có mạng, server nhận commit rồi response 503, reload/gửi lại cùng UUID chỉ có một receipt/kết quả.
-- Axe A/AA không phát hiện vi phạm trong vùng quét, không tràn ngang; đã xem ảnh desktop/mobile. Không thay kiểm tra thủ công/thiết bị thật hoặc giáo viên nghe audio.
-- Kết quả tinh chỉnh cuối, tài liệu và xác minh Git được ghi trong [SESSION_LOG.md](SESSION_LOG.md).
+- Node 22.18.0/npm 10.9.3, Supabase Docker/CLI 2.116.0. Thêm dependency server `web-push` 3.6.7 và lockfile; npm audit lúc cài không báo lỗ hổng.
+- Lint/typecheck/build và **82 unit test** đạt; bundle chính ~648 kB minified/~186 kB gzip, vẫn có cảnh báo chưa chia route.
+- Toàn bộ **68 ca khách** và **39 ca Auth/API/sync/offline/nhắc học** đạt trên Chrome 1440×1000 và 360×800. Axe A/AA không phát hiện vi phạm vùng quét; không tràn ngang, đã xem giao diện.
+- Calendar/RLS/CAS thật: qua ngày, ngày trong tuần, DST tiến/lùi, quiet boundary, claim đồng thời, một lượt/ngày, skip quá giờ, dời/tắt/revision cũ/404–410. Sau bổ sung claim giới hạn thiết bị thử, chạy lại bốn ca API nhắc và đạt.
+- UI permission/subscription có điều khiển, RPC/worker/IndexedDB thật: từ chối vẫn học, lưu qua reload, bật/dời/tắt, mất response, thay chủ trong request được nhận, logout, chống hiển thị lặp và click. Không gọi CDP injection là mạng push thật.
+- Probe mạng thật dùng tài khoản riêng và hồ sơ Chrome thử: dịch vụ đẩy nhận và worker đăng ký thông báo khi 0 trang app mở. Có lượt probe nhận HTTP thành công nhưng chưa thấy thông báo trong thời hạn kiểm tra; không coi `accepted` là đã hiển thị. Chi tiết diễn biến ở [SESSION_LOG.md](SESSION_LOG.md).
 
-## Giới hạn cần giữ rõ
+## Giới hạn và task tiếp theo
 
-- Offline cần tải bản build ở origin ổn định và còn cache. Browser có thể thu hồi dữ liệu; giữ bản sao tiến độ. Không có background sync khi OS đóng app, không bảo đảm lưu vĩnh viễn.
-- Audio eSpeak NG thử nghiệm còn cứng/tên Việt có thể chưa tự nhiên; chưa có giáo viên độc lập duyệt, không gọi là mẫu accent chuẩn. Bảy bài chưa đủ chương trình nền tảng bốn tuần; chưa đánh giá đầu vào hoặc lộ trình sáu tháng cá nhân.
-- Kho local chưa mã hóa. Phần khách và nhiều tab khi không có Web Locks vẫn giữ giới hạn cũ; metadata sync còn chiếm quota. Hộp cài đặt hoãn sync để giữ form chưa lưu.
-- Request sync vẫn snapshot đầy đủ/giới hạn 5 MB; chưa benchmark nhiều tháng, hạn mức RPC hoặc chính sách xóa/retention hosted. Chưa có UI xóa toàn bộ tài khoản/server.
-- Các bài kiểm tra dùng context Chrome và dữ liệu thử, chưa có Safari/iPhone/Android thật, cửa sổ app OS, public HTTPS/SMTP hoặc push delivery thật.
-- Log/build/test và dữ liệu thử nằm trong `.local`/`test-results`, không commit. Tiếp tục từ **NOTIFY-001 READY** trong [TASKS.md](TASKS.md).
+- Chưa có điện thoại/Safari thật, giao diện thông báo OS, HTTPS/SMTP/hosted hoặc dịch vụ gửi chạy liên tục. PWA vẫn cần kiểm tra thiết bị trước beta; viewport không thay thiết bị.
+- Tối đa năm ID thiết bị/tài khoản, chưa có UI quản lý/xóa từ xa/retention receipt. Xóa browser storage có thể mất ID; logout mất mạng không bảo đảm xác nhận tắt trên server hoặc thu hồi push đang tới. Local chưa mã hóa.
+- Offline cần cache còn tồn tại; tải file không phải sao lưu tiến độ. Không background sync khi OS đóng app. Snapshot sync còn gửi toàn bộ, chưa benchmark nhiều tháng/hạn mức hosted. Giữ giới hạn cũ ở SYNC/OFFLINE.
+- Bảy bài chưa đủ bốn tuần, chưa có đánh giá đầu vào hoặc giáo viên độc lập duyệt; không hứa IELTS 6.5/sáu tháng.
+- **Bắt đầu AI-001 READY** trong [TASKS.md](TASKS.md): tập bài đối chiếu + thiết kế API có xác thực/validation/timeout/hạn mức; kiểm tra nhà cung cấp, ngân sách và cấu hình thật trước gọi dịch vụ. Không tự giả định có API key hoặc ghi mock là AI thật. Tài liệu bàn giao/lockfile/code/test phải được giữ cùng commit.

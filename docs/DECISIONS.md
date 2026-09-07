@@ -130,6 +130,15 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 - Khôi phục chủ local từ phiên SDK đã lưu trước khi chờ làm mới token, vì tín hiệu navigator.onLine có thể không phản ánh kết nối Internet thực. Chỉ chọn kho trên máy, không cấp quyền server; UI ghi đang mở bản lưu, sync hoãn đến khi SDK xác nhận phiên. SIGNED_OUT thực vẫn chuyển về khách. Khi SDK thông báo, engine được đánh thức ở task kế tiếp để không gọi API trong auth lock.
 - Chỉ đăng ký worker trong bản build. `preview:local` build với cấu hình công khai của Supabase Docker rồi mở cổng 4175 riêng; cổng khác là kho khác. Không tự triển khai hosted; không thay kiểm thử iOS/Android thật bằng viewport Chrome.
 
+## DEC-016 — Nhắc học theo thiết bị, có lựa chọn rõ ràng
+
+- Ngày: 2026-09-07. NOTIFY-001 đã triển khai. Chọn Web Push với bộ gửi Node và Supabase local hiện hữu, không dùng timer trong tab để hứa nhắc khi đóng app. Mặc định tắt; người học chọn bật/quyền trình duyệt, giờ/ngày/múi giờ và giờ yên lặng. Chưa triển khai công khai hoặc gửi cho người học thật.
+- Mỗi trình duyệt/origin có một thiết bị nhắc cho chủ hiện tại; lịch/subscription có RLS riêng và revision để tránh ghi đè từ tab cũ. Đăng xuất/đổi chủ tắt binding local và hủy subscription; không tự bật lại cho tài khoản mới. Lịch không nhập theo bản sao học và không làm thay đổi StudyState version 3.
+- PostgreSQL chọn lần nhắc tiếp theo theo IANA timezone; bỏ giờ không tồn tại khi DST tiến, dùng lần sau khi giờ lặp theo quy tắc PostgreSQL. Chỉ gửi tối đa một lượt/thiết bị/ngày địa phương, bỏ lượt quá một phút, kiểm tra giờ yên lặng trước gửi. Dời một lần giữ lịch lặp. Ghi nhận attempt trước gọi dịch vụ; không retry kết quả mạng chưa rõ để tránh nhắc trùng, có thể bỏ lỡ một lần nếu tiến trình dừng.
+- VAPID private key chỉ trong `.local` của bộ gửi, public key đọc từ cấu hình máy chủ. Chỉ chấp nhận endpoint push HTTPS của nhà cung cấp hỗ trợ, không cho URL tùy ý làm request máy chủ. Payload chỉ là lời nhắc chung, không có câu trả lời/tên/email/band. TTL 0 tránh lưu thông báo để dồn khi thiết bị có mạng lại; dịch vụ nhận không đồng nghĩa OS đã hiển thị.
+- Chrome headless Windows đã đăng ký/gửi/nhận qua FCM thật khi không còn trang app mở; `getNotifications()` xác nhận worker đã đăng ký thông báo. Chưa quan sát màn hình OS, tắt cả trình duyệt hoặc thử iPhone/Android. Probe chỉ claim ID thiết bị do nó tạo; không thay lịch của tài khoản local khác. Chi tiết và retention còn thiếu ở [NOTIFICATIONS.md](NOTIFICATIONS.md).
+- Nguồn: [WebKit Home Screen Web Push](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/), [MDN subscribe](https://developer.mozilla.org/en-US/docs/Web/API/PushManager/subscribe), [showNotification](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/showNotification), [web-push Node](https://github.com/web-push-libs/web-push), [PostgreSQL timestamp/DST](https://www.postgresql.org/docs/17/datetime-invalid-input.html).
+
 ## Các giả định/chọn lựa còn mở
 
 | Mã | Vấn đề | Mặc định hiện tại | Thời điểm cần làm rõ |

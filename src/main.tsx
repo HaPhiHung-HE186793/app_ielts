@@ -5,6 +5,7 @@ import { initializeInstallation } from './app/installation'
 import { initializeAuth } from './app/auth'
 import { initializeSync } from './app/sync'
 import { initializeOffline } from './app/offline'
+import { initializeReminders } from './features/reminders/service'
 import '@fontsource/be-vietnam-pro/400.css'
 import '@fontsource/be-vietnam-pro/500.css'
 import '@fontsource/be-vietnam-pro/600.css'
@@ -18,6 +19,7 @@ initializeInstallation()
 initializeAuth()
 initializeSync()
 void initializeOffline()
+initializeReminders()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

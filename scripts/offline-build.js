@@ -46,12 +46,19 @@ export function offlineBuild(lessons) {
         'export function',
         'function',
       )
-      const build = hash(JSON.stringify(shell) + pack.version + worker + range).slice(0, 20)
+      const reminders =
+        (await readFile('src/reminders/push-store.js', 'utf8')).replace(/^export /gm, '') +
+        '\n' +
+        (await readFile('src/reminders/push-worker.js', 'utf8'))
+      const build = hash(JSON.stringify(shell) + pack.version + worker + range + reminders).slice(
+        0,
+        20,
+      )
       const manifest = { build, shell, pack }
       await writeFile(resolve(outDir, 'offline-manifest.json'), JSON.stringify(manifest))
       await writeFile(
         resolve(outDir, 'sw.js'),
-        `const manifest = ${JSON.stringify(manifest)};\n${range}\n${worker}`,
+        `const manifest = ${JSON.stringify(manifest)};\n${range}\n${worker}\n${reminders}`,
       )
     },
   }

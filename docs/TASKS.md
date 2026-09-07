@@ -41,7 +41,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | DATA-002 | DONE | DATA-001, REVIEW-001, PROGRESS-001 | Đồng bộ tự nguyện với outbox/revision, gộp lượt theo ID/checkpoint, lịch ôn và chọn bản xung đột; nhập phần khách có lựa chọn và giữ nguồn. RLS/RPC thật kiểm tra quyền, gửi trùng/đồng thời. Hai browser context kiểm tra tiếp tục, offline/response mất, reload, đổi chủ khi đang gửi; một tab sửa tài khoản theo Web Locks. Giới hạn thiết bị/hosted và cách dùng ở SYNC. |
 | PWA-001 | DONE | APP-002, LEARN-002 | Manifest/icon/standalone, hướng dẫn và prompt tự nguyện; Chrome đọc manifest/icon và không báo lỗi installability trong hồ sơ thử riêng. Luồng prompt/standalone có kiểm tra điều khiển; chưa cài/khởi chạy trên iPhone/Android hoặc cửa sổ app hệ điều hành. Phạm vi và bước xác minh ở INSTALLATION/TESTING. |
 | PWA-002 | DONE | PWA-001, DATA-002 | Gói bảy bài/bảy WAV được tạo từ nội dung dự án; worker/manifest có hash, tải/dung lượng/xóa/lỗi/quota, mở mới offline và chờ sync. Kiểm tra cập nhật giữ draft/outbox, file thiếu/thử lại, range audio và cache không chứa dữ liệu tài khoản. Hướng dẫn/quyền/giới hạn thiết bị ở OFFLINE. |
-| NOTIFY-001 | READY | PWA-001, DATA-001, PLAN-001 | Nhắc học tự nguyện, múi giờ và giờ yên lặng, tắt/dời lịch được. Xin quyền từ thao tác người dùng, xử lý từ chối; xác minh nền tảng hỗ trợ, không phụ thuộc thông báo để vào bài. |
+| NOTIFY-001 | DONE | PWA-001, DATA-001, PLAN-001 | Nhắc học tự nguyện, múi giờ và giờ yên lặng, tắt/dời lịch được. Xin quyền từ thao tác người dùng, xử lý từ chối; xác minh nền tảng hỗ trợ, không phụ thuộc thông báo để vào bài. |
 
 Điều kiện đạt mốc 2: dùng cùng tài khoản để tiếp tục trên hai thiết bị và học phần đã tải khi mất mạng, với giới hạn được hiển thị rõ.
 
@@ -49,7 +49,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 
 | ID | Trạng thái | Phụ thuộc | Kết quả và tiêu chí hoàn thành |
 | --- | --- | --- | --- |
-| AI-001 | TODO | DATA-001 | Chọn nhà cung cấp từ thử nghiệm chất lượng/độ trễ/chi phí, ghi ngân sách và hạn mức; API máy chủ có xác thực, validation, timeout và giới hạn dùng. Kiểm tra không lộ secret và lỗi dịch vụ không làm mất bài. Không ghi AI thật hoạt động khi chỉ có mock. |
+| AI-001 | READY | DATA-001 | Chọn nhà cung cấp từ thử nghiệm chất lượng/độ trễ/chi phí, ghi ngân sách và hạn mức; API máy chủ có xác thực, validation, timeout và giới hạn dùng. Kiểm tra không lộ secret và lỗi dịch vụ không làm mất bài. Không ghi AI thật hoạt động khi chỉ có mock. |
 | AI-002 | TODO | AI-001, LEARN-001 | Luyện nói: xin quyền mic, ghi/hủy/nghe lại/gửi, nhận phản hồi và thử lại. Chốt thời gian lưu/xóa trước audio thật; đối chiếu mẫu. Chỉ nhận xét phát âm khi thực sự xử lý âm thanh phù hợp. |
 | AI-003 | TODO | AI-001, LEARN-001 | Luyện viết: lưu nháp → nộp → gợi ý theo mức độ → tự sửa → so sánh. Phản hồi có căn cứ, giới hạn và nguồn; kiểm tra tập bài đối chiếu, xử lý phản hồi sai/timeout. |
 | CONTENT-002 | TODO | CONTENT-001, LEARN-001 | Mở rộng bốn tuần nền tảng với bốn kỹ năng, mục tiêu và bài kiểm tra; có hồ sơ kiểm duyệt và nguồn/quyền sử dụng. Kiểm tra bài mới phù hợp độ khó, không chỉ tăng số lượng. |
@@ -67,21 +67,21 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | COACH-001 | TODO | BETA-001 | Nếu người dùng cần: dashboard gia sư, giao bài và nhận xét với quyền truy cập có lựa chọn; kiểm tra học viên khác không xem chéo dữ liệu. |
 | MOBILE-001 | TODO | BETA-001 | Nếu cần cửa hàng ứng dụng: đánh giá Capacitor, build/ký và kiểm thử native, chuẩn bị thông tin phát hành. Tài khoản, thiết bị và quyền phát hành phải có trước khi gửi lên cửa hàng. |
 
-## Chi tiết task tiếp theo: NOTIFY-001
+## Chi tiết task tiếp theo: AI-001
 
 ### Thực hiện
 
-1. Đọc STATUS, OFFLINE, INSTALLATION, SYNC, ARCHITECTURE và DEC-015; kiểm tra Git/code/backend. Giữ worker theo phiên bản, outbox và phạm vi cache công khai. Đánh dấu IN_PROGRESS trước code.
-2. Kiểm tra tài liệu nền tảng hiện hành về Notifications/Web Push/iOS/Android và môi trường thật có sẵn. Chốt trong DECISIONS khác biệt giữa lời nhắc lúc app mở và thông báo khi đóng app; không gọi timer tab là lịch gửi nền đã hoạt động.
-3. Thiết lập mặc định tắt, người học chọn bật/giờ/múi giờ/ngày/giờ yên lặng, sửa/dời/tắt được. Quyền trình duyệt chỉ xin sau thao tác rõ ràng; từ chối/không hỗ trợ vẫn mở bài bình thường.
-4. Nếu cần push: thiết kế subscription riêng theo chủ/thiết bị, xác thực/RLS, khóa máy chủ không đưa vào VITE, xử lý logout/hủy đăng ký và endpoint hết hiệu lực. Dùng dữ liệu thử local; chưa tự phát thông báo cho người khác hoặc deploy hosted.
-5. Kiểm tra lịch qua ngày/múi giờ/DST, không gửi trùng hoặc trong giờ yên lặng; tắt/dời/thay chủ vô hiệu nhắc cũ. Nội dung không chứa câu trả lời cá nhân hoặc tạo áp lực streak. Chỉ báo delivery hoạt động khi đã xác minh thật; ghi rõ phần cần host/thiết bị nếu thiếu.
-6. Chạy kiểm tra phù hợp và hồi quy PWA/Auth phần thay đổi. Cập nhật README, STATUS/TASKS/SESSION_LOG và quyết định; commit/push theo ủy quyền đã có.
+1. Đọc STATUS, PRODUCT, ARCHITECTURE, DEC-016 và các giới hạn Auth/sync/offline/nhắc học; kiểm tra Git/code. Đánh dấu IN_PROGRESS trước triển khai.
+2. Chuẩn bị tập câu trả lời thử ở trình độ nền tảng và tiêu chí đối chiếu phản hồi bằng tiếng Việt: đúng ngôn ngữ, chỉ ra bằng chứng, vừa trình độ, gợi ý tự sửa; không tự gán band/phát âm từ văn bản.
+3. Kiểm tra tài liệu nhà cung cấp hiện hành, khả năng xử lý cần thiết, chi phí và môi trường có thật. Ghi lựa chọn/ngân sách/hạn mức trong DECISIONS. Nếu chưa có key hoặc ngân sách, làm phần API/validation và tập đánh giá độc lập, chỉ hỏi thông tin cần cho bước gọi dịch vụ thật. Không đưa key vào VITE/Git.
+4. API máy chủ xác thực tài khoản, giới hạn kích thước/tần suất/thời gian/chi phí; hủy/timeout, xử lý nội dung gửi như dữ liệu, phân biệt lỗi dịch vụ và phản hồi thật. Không mất bài khi gọi thất bại, không tự gửi nháp.
+5. Đo/đối chiếu chất lượng, độ trễ và chi phí bằng mẫu thử khi có cấu hình hợp lệ. Không gọi response fixture là AI thật hoặc đánh dấu DONE trước khi đáp ứng tiêu chí.
+6. Chạy kiểm tra phù hợp, cập nhật README/STATUS/TASKS/SESSION_LOG và quyết định, commit/push theo ủy quyền đã có.
 
 ### Chưa thuộc task này
 
-AI, chương trình học liệu đầy đủ, social/leaderboard, triển khai công khai hoặc phát hành cửa hàng.
+Phát hành công khai, thu âm cá nhân, AI nói/viết đầy đủ, mở rộng IELTS, social/leaderboard hoặc app native.
 
 ### Phần đã có nhưng chưa đóng mốc khác
 
-Mốc 1 local, PWA-001/002 và DATA-001/002 đã đóng. NOTIFY-001 READY. Tài khoản, sync và offline đã kiểm tra trên Chrome/backend local; mốc 2 còn xác minh hai thiết bị thật theo INSTALLATION/BETA-001. Không gọi bản hiện tại là beta hoàn chỉnh hoặc app native.
+Mốc 1 local, PWA-001/002, DATA-001/002 và NOTIFY-001 đã đóng. AI-001 READY. Tài khoản/sync/offline/nhắc học đã kiểm tra trên Chrome/backend local; mốc 2 còn xác minh thiết bị thật theo INSTALLATION/NOTIFICATIONS/BETA-001. Không gọi bản hiện tại là beta hoàn chỉnh hoặc app native.

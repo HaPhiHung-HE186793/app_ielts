@@ -9,6 +9,7 @@ const env = {
 }
 // Only the publishable key goes to Vite; no server key is passed via the environment.
 for (const args of [
+  ['scripts/reminders-local.js', '--setup'],
   ['node_modules/vite/bin/vite.js', 'build', '--outDir', '.local/auth-dist'],
   [
     'node_modules/@playwright/test/cli.js',

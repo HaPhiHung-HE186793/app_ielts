@@ -11,6 +11,10 @@ let snapshot: AuthSnapshot = { status: supabase ? 'loading' : 'guest', user: nul
 const listeners = new Set<() => void>()
 let initialized = false
 let receivedEvent = false
+let beforeSignOut: (() => Promise<void>) | null = null
+export function registerSignOutCleanup(cleanup: () => Promise<void>) {
+  beforeSignOut = cleanup
+}
 
 function publish(next: AuthSnapshot) {
   snapshot = next
@@ -92,6 +96,7 @@ export function subscribeAuth(listener: () => void) {
 
 export async function signOutHere() {
   if (!supabase) return null
+  await beforeSignOut?.()
   const { error } = await supabase.auth.signOut({ scope: 'local' })
   if (error && !snapshot.user) {
     publish({

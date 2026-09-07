@@ -10,6 +10,7 @@ export default defineConfig([
   js.configs.recommended,
   { files: ['**/*.js'], languageOptions: { globals: globals.node } },
   { files: ['src/offline/*.js'], languageOptions: { globals: globals.serviceworker } },
+  { files: ['src/reminders/*.js'], languageOptions: { globals: globals.serviceworker } },
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

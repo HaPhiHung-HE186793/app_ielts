@@ -1,10 +1,10 @@
 # Kiến trúc dự kiến
 
-Ngày cập nhật: 2026-09-06. Frontend, luồng học local, hướng dẫn cài PWA, Supabase Auth/RLS và đồng bộ tiến độ đã triển khai/kiểm tra trên Docker local. PWA offline đã triển khai cho bảy bài; cloud hosted và AI vẫn là kế hoạch. Các quyết định nằm trong [DECISIONS.md](DECISIONS.md).
+Ngày cập nhật: 2026-09-07. Frontend, luồng học local, PWA/offline, Supabase Auth/RLS, đồng bộ và nhắc học Web Push đã triển khai/kiểm tra local. Cloud hosted và AI vẫn là kế hoạch. Các quyết định nằm trong [DECISIONS.md](DECISIONS.md).
 
 ## Hiện có trong code
 
-- React + TypeScript + Vite, điều hướng hash cho năm khu vực, `/lesson/:id`, `/session`, `/install` và `/account`; không cần cấu hình rewrite để mở đường dẫn bài học trên static host.
+- React + TypeScript + Vite, điều hướng hash cho năm khu vực, `/lesson/:id`, `/session`, `/install`, `/account` và `/reminders`; không cần cấu hình rewrite để mở đường dẫn bài học trên static host.
 - `public/manifest.webmanifest`, `public/icons`, metadata trong `index.html`: tên, ID ở gốc origin, scope, start URL Hôm nay, standalone và bộ icon do dự án tạo. `scripts/generate-icons.js` tái tạo PNG từ SVG. Worker sinh lúc build lưu shell theo hash và gói bài có phiên bản khi người học chọn; hướng dẫn/quyền audio ở [OFFLINE.md](OFFLINE.md).
 - `src/app/installation.ts` nhận sự kiện cài từ lúc khởi động, giữ prompt một lần qua điều hướng và xử lý từ chối/lỗi. Chỉ xác nhận chế độ cửa sổ từ display-mode hoặc navigator.standalone. `features/install/InstallPage.tsx` có hướng dẫn nền tảng và đường đến bản sao; xem [INSTALLATION.md](INSTALLATION.md), DEC-012.
 - `src/content/lessons.ts`: bảy bài thử nghiệm; nguồn và rà soát tại [CONTENT_REVIEW.md](CONTENT_REVIEW.md).
@@ -20,6 +20,7 @@ Ngày cập nhật: 2026-09-06. Frontend, luồng học local, hướng dẫn c�
 - `src/components/ListenButton.tsx` phát WAV eSpeak NG của bảy câu mẫu, có dừng/lỗi/transcript; worker trả byte range khi offline. Font/minh họa local. Không có lời gọi API AI.
 - `src/offline/worker.js` nhận allowlist sinh bởi `scripts/offline-build.js`, kiểm tra hash và lưu shell/gói riêng. `app/offline.ts` quản lý đăng ký/lệnh, `features/install/OfflinePanel.tsx` tải/dung lượng/xóa/thông báo cập nhật. Không skipWaiting hay đụng kho tiến độ; chỉ kích hoạt sau khi cửa sổ cũ đóng.
 - Khởi động mở chủ local từ phiên SDK lưu sẵn trước khi cần refresh token; sync chờ SDK xác nhận. UI phân biệt bản lưu với phiên đã khôi phục, không cấp quyền server từ thông tin local.
+- `features/reminders` có form/lớp điều phối theo chủ, revision và Web Lock riêng. `src/reminders` được ghép vào worker khi build: IndexedDB chỉ giữ binding/ngày nhắc để lọc payload và chống lặp, không thay kho tiến độ. Ba bảng `reminder_service/devices/deliveries` lưu cấu hình công khai/lịch/receipt; Auth/RLS/RPC bảo vệ quyền và tính lịch trong PostgreSQL. Bộ gửi Node `scripts/reminder-sender.js`/`reminders-local.js` dùng `web-push` 3.6.7, khóa riêng chỉ ở `.local`. Xem [NOTIFICATIONS.md](NOTIFICATIONS.md), DEC-016; thông báo thật đã kiểm tra trong Chrome, chưa xác minh điện thoại/OS thật.
 - Một bài dở tại một thời điểm. Chuyển sang bài khác cần xác nhận trong giao diện; tiếp tục cùng bài giữ câu đang nhập, đáp án/gợi ý và bài tự viết.
 - Một phiên có danh sách hoạt động cố định, câu ôn/khởi động đang nhập, gợi ý và con trỏ lưu qua reload. Bài đầy đủ dùng lại LessonPlayer và draft cũ. Kết quả khởi động tách khỏi completions/reviewLog; chỉ chuyển bước khi có lượt thực tương ứng. `planner.ts` lưu snapshot `planHistory` khi hoàn tất/thay kế hoạch, giữ một bài dở.
 - `src/domain/activity.ts`: đồng hồ hoạt động độc lập giao diện, phân ngày địa phương, checkpoint cộng dồn không trùng. `ActivityMeter.tsx` gắn lifecycle/focus/visibility và thao tác vào đồng hồ; `ActivityGate` dừng khi mở cài đặt. Epoch store ngăn callback cũ tái tạo dữ liệu sau reset/import/đổi chủ sở hữu; shell dựng lại form theo key kho, import kiểm tra epoch sau khi đọc file bất đồng bộ.

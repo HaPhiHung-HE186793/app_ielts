@@ -1,6 +1,6 @@
 # Mở Mỗi ngày từ màn hình chính
 
-Cập nhật: 2026-09-06. PWA-001 thêm cấu hình cài từ web và hướng dẫn; PWA-002 bổ sung gói offline ở bản build. Chưa có bản HTTPS công khai, thông báo hoặc phát hành qua cửa hàng. Kết quả kiểm tra thực tế ở [TESTING.md](TESTING.md) và [STATUS.md](STATUS.md).
+Cập nhật: 2026-09-07. PWA-001 thêm cấu hình cài từ web và hướng dẫn; PWA-002 bổ sung gói offline ở bản build; NOTIFY-001 thêm [nhắc học tự nguyện](NOTIFICATIONS.md) với bộ gửi local. Chưa có bản HTTPS công khai hoặc phát hành qua cửa hàng. Kết quả kiểm tra thực tế ở [TESTING.md](TESTING.md) và [STATUS.md](STATUS.md).
 
 ## Mở hướng dẫn trong app
 

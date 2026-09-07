@@ -1,0 +1,63 @@
+.reminder-fields {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.reminder-clocks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.reminder-clocks .field {
+  min-width: 0;
+}
+.reminder-clocks input {
+  width: 100%;
+  min-width: 0;
+}
+.reminder-days {
+  border: 0;
+  padding: 0;
+  margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.reminder-days legend {
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.reminder-days label,
+.reminder-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+}
+.reminder-days label {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0 12px;
+}
+.reminder-days input,
+.reminder-toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--green);
+}
+.reminder-toggle {
+  margin: 16px 0;
+}
+.reminder-actions {
+  margin-top: 20px;
+}
+@media (max-width: 540px) {
+  .reminder-clocks {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .reminder-actions .button {
+    width: 100%;
+  }
+}

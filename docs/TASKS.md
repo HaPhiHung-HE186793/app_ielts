@@ -54,8 +54,9 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | AI-003 | TODO | AI-001, LEARN-001 | Luyện viết: lưu nháp → nộp → gợi ý theo mức độ → tự sửa → so sánh. Phản hồi có căn cứ, giới hạn và nguồn; kiểm tra tập bài đối chiếu, xử lý phản hồi sai/timeout. |
 | CONTENT-002 | DONE | CONTENT-001, LEARN-001 | Có 28 bài + bốn kiểm tra theo mục tiêu tăng dần, đoạn đọc/nghe, tự nói/viết và tiêu chí tự xem lại; gói 57 WAV offline. Giữ bảy bài cũ và dữ liệu v3; kiểm tra cả bốn bài tuần qua UI offline, hint/reload/lưu/ôn. Hồ sơ nguồn/rà soát nội bộ ở CURRICULUM/CONTENT_REVIEW; học liệu thử nghiệm, chưa có giáo viên độc lập hoặc hiệu chỉnh độ khó bằng người học thật. |
 | ADAPT-001 | DONE | PLAN-001, REVIEW-001, PROGRESS-001, CONTENT-002 | Gợi ý theo bài trước/tuần, tín hiệu bài và truy hồi, ôn đến hạn và sở thích trong nhóm sẵn sàng; nhịp mệt/khó/quay lại có giới hạn, lý do lưu cùng phiên. Giữ draft, schema v3, lịch ôn và danh sách đã bắt đầu; kiểm tra thứ tự/giảm tải/backup/offline/sync. Chưa chẩn đoán riêng bốn kỹ năng hoặc hiệu chỉnh quy tắc trên người học; chi tiết ADAPTATION. |
-| DEPLOY-001 | READY | PWA-002, ADAPT-001 | Chuẩn bị artifact/cấu hình web để triển khai HTTPS: tách cấu hình khách/tài khoản/API, hướng dẫn biến môi trường, cache/cập nhật và quay lui; kiểm tra build không chứa khóa, luồng học từ artifact và phương án dùng trên điện thoại. Ghi rõ hosting/SMTP/dịch vụ nào chưa cấu hình; không coi build local là đã phát hành hoặc cần chờ AI để chuẩn bị phần độc lập. |
-| BETA-001 | TODO | DEPLOY-001, DATA-002, PWA-002, AI-002, AI-003, CONTENT-002, ADAPT-001, NOTIFY-001 | Chuẩn bị bản triển khai, cấu hình, hướng dẫn dùng/khôi phục/xóa dữ liệu và kiểm tra luồng chính trên web/iOS/Android. Thử nghiệm học theo lịch, ghi phản hồi và hạn chế. Việc phát hành thực tế chỉ thực hiện trong phạm vi đã được cho phép. |
+| DEPLOY-001 | DONE | PWA-002, ADAPT-001 | Chuẩn bị artifact/cấu hình web để triển khai HTTPS: tách cấu hình khách/tài khoản/API, hướng dẫn biến môi trường, cache/cập nhật và quay lui; kiểm tra build không chứa khóa, luồng học từ artifact và phương án dùng trên điện thoại. Ghi rõ hosting/SMTP/dịch vụ nào chưa cấu hình; không coi build local là đã phát hành hoặc cần chờ AI để chuẩn bị phần độc lập. |
+| DEPLOY-002 | BLOCKED | DEPLOY-001 | Đưa bản khách đã kiểm tra lên một origin HTTPS ổn định; ghi project/revision/deployment, kiểm tra header/404/worker/audio/lưu dữ liệu và hướng dẫn cài. Chưa có tài khoản/project hosting được kết nối hoặc URL production được chọn; artifact local chưa là deployment. Chỉ bật tài khoản sau hosted/SMTP/RLS thật. |
+| BETA-001 | TODO | DEPLOY-002, DATA-002, PWA-002, AI-002, AI-003, CONTENT-002, ADAPT-001, NOTIFY-001 | Chuẩn bị bản triển khai, cấu hình, hướng dẫn dùng/khôi phục/xóa dữ liệu và kiểm tra luồng chính trên web/iOS/Android. Thử nghiệm học theo lịch, ghi phản hồi và hạn chế. Việc phát hành thực tế chỉ thực hiện trong phạm vi đã được cho phép. |
 
 Điều kiện đạt mốc 3: người học có thể mở app hằng ngày, dùng học liệu bốn tuần và nhận phản hồi AI đã được kiểm tra trong phạm vi công bố. Không coi beta này là đã hoàn thành chương trình luyện IELTS sáu tháng.
 
@@ -68,15 +69,15 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | COACH-001 | TODO | BETA-001 | Nếu người dùng cần: dashboard gia sư, giao bài và nhận xét với quyền truy cập có lựa chọn; kiểm tra học viên khác không xem chéo dữ liệu. |
 | MOBILE-001 | TODO | BETA-001 | Nếu cần cửa hàng ứng dụng: đánh giá Capacitor, build/ký và kiểm thử native, chuẩn bị thông tin phát hành. Tài khoản, thiết bị và quyền phát hành phải có trước khi gửi lên cửa hàng. |
 
-## Chi tiết task tiếp theo: DEPLOY-001
+## Chi tiết task tiếp theo: DEPLOY-002
 
-**READY — chuẩn bị bản web dùng qua HTTPS.** Tách phần chuẩn bị triển khai đã có trong BETA-001 để làm độc lập khi AI còn chờ key/ngân sách. BETA-001 vẫn cần đủ phụ thuộc và kiểm tra thiết bị, không đóng chỉ vì có artifact.
+**BLOCKED — cần tài khoản/project hosting có quyền triển khai và origin production được chọn.** DEPLOY-001 đã đóng phần artifact/preview/config/hướng dẫn; không dựng lại nền tảng hoặc nói đã public. Xem [DEPLOYMENT.md](DEPLOYMENT.md), DEC-020.
 
-1. Đọc STATUS/kiến trúc và kiểm tra Git, đánh dấu IN_PROGRESS. Kiểm tra môi trường/hosting có thật trước khi chọn phương án; không giả định tài khoản cloud hoặc tên miền đã tồn tại.
-2. Tạo artifact và cấu hình theo môi trường; xác định rõ static web, Supabase hosted/SMTP, máy AI/nhắc cần chạy ở đâu. Chuẩn bị chế độ khách dùng được khi dịch vụ tùy chọn chưa bật.
-3. Kiểm tra HTTPS/worker/cache cập nhật, secret không nằm trong build, mở đường dẫn trực tiếp, bản sao/khôi phục và checklist iOS/Android. Ghi các phép thử cần thiết bị/tài khoản thật còn thiếu.
-4. Viết hướng dẫn triển khai/quay lui và thông tin cụ thể cần cho bước phát hành. Chỉ làm thao tác ngoài trong phạm vi đã được người dùng cho phép; không mô tả artifact local là app đã public.
-5. Chạy kiểm tra phù hợp, cập nhật tài liệu và commit/push theo ủy quyền đã có.
+1. Kiểm tra Git và môi trường/tài khoản có thật, chọn project/URL ổn định trong phạm vi người dùng cho phép. Không gửi token vào chat/Git, không suy rằng cài CLI đồng nghĩa có quyền hosting.
+2. Tạo release khách từ commit sạch, verify; giữ bản kê riêng và tải nguyên site lên cùng project. Ghi URL/revision/deployment. Bản khách dùng được mà không chờ AI/SMTP.
+3. Kiểm tra HTTPS, header/404/CSP, đường dẫn trực tiếp, WAV online/offline, worker update giữ draft/tiến độ và backup/restore trên URL thật. Làm checklist iPhone/Android nếu có thiết bị; ghi rõ phần chưa thử.
+4. Nếu cần bật tài khoản, triển khai Supabase hosted/migration/RLS và SMTP theo BACKEND trước, kiểm tra hai tài khoản riêng. Chưa triển khai entrypoint máy AI/nhắc production; không trỏ web public đến localhost.
+5. Cập nhật docs và commit/push. Không đóng BETA-001 khi thiếu các phụ thuộc AI/thiết bị/người học thật.
 
 ## AI-001 đang chờ bước đối chiếu
 

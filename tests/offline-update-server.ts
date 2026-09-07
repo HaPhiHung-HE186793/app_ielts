@@ -1,14 +1,16 @@
 import { createServer } from 'node:http'
 import { readFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
+import { resolve } from 'node:path'
 
 // Isolated HTTP origin per test; never mutates dist or another test's server.
 export async function updateServer() {
-  const manifest = JSON.parse(await readFile('dist/offline-manifest.json', 'utf8'))
-  const originalWorker = await readFile('dist/sw.js', 'utf8')
+  const root = process.env.PLAYWRIGHT_ARTIFACT_DIR || 'dist'
+  const manifest = JSON.parse(await readFile(resolve(root, 'offline-manifest.json'), 'utf8'))
+  const originalWorker = await readFile(resolve(root, 'sw.js'), 'utf8')
   const files = new Map<string, Buffer>()
   for (const asset of [...manifest.shell, ...manifest.pack.resources])
-    files.set(asset.path, await readFile(`dist${asset.path}`))
+    files.set(asset.path, await readFile(resolve(root, `.${asset.path}`)))
   files.set('/sw.js', Buffer.from(originalWorker))
   let upgraded = false
   const next = new Map(files)

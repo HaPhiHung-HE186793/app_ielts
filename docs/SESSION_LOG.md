@@ -378,3 +378,24 @@ Người dùng yêu cầu tiếp tục. Đọc bàn giao và code tại `1dffddb
 - ADAPTATION mới và STATUS/TASKS/README/PRODUCT/ARCHITECTURE/DECISIONS/CURRICULUM/SYNC/TESTING cập nhật. Preview 4175 build lại; giữ máy nhắc/AI gọi thật tắt. Không xử lý lại việc restart AI bị chặn ở mốc trước vì không cần cho task này.
 - Kiểm tra diff/liên kết/task/secret staged trước commit và push main theo ủy quyền. Không stage .local/token/trace/dữ liệu cá nhân; hash và remote xác minh bằng Git rồi báo cuối. Không force-push.
 - Rà soát cuối đạt: Prettier/lint/typecheck/build, diff --check, 19 Markdown/100 liên kết nội bộ/25 task, DEPLOY-001 READY duy nhất. Build từ chối cấu hình secret; bốn file build/25 file staged không chứa service key/VAPID private. Preview 4175 đã build code cuối, kiểm tra chọn khó quá/lưu/reload ở 360px đạt, không runtime error/tràn ngang. Smoke qua Auth/proxy thật xác nhận AI tắt/503/không lượt trả phí; sau dọn đúng tài khoản thử, user/profile/snapshot/commit/reminder/AI receipt/Mailpit đều 0, budget pilot false/0/spend 0. Giữ kho cá nhân nếu có, không reset DB.
+
+## 2026-09-07 — DEPLOY-001: artifact để triển khai web
+
+### Kết quả
+
+- Theo yêu cầu tiếp tục, chọn DEPLOY-001 READY và đánh dấu IN_PROGRESS trước sửa. Đọc docs/Git/code; môi trường có tar nhưng chưa có hosting CLI/account/project kết nối. Chọn artifact portable và hướng dẫn Cloudflare Pages Direct Upload, chưa tạo deployment hoặc giả định beta hoàn tất.
+- Thêm scripts/release build/config/inventory/verify/preview: Vite config riêng, envDir/envPrefix tắt, production rõ ràng; cấu hình khách mặc định/account hosted qua JSON allowlist, AI tắt. Build tạo thư mục mới, không xóa bản trước/dist/dữ liệu. 99 file/10.124.043 bytes bản khách, bản kê SHA/Git dirty/schema ngoài site. Thêm _headers/CSP/cache/404, preview 4176 không proxy và chỉ phục vụ file được kiểm tra.
+- Bổ sung nhãn AI chưa bật trên release, giữ luồng Auth/dev có sẵn. Không đổi schema/migration/dependency/lockfile. DEPLOYMENT ghi riêng static/hosted SMTP/máy AI/máy nhắc, HTTP/HTTPS, origin/worker/rollback/data và kiểm tra điện thoại còn thiếu; tham khảo tài liệu chính thức Pages tại thời điểm triển khai.
+
+### Kiểm tra
+
+- Lần build đầu bắt nhầm vị trí WAV (gói thực đặt trực tiếp dưới foundation-v1), sửa allowlist theo file thật. Typecheck ban đầu thiếu kiểu Record ở helper header JS; thêm JSDoc, không nới TypeScript. Sau sửa lint/typecheck/build, Prettier và 135 unit đạt.
+- Lượt artifact đầu 38/38 đạt; sau chỉnh helper test update đọc chính release thay vì dist, chạy lệnh test:release đầy đủ lần nữa, 38/38 đạt. Học/ôn/bản sao/khôi phục, nhịp nhẹ và draft, WAV/offline/quota/pack thiếu/update/outbox, a11y vùng quét/360px, header/404/CSP và AI tắt không gọi API. Không coi HTTP loopback là đã thử HTTPS/CDN.
+- Auth–AI liên quan 6/6 đạt với backend local thật/provider fixture. Không gọi OpenAI thật hoặc chạy lại toàn bộ bộ hồi quy không liên quan. Smoke local xác minh AI tắt/ngân sách không phát sinh; tài khoản thử do test tạo được dọn, không reset DB.
+- Kiểm tra thực thi guest/account build với biến công khai local và marker khóa riêng đặt trong env, kể cả NODE_ENV development; marker không xuất hiện trong artifact, config JSON tường minh được giữ. Bản sao artifact bị sửa file bị verify từ chối. Quét thêm service key/VAPID thực ở artifact/build/staged và docs/diff trước commit; không in key vào log.
+
+### Bàn giao
+
+- DEPLOY-001 DONE phần chuẩn bị. DEPLOY-002 BLOCKED chờ tài khoản/project hosting có quyền triển khai và origin production được chọn; không dựng lại nền tảng khi tiếp tục. BETA-001 phụ thuộc DEPLOY-002 và các task AI còn thiếu, AI-001 giữ IN_PROGRESS. README/STATUS/TASKS/DECISIONS/ARCHITECTURE/TESTING cập nhật cùng DEPLOYMENT.
+- Giữ preview tài khoản 4175 và dịch vụ AI/nhắc cũ; để preview release khách 4176 chạy ẩn. Chưa public URL, chưa hosted/SMTP hoặc iPhone/Android thật. Bundle khách ~707 kB/205 kB gzip vẫn cảnh báo route chưa chia.
+- Commit/push main theo ủy quyền, chỉ stage code/docs/cấu hình public mẫu; không stage .local/bản ghi/backup/token. Hash và remote xác minh bằng Git trong bàn giao cuối. Sau commit tạo lại artifact sạch và verify để upload đúng code đã lưu; không sửa tài liệu để chèn hash của chính commit.

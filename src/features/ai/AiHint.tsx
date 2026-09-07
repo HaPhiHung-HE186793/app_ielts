@@ -12,7 +12,19 @@ import {
 } from '../../ai/client'
 import '../../styles/ai.css'
 
-export function AiHint({
+type AiHintProps = { lessonId: string; draftId: string; text: string }
+
+export function AiHint(props: AiHintProps) {
+  if (import.meta.env.VITE_AI_ENABLED === 'false')
+    return (
+      <p className="small muted">
+        Gia sư AI chưa bật trên bản web này. Bạn vẫn có thể tự xem lại câu và hoàn thành bài.
+      </p>
+    )
+  return <ConnectedAiHint {...props} />
+}
+
+function ConnectedAiHint({
   lessonId,
   draftId,
   text,

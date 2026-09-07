@@ -24,6 +24,8 @@
     "tests",
     "vite.config.ts",
     "playwright.config.ts",
-    "playwright.auth.config.ts"
+    "playwright.auth.config.ts",
+    "playwright.release.config.ts",
+    "scripts/release/*.test.ts"
   ]
 }

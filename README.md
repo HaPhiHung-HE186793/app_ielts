@@ -16,7 +16,7 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 - NOTIFY-001: nhắc học tự nguyện theo thiết bị, múi giờ/ngày/giờ yên lặng, dời và tắt; Web Push thật đã nhận trong Chrome thử nghiệm khi đóng các trang app. Chưa xác minh điện thoại thật hoặc màn hình OS.
 - **AI-001 đang thực hiện**: API có xác thực/hạn mức/chống gọi lặp và gợi ý tùy chọn ở câu tự viết cuối bài. AI thật mặc định tắt, chưa có khóa/ngân sách và kết quả đối chiếu; chưa đóng task. Chưa có Supabase hosted hoặc triển khai công khai.
 - Hôm nay có nhịp **bình thường/mệt/khó quá/quay lại sau nghỉ**, chọn bài theo kiến thức cần trước, kết quả còn cần hỗ trợ và sở thích. Có lý do từng bài; nhịp nhẹ giới hạn bài ôn, giữ bài dở và đồng bộ lựa chọn của phiên. Xem [cách chọn phiên](docs/ADAPTATION.md).
-- **ADAPT-001 hoàn thành trong phạm vi quy tắc thử nghiệm. Tiếp theo: DEPLOY-001**, chuẩn bị cấu hình/artifact để dùng web qua HTTPS; chưa phát hành công khai.
+- **DEPLOY-001 đã chuẩn bị bản đóng gói** khách/tài khoản, kiểm tra file/cấu hình, cache và hướng dẫn cập nhật/quay lui. Tiếp theo **DEPLOY-002** đưa bản khách lên URL HTTPS; cần tài khoản/project hosting, chưa phát hành công khai. Xem [triển khai web](docs/DEPLOYMENT.md).
 - Trạng thái chi tiết và bước tiếp theo luôn được cập nhật tại [docs/STATUS.md](docs/STATUS.md).
 
 ## Bắt đầu hoặc tiếp tục phát triển
@@ -56,7 +56,17 @@ npm run preview
 
 `build` tạo `dist/`; `preview` dùng để kiểm tra bản build local, không phải máy chủ production.
 
-`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 125 unit test, 80 ca trình duyệt khách và 50 ca Auth/RLS/đồng bộ/offline/nhắc học/API AI trên Supabase local. Provider AI trong test là fixture có nhãn. Kết quả thực tế ở STATUS/SESSION_LOG.
+`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 135 unit test, 80 ca trình duyệt khách và 50 ca Auth/RLS/đồng bộ/offline/nhắc học/API AI trên Supabase local; `test:release` chọn 38 ca để kiểm tra artifact phát hành. Provider AI trong test là fixture có nhãn. Kết quả thực tế ở STATUS/SESSION_LOG.
+
+Để tạo bản khách sẵn sàng tải lên hosting:
+
+```sh
+npm run release:build
+npm run release:verify
+npm run release:preview
+```
+
+Mở http://127.0.0.1:4176/#/today. Artifact trong `.local/releases`, chỉ tải thư mục `site/` lên hosting. Build này không kế thừa `.env`/cấu hình local; mặc định không tài khoản và AI tắt. Lệnh không tự public web. Cấu hình tài khoản, Pages, HTTPS/404/cache, giữ tiến độ và rollback ở [DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 Để thử tài khoản, mở Docker rồi chạy:
 

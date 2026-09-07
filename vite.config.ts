@@ -20,6 +20,6 @@ export default defineConfig(({ mode }) => {
       proxy: { '/api/ai': 'http://127.0.0.1:8787' },
     },
     preview: { proxy: { '/api/ai': 'http://127.0.0.1:8787' } },
-    test: { include: ['src/**/*.test.ts', 'server/**/*.test.ts'] },
+    test: { include: ['src/**/*.test.ts', 'server/**/*.test.ts', 'scripts/release/**/*.test.ts'] },
   }
 })

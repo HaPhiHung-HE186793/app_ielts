@@ -147,7 +147,13 @@ Một phiên hoàn thành phải được lưu từ hành động thực của n
 
 Chỉ ghi các môi trường và lệnh thực sự đã kiểm tra. Điều kiện cần tài khoản, thiết bị hoặc chi phí được ghi rõ ở task liên quan, không ngăn cản phần local độc lập.
 
-## 9. Tham khảo triển khai
+## 9. Artifact triển khai (DEPLOY-001)
+
+`scripts/release/` dùng Vite API riêng để tắt tải `.env`, tự động đưa biến env vào browser và cấu hình proxy local. JSON public nhận chế độ khách/tài khoản (Supabase hosted chuẩn); release ép production, AI tắt. Giữ luồng build/dev/Auth cũ. `site/` chỉ chứa tài nguyên public được cho phép, có hash để verify và `_headers`/404 cho Pages; `release.json` chứa metadata/schema nằm ngoài web root. Mỗi lần tạo thư mục mới, không xóa release cũ.
+
+App đặt ở root origin, route hash. Preview 4176 đọc artifact đã verify, áp header cùng nguồn với `_headers`, không phục vụ file ngoài bản kê hoặc proxy API. Đây vẫn là loopback HTTP; chưa kiểm tra deployment/CDN/HTTPS thật. Giữ origin và khả năng đọc dữ liệu khi update/rollback. Chi tiết, giới hạn account/API/SMTP, hướng dẫn Pages và checklist thiết bị ở [DEPLOYMENT.md](DEPLOYMENT.md), DEC-020.
+
+## 10. Tham khảo triển khai
 
 - [Vite](https://vite.dev/guide/)
 - [Supabase](https://supabase.com/docs)

@@ -1,5 +1,11 @@
 # Chạy và kiểm tra ứng dụng
 
+## Bản phát hành DEPLOY-001
+
+`npm run test:release` tạo artifact khách rồi chạy 38 ca với Chrome desktop và viewport 360px qua preview 4176. Gồm 34 ca tái sử dụng học/bản sao/thích ứng/offline và bốn ca riêng HTTP/cache/404/CSP/AI tắt. Test đổi worker phục vụ chính tài nguyên release trên origin thử riêng, không phụ thuộc `dist` cũ. Không chạy đồng thời hai bộ release hoặc tạo release khác khi bộ này đang dùng con trỏ latest.
+
+`npm test` thêm 10 ca ranh giới cấu hình/header/file public, tổng 135. Kiểm tra thực thi build khách/tài khoản bằng giá trị thử trong env đã xác minh không kế thừa URL local hoặc marker khóa riêng, kể cả NODE_ENV development; không gọi hosted/AI thật. Verify phát hiện artifact bị sửa. Phạm vi và checklist còn cần HTTPS/iPhone/Android thật ở [DEPLOYMENT.md](DEPLOYMENT.md). Kết quả từng lượt ở STATUS/SESSION_LOG, không coi việc định nghĩa test là đã chạy.
+
 ## Môi trường
 
 Đã dùng Node 22.18.0, npm 10.9.3 trên Windows. `package.json` khai báo Node 22.13+ thuộc nhánh 22, Node 24 hoặc Node 26+ để phù hợp cả build và bộ kiểm tra. Dùng `npm ci` để cài từ lockfile. Trên PowerShell có thể dùng `npm.cmd` thay `npm`.
@@ -26,7 +32,7 @@ npm run test:e2e
 
 ## Phạm vi
 
-- Vitest: 125 ca về chấm đáp án, vòng đời 32 bài/kiểm tra, lịch ôn, ghép phiên, thời gian, cấu hình/adapter AI và tương thích version 1/2/3. Có kiểm tra kho theo chủ, quota, dữ liệu lỗi và cấu hình công khai. DATA-002 thêm 8 ca gộp ba phía/lượt trùng/lịch ôn/checkpoint/xung đột và 9 ca engine: bật tự nguyện, outbox qua reload, mất phản hồi, thay đổi trong lúc gửi, offline, quota, đổi chủ, reset/import và hoãn khi mở cài đặt.
+- Vitest: 135 ca về chấm đáp án, vòng đời 32 bài/kiểm tra, lịch ôn, ghép phiên, thời gian, cấu hình/adapter AI và tương thích version 1/2/3. Có kiểm tra kho theo chủ, quota, dữ liệu lỗi và cấu hình công khai. DATA-002 thêm 8 ca gộp ba phía/lượt trùng/lịch ôn/checkpoint/xung đột và 9 ca engine: bật tự nguyện, outbox qua reload, mất phản hồi, thay đổi trong lúc gửi, offline, quota, đổi chủ, reset/import và hoãn khi mở cài đặt.
 - Playwright: luồng học thực trên bản build; giữ bài dở sau reload, giữ cả lựa chọn/câu đang nhập, ôn đến hạn khi đổi ngày, ghi lịch ôn một lần, cài đặt và bản sao xuất/nhập, dữ liệu lỗi, quota, bộ lọc và URL không tồn tại.
 - Tổng 80 ca trình duyệt chế độ khách (40 kịch bản × hai kích thước), gồm mục tiêu/ngày/loại thi chưa quyết định, phiên 2/5/15/buổi đầy đủ, tiếp tục, bản sao, bộ đo/lịch sử tiến bộ và PWA/offline. Có trang tài khoản chưa cấu hình, đường tiếp tục học/focus/axe. Ca buổi đầy đủ kiểm tra tối đa 10 hoạt động và thời gian còn trống, không tự coi các bài đã hoàn thành.
 - `domain/adaptation.test.ts`: 11 ca gồm đồ thị bài trước không vòng lặp, thứ tự qua mọi điểm dừng danh mục, sở thích không vượt bài trước, ưu tiên tín hiệu hỗ trợ, kết quả mới/timestamp tương lai/thứ tự sau sync, giới hạn từng nhịp/ngân sách, giữ draft, mốc bảy ngày, metadata qua bản sao/gộp/thay phiên và từ chối metadata lỗi. Các quy tắc là giả định sản phẩm thử nghiệm, test không xác nhận hiệu quả học.
@@ -68,7 +74,7 @@ Cần Docker và Supabase local của repo đang chạy; xem [BACKEND.md](BACKEN
 
 ## PWA offline trên bản build
 
-- `src/offline/range.test.ts`: hai ca đơn vị cho khoảng byte có chặn biên, suffix, EOF và khoảng sai/nhiều khoảng. Mốc PWA-002 có 78 ca, NOTIFY-001 có 82, nền tảng AI-001 có 89, CONTENT-002 có 114; tổng hiện tại 125 sau ADAPT-001.
+- `src/offline/range.test.ts`: hai ca đơn vị cho khoảng byte có chặn biên, suffix, EOF và khoảng sai/nhiều khoảng. Mốc PWA-002 có 78 ca, NOTIFY-001 có 82, nền tảng AI-001 có 89, CONTENT-002 có 114; ADAPT-001 có 125; tổng hiện tại 135 sau DEPLOY-001.
 - `tests/offline.spec.ts`: năm kịch bản × desktop/mobile = 10 ca, gồm tải/đóng cửa sổ/mở mới khi context offline/phát WAV thật, trả HTTP 206/416, hoàn thành và lưu bài/lịch ôn; xóa gói giữ tiến độ/shell/cache khác; integrity thất bại/reload/thử lại và file bị thu hồi; giả lập `QuotaExceededError` ở worker rồi tải lại; allowlist loại request cá nhân.
 - Kịch bản nâng phiên bản dùng `tests/offline-update-server.ts`, HTTP server riêng/port ngẫu nhiên cho từng ca, phục vụ hai bộ shell/pack manifest khác nhau từ bản build thật. Worker cũ chờ các cửa sổ đóng; test đợi trạng thái activation thực rồi mở bản mới, kiểm tra nguyên văn draft/outbox ở cả key khách/tài khoản fixture, dọn cache cũ, tải gói mới và reload offline. Không sửa dist của test khác hoặc gọi skipWaiting trong fixture.
 - `tests/auth/offline.spec.ts`: hai kịch bản × hai kích thước = bốn ca, mở mới offline với `expires_at` của phiên SDK đã qua hạn (JWT server vẫn do Auth cấp), làm/nộp khởi động, kết nối lại, nhận 503 sau commit thật rồi reload/gửi lại đúng UUID. Kiểm tra riêng A/B dùng chung gói công khai nhưng cache không chứa response/token/nội dung riêng và B không thấy tiến độ A.
@@ -86,7 +92,7 @@ Cần Docker và Supabase local của repo đang chạy; xem [BACKEND.md](BACKEN
 
 ## Gia sư AI
 
-- `server/ai/provider.test.ts`: 7 ca trong tổng hiện tại **125 unit**. Kiểm tra cấu hình tắt/khóa/hạn mức, JSON schema, prompt tách dữ liệu, body/output, refusal/incomplete, quote không tồn tại, không retry provider và dự toán token. Không gọi mạng OpenAI.
+- `server/ai/provider.test.ts`: 7 ca trong tổng hiện tại **135 unit**. Kiểm tra cấu hình tắt/khóa/hạn mức, JSON schema, prompt tách dữ liệu, body/output, refusal/incomplete, quote không tồn tại, không retry provider và dự toán token. Không gọi mạng OpenAI.
 - `tests/auth/ai-api.spec.ts`: **5 ca** với JWT/Auth/PostgreSQL thật và provider fixture: giả mạo/khác chủ/RLS/service-only/body/origin; giữ chỗ đồng thời, replay sau restart, đổi hash/24 giờ, ngân sách không reset sau xóa user; timeout unknown giữ tiền, cooldown/quota/cap active và tự tắt khi usage bất thường.
 - `tests/auth/ai.spec.ts`: **3 ca × 2 viewport**. AI chưa cấu hình vẫn lưu/reload/hoàn thành; chưa đồng ý không gọi; sau xử lý thật ở server fixture mới làm mất response, reload khi hết ngân sách vẫn replay UUID cũ/1 lần provider; sửa câu/đổi chủ khi chờ giữ draft và không lộ kết quả. API test được chuyển qua route đến HTTP server riêng, Auth/RLS thật; không gọi đây là AI thật.
 - Tổng bộ Auth hiện tại **50 ca**, khách **80 ca**. Axe A/AA vùng AI, không tràn ngang, xem ảnh desktop/mobile. Chưa thử Safari/điện thoại thật. Không có API key/tokens trong trace/report Git.

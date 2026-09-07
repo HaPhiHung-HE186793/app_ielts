@@ -4,39 +4,35 @@ Cập nhật: 2026-09-07, múi giờ Asia/Saigon.
 
 ## Đang ở đâu
 
-**ADAPT-001 DONE; DEPLOY-001 READY để chuẩn bị triển khai web HTTPS.** Bộ gợi ý bài chạy offline bằng quy tắc thử nghiệm. AI-001 vẫn IN_PROGRESS, thiếu key/ngân sách được xác nhận và đối chiếu provider thật; không tự bật gọi trả phí hoặc coi beta hoàn chỉnh.
+**DEPLOY-001 DONE: đã có bản đóng gói để triển khai web. Chưa public HTTPS.** DEPLOY-002 cần tài khoản/project hosting có quyền triển khai và origin được chọn. AI-001 vẫn IN_PROGRESS chờ key/ngân sách và đối chiếu thật; BETA-001 chưa hoàn chỉnh.
 
-- Hôm nay chọn bình thường/mệt/khó/quay lại, thời gian và xem lý do từng bài. Phiên dài ưu tiên tối đa ba câu ôn, giữ bài dở, một bài cần hỗ trợ rồi bài mới theo tuần/kiến thức trước và sở thích. Nhịp nhẹ giới hạn một bài và một hoặc hai câu ôn, không dồn toàn bộ thẻ cũ.
-- “Khó quá” chuyển gợi ý sang hai phút với câu nền tảng liên quan, không thay draft. Sau bảy ngày không có hoạt động ghi nhận, mời quay lại nhẹ; người học được đổi lựa chọn. Kết quả bài/truy hồi chưa đủ chẩn đoán riêng nghe/đọc/nói/viết hoặc band.
-- Plan/lịch sử lưu nhịp và lý do tùy chọn, vẫn StudyState 3/đọc 1/2/3, không migration/dependency mới. Không tự đổi phiên đang học khi có kết quả mới/reload/đổi ngày; thay phiên có xác nhận và giữ draft. Các máy nên cập nhật để giữ metadata tùy chọn qua sync.
-- Giữ 28 bài + bốn kiểm tra/57 WAV (~8,92 MB), học liệu thử nghiệm chưa giáo viên độc lập duyệt. Auth/OTP, sync/outbox/xung đột, nhắc học và nền tảng API AI giữ phạm vi mốc trước.
+- Release mặc định khách, có lựa chọn account bằng JSON public đã kiểm tra; không kế thừa .env/biến VITE hoặc proxy local. Ép production và tắt AI rõ ràng trong UI. Mỗi lượt tạo thư mục mới, bản kê Git/dirty/hash/schema riêng, verify trước preview/upload.
+- site chứa 99 file, 10.124.043 bytes ở bản khách hiện tại: học liệu 28 bài + bốn kiểm tra, 57 WAV, app/worker/icon/header/404. Có CSP, cache phân biệt file có hash/đường dẫn cố định; preview 4176 áp cùng quy tắc và không proxy API. Chưa kiểm tra CDN/HTTPS thật.
+- Giữ phiên học thích ứng, lịch ôn, bản sao JSON, StudyState 3/đọc 1/2/3 và quy tắc offline cũ. Không migration/dependency mới, không đổi ngân sách AI hoặc thu dữ liệu học viên.
 
 ## Dùng ngay
 
-1. Docker → npm run db:start → npm run db:migrate → npm run preview:local. Mở http://127.0.0.1:4175/#/today, chọn nhịp và thời gian. Preview đang để chạy Node ẩn; kiểm tra cổng trước mở thêm.
-2. Vào #/install để tải gói trước khi học offline. Khám phá vẫn chọn bài tự do. Mỗi origin có kho riêng, dùng sync/JSON khi chuyển từ 5173 sang 4175. Dev không đăng ký worker.
-3. OTP ở http://127.0.0.1:54324, không gửi ra ngoài. Máy nhắc dùng npm run reminders:local, đăng nhập/chọn lịch tự nguyện. Máy AI 8787 vẫn gọi thật tắt; cần nạp lại server khi tới bước đối chiếu thật. Không thay cấu hình AI/nhắc trong task này.
-
-Log/ảnh/trace thử nằm trong .local (không commit). Chưa có hosted/SMTP/HTTPS công khai hoặc thiết bị iOS/Android thật.
+1. Bản khách phát hành: npm run release:build → npm run release:verify → npm run release:preview. Mở http://127.0.0.1:4176/#/today. Preview đã để chạy Node ẩn sau kiểm tra; xem cổng trước khi mở thêm. File .local/releases/latest.json chỉ tới artifact gần nhất; chỉ site được upload, giữ release.json ngoài web root.
+2. Bản tài khoản local cũ vẫn tại http://127.0.0.1:4175/#/today; Docker → npm run db:start → npm run db:migrate → npm run preview:local nếu cần khởi động lại. OTP ở 54324 chỉ là hộp thư thử. Máy AI/nhắc giữ nguyên, AI thật tắt.
+3. Vào #/install tải gói trước khi học offline. Mỗi origin có kho riêng; dùng bản sao JSON/sync rõ ràng khi chuyển 4175/4176 hoặc lên tên miền. Cache offline không là bản sao tiến độ.
 
 ## File quan trọng
 
-- [ADAPTATION.md](ADAPTATION.md): cách dùng, giới hạn từng nhịp, thuật toán, metadata và giới hạn đánh giá; DEC-019 ghi quyết định.
-- src/content/prerequisites.ts: đồ thị bài trước của 32 đơn vị, tách khỏi nội dung/âm thanh.
-- src/domain/adaptation.ts và planner.ts: tín hiệu từ kết quả, bài sẵn sàng, sở thích, trần số hoạt động; schema.ts thêm metadata tùy chọn.
-- features/today/SessionChoices.tsx, SessionPage.tsx, Today.tsx và styles/adaptation.css: chọn nhịp, lý do, tiếp tục/thay phiên. Kho được dựng lại theo chủ tài khoản như trước.
-- domain/adaptation.test.ts, tests/adaptation.spec.ts, tests/auth/sync.spec.ts: thứ tự/tải/backup/merge/UI/offline/two-device; tests/progress.spec.ts và tests/auth/reminders.spec.ts sửa điều kiện chờ không ổn định của test cũ.
+- [DEPLOYMENT.md](DEPLOYMENT.md): lệnh build/verify/preview, cấu hình khách/account/API, hướng dẫn Pages/HTTPS/cache/cập nhật/quay lui, checklist thiết bị và thông tin hosting còn thiếu.
+- scripts/release/config.js, build.js, artifact.js, preview.js, verify.js: ranh giới cấu hình công khai, tạo release mới, danh sách file/hash/header và preview từ artifact. deploy/account.example.json chỉ placeholder.
+- src/features/ai/AiHint.tsx: nhãn AI chưa bật cho bản phát hành; chế độ dev/Auth giữ luồng cũ.
+- scripts/release/config.test.ts, playwright.release.config.ts, tests/release/artifact.spec.ts và tests/offline-update-server.ts: test cấu hình/artifact và tái dùng luồng thật từ chính release.
+- [TASKS.md](TASKS.md), README, ARCHITECTURE/DECISIONS/TESTING đã cập nhật; chi tiết quy tắc học vẫn ở ADAPTATION/CURRICULUM.
 
 ## Kiểm tra
 
-- Lint/typecheck/build và **125/125 unit** đạt. Đã chạy toàn bộ 80 ca khách/50 ca Auth, phát hiện hai test phụ thuộc thời gian thực; sửa test đồng hồ và chờ dọn subscription, giữ nguyên code tính giờ/nhắc.
-- Sau sửa, chạy lại **16/16 ca thích ứng/tiến bộ** và **18/18 ca nhắc/đồng bộ** đạt, gồm hai ca từng lỗi. Các ca hồi quy còn lại đạt ở lượt toàn bộ; không trình bày hai lượt đầu 79/80 và 49/50 là đã đạt hết ngay lần đầu. Chi tiết [SESSION_LOG.md](SESSION_LOG.md), phạm vi [TESTING.md](TESTING.md).
-- Bộ thích ứng: thứ tự qua mọi điểm dừng danh mục, quan hệ không vòng, tín hiệu mới/có hỗ trợ, sở thích không bỏ bài trước, trần nhịp/ngân sách, gap, backup và merge. UI hai kích thước giữ draft khi “khó” offline, giới hạn 32 thẻ cũ, hủy/thay phiên và lưu lý do. Auth/DB thật giữ nhịp và lý do trên hai browser context.
-- Axe A/AA không báo vi phạm vùng quét, không tràn ngang 360px/desktop, đã xem ảnh. Test không thay thiết bị thật hoặc đo hiệu quả học. Bundle khách ~716 kB minified/208 kB gzip, còn cảnh báo chia route. Không gọi AI thật.
-- Prettier/diff, 19 Markdown/100 liên kết/25 task và quét secret build/25 file staged đạt. Preview 4175 code cuối chọn nhịp/lưu/reload đạt; smoke Auth/proxy xác nhận AI tắt và không lượt trả phí, dữ liệu thử đã dọn. Commit/remote xác minh bằng Git ở bàn giao cuối.
+- Lint/typecheck/build và **135/135 unit** đạt. **38/38 ca release** đạt trên Chrome desktop/viewport 360px: học/ôn/draft/backup/restore, thích ứng, WAV/offline, lỗi tải/quota, update giữ draft/outbox, header/CSP/404 và không gọi API từ bản khách. Ca update dùng origin thử riêng với chính file release.
+- **6/6 ca Auth–AI liên quan** đạt trên hai kích thước, Supabase local thật/provider fixture: AI chưa cấu hình, consent/gửi lại và đổi câu/chủ khi chờ. Không chạy lại toàn bộ 80 khách/50 Auth trong task này; kết quả hồi quy trước ở SESSION_LOG.
+- Thực thi build khách/account với giá trị thử: biến URL local/public key/khóa riêng không kế thừa, NODE_ENV development không đổi release thành dev. Artifact sửa file bị từ chối; giữ bản gốc. Tài khoản hosted trong build chỉ cấu hình thử, chưa gọi dịch vụ thật.
+- Prettier/diff, liên kết/task và quét secret thực trong artifact/build/staged được kiểm tra trước commit. Bundle khách khoảng 707 kB minified/205 kB gzip, vẫn cảnh báo chưa chia route. Ảnh/trace/log trong thư mục bỏ qua Git; kiểm tra trình duyệt không thay điện thoại thật.
 
 ## Tiếp theo và giới hạn
 
-**DEPLOY-001**: chuẩn bị artifact/cấu hình web, môi trường khách/tài khoản/API, hướng dẫn HTTPS/cache/cập nhật/quay lui và thông tin còn thiếu cho phát hành. Tách khỏi BETA-001 để tiến hành phần độc lập; chưa có deployment thật. Xem [TASKS.md](TASKS.md).
+**DEPLOY-002**: chọn tài khoản/project hosting có quyền triển khai, public bản khách từ commit sạch và kiểm tra URL HTTPS thực tế theo DEPLOYMENT. Chưa có hosting được kết nối, Supabase hosted/SMTP, domain hoặc thiết bị iOS/Android thật; không suy ra từ preview 4176 là đã phát hành.
 
-AI-001 chỉ đối chiếu thật sau cấu hình máy chủ/ngân sách và rubric người duyệt. Chưa có phản hồi AI đã kiểm chứng, mic, đánh giá đầu vào hoặc chương trình IELTS sáu tháng. Nhịp/đồ thị/threshold là quy tắc thử nghiệm cần dữ liệu người học. Lưu local chưa mã hóa; cache offline không là sao lưu, không background sync khi OS đóng app; chưa benchmark lịch sử nhiều tháng. Giữ giới hạn trong BACKEND/SYNC/OFFLINE/NOTIFICATIONS/AI.
+AI-001 cần key/ngân sách máy chủ và người duyệt rubric để đối chiếu; chưa tự bật gọi trả phí, mic hoặc band. Học liệu/rule còn thử nghiệm, chưa giáo viên độc lập duyệt hoặc chương trình IELTS sáu tháng. Giới hạn dữ liệu/offline/nhắc/AI ở BACKEND/SYNC/OFFLINE/NOTIFICATIONS/AI vẫn áp dụng.

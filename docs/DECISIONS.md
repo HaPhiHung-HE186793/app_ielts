@@ -166,6 +166,13 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 
 - Sau ADAPT-001, tách DEPLOY-001 từ phần chuẩn bị triển khai của BETA-001 để tiếp tục artifact/cấu hình/hướng dẫn độc lập khi AI chờ key/ngân sách. Không mở rộng sang app native hoặc tự coi beta đã hoàn chỉnh/phát hành. BETA-001 thêm phụ thuộc DEPLOY-001; việc triển khai thật vẫn theo phạm vi được cho phép.
 
+## DEC-020 — Artifact phát hành riêng, triển khai khách trước
+
+- Ngày 2026-09-07, DEPLOY-001. Tạo release mới trong `.local/releases`, không thay bản trước hoặc build Auth local. Build qua Vite API với configFile/envDir tắt, không tự công khai biến env; chỉ nhận JSON public đã kiểm tra. Ép production và AI tắt trong release. Bản tài khoản hiện chỉ chấp nhận Supabase hosted chuẩn, chưa hỗ trợ custom domain; không tự tạo backend/SMTP.
+- Artifact gồm static site, 404 thật cho path thiếu và `_headers` cho Cloudflare Pages. Chọn Direct Upload làm ví dụ triển khai có thể chuẩn bị độc lập, chưa chọn thay người dùng tài khoản/project hoặc public site. Không thêm SDK hosting/dependency/CI có token. Preview 4176 áp cùng quy tắc HTTP, chỉ phục vụ danh sách file đã xác minh, không proxy AI local.
+- Bản kê ngoài web root ghi revision/dirty/hash và schema. Thư mục bất biến theo lượt build giúp kiểm tra/quay lui; không là bản sao dữ liệu học viên, chữ ký xác thực hoặc xác nhận đã triển khai. Giữ origin qua update, đợi worker kích hoạt và kiểm tra tương thích dữ liệu trước rollback; không xóa storage để sửa cache.
+- Tách DEPLOY-002 cho hành động phát hành/kiểm tra URL thật. Điều kiện còn thiếu là tài khoản/project hosting có quyền triển khai và origin được chọn, được ghi cụ thể ở DEPLOYMENT/STATUS. Bản khách không cần chờ AI; BETA-001 vẫn cần AI và kiểm tra thiết bị thật.
+
 ## Các giả định/chọn lựa còn mở
 
 | Mã | Vấn đề | Mặc định hiện tại | Thời điểm cần làm rõ |
@@ -174,7 +181,7 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 | OPEN-002 | Academic hay General Training | Không tự điền loại thi; nền tảng dùng chung | Onboarding và trước xây học liệu luyện thi |
 | OPEN-003 | Đầu vào, thời gian, ngày thi, điểm tối thiểu từng kỹ năng | Đã có form thời gian/ngày mục tiêu và tự nhận xét; chưa có đánh giá đầu vào hoặc yêu cầu band từng kỹ năng | Trước kế hoạch luyện thi cá nhân |
 | OPEN-004 | Nhà cung cấp và ngân sách AI | Chưa chọn, không giả định có API key | AI-001 |
-| OPEN-005 | Hosting, dự án Supabase, tên miền | Đã có Supabase Docker local; chưa có cloud, SMTP gửi thư thật hoặc tên miền | Trước cấu hình hosted và bản triển khai beta |
+| OPEN-005 | Hosting, dự án Supabase, tên miền | Có artifact khách/tài khoản và hướng dẫn Pages, Supabase Docker local; chưa có tài khoản/project hosting được kết nối, cloud/SMTP hoặc URL public | DEPLOY-002; trước cấu hình hosted |
 | OPEN-006 | Đánh giá lại thuật toán lịch ôn | Đã có lịch khởi đầu DEC-009; cần hiệu chỉnh theo dữ liệu | Sau thử nghiệm sử dụng và trước mở rộng |
 | OPEN-007 | Thời gian lưu audio và bài cá nhân trên cloud | Chưa chốt, chưa thu thập dữ liệu thật | Trước upload dữ liệu thật và AI-002 |
 | OPEN-008 | Người kiểm duyệt/giáo viên đối chiếu bài | Chưa bố trí | Trước phê duyệt học liệu beta và đánh giá AI |

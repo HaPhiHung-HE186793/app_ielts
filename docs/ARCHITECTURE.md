@@ -153,7 +153,13 @@ Chỉ ghi các môi trường và lệnh thực sự đã kiểm tra. Điều ki
 
 App đặt ở root origin, route hash. Preview 4176 đọc artifact đã verify, áp header cùng nguồn với `_headers`, không phục vụ file ngoài bản kê hoặc proxy API. Đây vẫn là loopback HTTP; chưa kiểm tra deployment/CDN/HTTPS thật. Giữ origin và khả năng đọc dữ liệu khi update/rollback. Chi tiết, giới hạn account/API/SMTP, hướng dẫn Pages và checklist thiết bị ở [DEPLOYMENT.md](DEPLOYMENT.md), DEC-020.
 
-## 10. Tham khảo triển khai
+## 10. Vercel/Render/Supabase (DEPLOY-002 đang triển khai)
+
+Theo lựa chọn người dùng, Vercel phục vụ static PWA và proxy /api/ai/status, /api/ai/feedback, /api/healthz sang Render. Browser vẫn dùng Supabase Auth/RLS/RPC trực tiếp cho tài khoản/sync. scripts/release/vercel.js tái dùng createRelease để tạo Build Output API v3, header/CSP theo URL và chỉ copy file public; không publish _headers/metadata. Framework Other, không Output Directory override. Khóa máy chủ không đi qua cấu hình browser.
+
+Render dùng server/production.ts + deployment-config.ts: env hosted/secret, origins HTTPS chính xác, PORT/0.0.0.0, healthz và cấu hình/purge budget DB. AI mặc định tắt/0, không đổi khoản đã chi khi restart. Mới chuẩn bị entrypoint và kiểm tra local; chưa vận hành cloud hoặc worker nhắc. Node thống nhất nhánh 22. Chi tiết vận hành ở [DEPLOY_VERCEL_RENDER_SUPABASE.md](DEPLOY_VERCEL_RENDER_SUPABASE.md), DEC-021.
+
+## 11. Tham khảo triển khai
 
 - [Vite](https://vite.dev/guide/)
 - [Supabase](https://supabase.com/docs)

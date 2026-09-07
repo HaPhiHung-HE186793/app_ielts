@@ -1,6 +1,6 @@
 # Danh sách task phát triển
 
-Cập nhật: 2026-09-07. Thực hiện theo thứ tự ưu tiên và phụ thuộc, không coi các tính năng dự kiến là đã có. Trạng thái tổng quan ở [STATUS.md](STATUS.md).
+Cập nhật: 2026-09-08. Thực hiện theo thứ tự ưu tiên và phụ thuộc, không coi các tính năng dự kiến là đã có. Trạng thái tổng quan ở [STATUS.md](STATUS.md).
 
 ## Quy ước
 
@@ -55,7 +55,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | CONTENT-002 | DONE | CONTENT-001, LEARN-001 | Có 28 bài + bốn kiểm tra theo mục tiêu tăng dần, đoạn đọc/nghe, tự nói/viết và tiêu chí tự xem lại; gói 57 WAV offline. Giữ bảy bài cũ và dữ liệu v3; kiểm tra cả bốn bài tuần qua UI offline, hint/reload/lưu/ôn. Hồ sơ nguồn/rà soát nội bộ ở CURRICULUM/CONTENT_REVIEW; học liệu thử nghiệm, chưa có giáo viên độc lập hoặc hiệu chỉnh độ khó bằng người học thật. |
 | ADAPT-001 | DONE | PLAN-001, REVIEW-001, PROGRESS-001, CONTENT-002 | Gợi ý theo bài trước/tuần, tín hiệu bài và truy hồi, ôn đến hạn và sở thích trong nhóm sẵn sàng; nhịp mệt/khó/quay lại có giới hạn, lý do lưu cùng phiên. Giữ draft, schema v3, lịch ôn và danh sách đã bắt đầu; kiểm tra thứ tự/giảm tải/backup/offline/sync. Chưa chẩn đoán riêng bốn kỹ năng hoặc hiệu chỉnh quy tắc trên người học; chi tiết ADAPTATION. |
 | DEPLOY-001 | DONE | PWA-002, ADAPT-001 | Chuẩn bị artifact/cấu hình web để triển khai HTTPS: tách cấu hình khách/tài khoản/API, hướng dẫn biến môi trường, cache/cập nhật và quay lui; kiểm tra build không chứa khóa, luồng học từ artifact và phương án dùng trên điện thoại. Ghi rõ hosting/SMTP/dịch vụ nào chưa cấu hình; không coi build local là đã phát hành hoặc cần chờ AI để chuẩn bị phần độc lập. |
-| DEPLOY-002 | BLOCKED | DEPLOY-001 | Đưa bản khách đã kiểm tra lên một origin HTTPS ổn định; ghi project/revision/deployment, kiểm tra header/404/worker/audio/lưu dữ liệu và hướng dẫn cài. Chưa có tài khoản/project hosting được kết nối hoặc URL production được chọn; artifact local chưa là deployment. Chỉ bật tài khoản sau hosted/SMTP/RLS thật. |
+| DEPLOY-002 | IN_PROGRESS | DEPLOY-001 | Theo lựa chọn người dùng: Vercel frontend, Render backend, Supabase hosted cho Auth/DB. Chuẩn bị cấu hình/entrypoint và hướng dẫn từng bước, kiểm tra local; tiếp tục ghi URL/revision/deployment và kiểm tra HTTPS/OTP/sync/worker thật khi có project. Không coi hướng dẫn/build là đã public; AI thật cần ngân sách/đối chiếu riêng. |
 | BETA-001 | TODO | DEPLOY-002, DATA-002, PWA-002, AI-002, AI-003, CONTENT-002, ADAPT-001, NOTIFY-001 | Chuẩn bị bản triển khai, cấu hình, hướng dẫn dùng/khôi phục/xóa dữ liệu và kiểm tra luồng chính trên web/iOS/Android. Thử nghiệm học theo lịch, ghi phản hồi và hạn chế. Việc phát hành thực tế chỉ thực hiện trong phạm vi đã được cho phép. |
 
 Điều kiện đạt mốc 3: người học có thể mở app hằng ngày, dùng học liệu bốn tuần và nhận phản hồi AI đã được kiểm tra trong phạm vi công bố. Không coi beta này là đã hoàn thành chương trình luyện IELTS sáu tháng.
@@ -71,13 +71,13 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 
 ## Chi tiết task tiếp theo: DEPLOY-002
 
-**BLOCKED — cần tài khoản/project hosting có quyền triển khai và origin production được chọn.** DEPLOY-001 đã đóng phần artifact/preview/config/hướng dẫn; không dựng lại nền tảng hoặc nói đã public. Xem [DEPLOYMENT.md](DEPLOYMENT.md), DEC-020.
+**IN_PROGRESS — đã có cấu hình/hướng dẫn Vercel frontend + Render backend + Supabase Auth/DB. Người dùng xác nhận chưa tạo project và muốn hướng dẫn từ đầu.** Xem [DEPLOY_VERCEL_RENDER_SUPABASE.md](DEPLOY_VERCEL_RENDER_SUPABASE.md), DEC-021. Không dựng lại phần chuẩn bị; chưa đóng task vì chưa có deployment thật.
 
-1. Kiểm tra Git và môi trường/tài khoản có thật, chọn project/URL ổn định trong phạm vi người dùng cho phép. Không gửi token vào chat/Git, không suy rằng cài CLI đồng nghĩa có quyền hosting.
-2. Tạo release khách từ commit sạch, verify; giữ bản kê riêng và tải nguyên site lên cùng project. Ghi URL/revision/deployment. Bản khách dùng được mà không chờ AI/SMTP.
-3. Kiểm tra HTTPS, header/404/CSP, đường dẫn trực tiếp, WAV online/offline, worker update giữ draft/tiến độ và backup/restore trên URL thật. Làm checklist iPhone/Android nếu có thiết bị; ghi rõ phần chưa thử.
-4. Nếu cần bật tài khoản, triển khai Supabase hosted/migration/RLS và SMTP theo BACKEND trước, kiểm tra hai tài khoản riêng. Chưa triển khai entrypoint máy AI/nhắc production; không trỏ web public đến localhost.
-5. Cập nhật docs và commit/push. Không đóng BETA-001 khi thiếu các phụ thuộc AI/thiết bị/người học thật.
+1. Hướng dẫn người dùng tạo project Supabase; lấy tên/ref/URL công khai, giữ key/password ngoài chat/Git. Link đúng project mới, dry-run rồi áp tám migration, cấu hình OTP template/SMTP.
+2. Render Web Service cùng repo/main: npm ci, npm run start:backend, healthz và env theo bảng hướng dẫn. Giữ AI false/ngân sách 0. Lưu URL thật, không trỏ về Docker/local.
+3. Vercel import repo, Other, npm run build:vercel, không override Output Directory, ba env public. Khi có URL production, cập nhật Render APP_ORIGINS và Supabase Site URL. Không lấy URL preview làm origin học cố định.
+4. Kiểm tra health trực tiếp/proxy, HTTPS/header/404/OTP/sync hai tài khoản, WAV/offline/worker và backup trên URL thật. Ghi thiết bị nào đã thử; không coi viewport mobile là iPhone/Android thật. Giữ thông tin project/revision/deployment trong STATUS.
+5. Cập nhật docs và commit/push theo ủy quyền. BETA-001 còn phụ thuộc AI/thiết bị/người học thật; Render mới chỉ có API, chưa worker nhắc production. Không tự bật trả phí vì đã deploy backend.
 
 ## AI-001 đang chờ bước đối chiếu
 

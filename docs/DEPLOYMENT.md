@@ -1,6 +1,6 @@
 # Đóng gói và triển khai web
 
-Cập nhật 2026-09-07, DEPLOY-001. Đã chuẩn bị bản static và kiểm tra local; **chưa có URL HTTPS công khai, tài khoản hosting được kết nối, Supabase hosted/SMTP hoặc phép thử điện thoại thật**. Đây là hướng dẫn vận hành, không là xác nhận đã phát hành beta.
+Cập nhật 2026-09-07. **Người dùng đã chọn Vercel frontend + Render backend + Supabase Auth/DB, và chưa tạo project.** Làm theo [hướng dẫn từ đầu](DEPLOY_VERCEL_RENDER_SUPABASE.md) cho DEPLOY-002. Tài liệu này giữ cách tạo artifact độc lập và quy tắc dữ liệu/worker/rollback của DEPLOY-001; chưa có URL public hoặc phép thử cloud/điện thoại thật.
 
 ## 1. Tạo bản để tải lên hosting
 
@@ -33,7 +33,7 @@ Build không xóa `dist`, bản release trước hoặc tiến độ. Bản kê 
 | --- | --- | --- | --- |
 | Khách — mặc định | Không cần tài khoản, `.env` hoặc API key | Học bốn tuần, phiên/ôn/tiến bộ, bản sao JSON, tải offline, hướng dẫn cài PWA | Đăng nhập, đồng bộ giữa máy, nhắc từ máy chủ, AI |
 | Tài khoản | File JSON công khai theo mẫu bên dưới; Supabase hosted đã chuẩn bị | Thêm OTP và đồng bộ khi hosted/SMTP/RLS đã kiểm tra | Build không tự tạo backend/SMTP, không tự bật AI hoặc máy gửi nhắc |
-| API AI / gửi nhắc | Dịch vụ máy chủ riêng | Chỉ sau bước triển khai/kiểm tra tương ứng | Không được đóng gói vào static site; entrypoint hiện tại là local |
+| API AI / gửi nhắc | Dịch vụ máy chủ riêng | Render có entrypoint mới để triển khai API; nhắc vẫn cần bước riêng | Không đóng gói server vào static site; chưa kiểm tra dịch vụ cloud thật |
 
 Để chuẩn bị bản tài khoản, chép [mẫu công khai](../deploy/account.example.json) vào `.local/release-account.json`, thay **URL hosted và publishable key** rồi chạy:
 
@@ -47,11 +47,11 @@ Chỉ nhận `mode`, `supabaseUrl`, `publishableKey`; bản khách chỉ nhận 
 
 Theo [BACKEND.md](BACKEND.md), chọn đúng dự án hosted, áp dụng migration bằng quy trình có sao lưu, kiểm tra RLS/RPC hai tài khoản riêng và cấu hình Site URL/OTP/SMTP với tên miền phát hành. Kiểm tra gửi thư thật, hết hạn mã, đăng xuất/đổi chủ, hai máy sync, offline/gửi lại và xung đột. `test:auth` chỉ chạy backend loopback, không chuyển nguyên bộ test local lên database production. Chưa thực hiện các bước hosted này trong DEPLOY-001.
 
-Release cố định AI tắt bằng cấu hình công khai khi biên dịch; không nhận tùy chọn bật trong JSON. UI giải thích và vẫn cho hoàn thành bài. Proxy `/api/ai` trong Vite local không tồn tại trên hosting static. Muốn bật sau này cần entrypoint production cho [AI](AI.md), xác thực/hạn mức/ngân sách và route cùng origin đã kiểm tra. Không đặt API key ở browser. [Máy gửi nhắc](NOTIFICATIONS.md) cần runtime/lịch chạy, khóa riêng và cấu hình backend riêng; `scripts/reminders-local.js` và `server/local.ts` không phải dịch vụ cloud đã triển khai.
+`release:build` giữ AI tắt, không nhận tùy chọn bật trong JSON. `build:vercel` tạo thêm route tới Render và cho UI hỏi trạng thái máy chủ; gọi AI thật vẫn tắt khi Render có AI_ENABLED=false/ngân sách 0. `server/production.ts` là entrypoint mới cho Render, dùng secret trên máy chủ và kiểm tra RPC lúc khởi động; chưa chạy cloud thật. Proxy Vite local không tự triển khai lên web. [Máy gửi nhắc](NOTIFICATIONS.md) chưa có entrypoint cloud, `scripts/reminders-local.js`/`server/local.ts` vẫn chỉ dành cho local.
 
 ## 3. Phương án hosting đã chuẩn bị
 
-Artifact độc lập nhà cung cấp; `_headers` được tạo cho **Cloudflare Pages** làm phương án hướng dẫn mặc định, chưa khẳng định tài khoản/dự án đã được chọn. Với hosting khác phải chuyển quy tắc header/404 tương đương và kiểm tra lại.
+Hướng chính đã đổi sang **Vercel/Render/Supabase** theo DEC-021. `build:vercel` chuyển header/404/API thành Build Output API v3; dùng hướng dẫn mới ở đầu tài liệu. Phần Direct Upload dưới đây là phương án thay thế từ DEPLOY-001, chỉ dùng cho artifact static tạo bằng release:build; không tải site của build:vercel lên Pages vì thiếu route Render.
 
 1. Vào tài khoản Cloudflare của chủ dự án, tạo Pages bằng Direct Upload và chọn tên project ổn định. Dashboard nhận thư mục hoặc zip; tải nội dung `site/` thành web root. Ghi lại project, URL production, revision và mã deployment. Không tự bật analytics hoặc dịch vụ trả phí. Direct Upload không đổi sang Git integration trong cùng project; nếu muốn Git integration, chọn cách đó trước khi tạo project. [Tài liệu Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/).
 2. Mở URL HTTPS production, thực hiện bảng kiểm dưới đây trước khi chia sẻ. Giữ origin ổn định qua các lần phát hành. URL preview, `pages.dev`, custom domain và localhost có kho lưu khác nhau; đổi origin cần xuất/nhập JSON hoặc sync rõ ràng, không coi là mất dữ liệu do update.
@@ -96,4 +96,4 @@ Ghi thiết bị, OS/browser, URL/revision và kết quả vào SESSION_LOG khi 
 
 ## 7. Thông tin còn cần để phát hành
 
-DEPLOY-002 cần tài khoản/project hosting có quyền triển khai và URL production được chọn. Có thể public bản khách trước mà không cần Supabase/AI. Với bản tài khoản cần thêm project hosted, migration/RLS và SMTP đã kiểm tra. AI-001 tiếp tục cần key/ngân sách máy chủ, kết quả đối chiếu và người duyệt. Việc cài/kiểm tra iOS/Android cần thiết bị thật. Không gửi khóa bí mật trong chat hoặc Git.
+DEPLOY-002 đang IN_PROGRESS, có cấu hình Vercel/Render và hướng dẫn; người dùng cần tạo ba project, áp migration, cấu hình email và kiểm tra các URL thật. Cần lưu tên/URL và trạng thái trong STATUS khi có; không ghi secret. AI-001 tiếp tục cần key/ngân sách máy chủ, kết quả đối chiếu và người duyệt. Việc cài/kiểm tra iOS/Android cần thiết bị thật.

@@ -50,6 +50,10 @@ export function createAiServer(options: AiServerOptions) {
       if (!res.writableEnded) controller.abort()
     })
     try {
+      if (req.url === '/healthz' && (req.method === 'GET' || req.method === 'HEAD')) {
+        reply(res, 200, { status: 'ok' })
+        return
+      }
       if (req.headers.origin && !options.origins.includes(req.headers.origin)) {
         reply(res, 403, { error: 'unauthorized' })
         return

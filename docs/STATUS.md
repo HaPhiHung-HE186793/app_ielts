@@ -1,38 +1,39 @@
 # Trạng thái bàn giao hiện tại
 
-Cập nhật: 2026-09-07, múi giờ Asia/Saigon.
+Cập nhật: 2026-09-08, múi giờ Asia/Saigon.
 
 ## Đang ở đâu
 
-**DEPLOY-001 DONE: đã có bản đóng gói để triển khai web. Chưa public HTTPS.** DEPLOY-002 cần tài khoản/project hosting có quyền triển khai và origin được chọn. AI-001 vẫn IN_PROGRESS chờ key/ngân sách và đối chiếu thật; BETA-001 chưa hoàn chỉnh.
+**DEPLOY-002 IN_PROGRESS: đã chuẩn bị Vercel frontend + Render backend + Supabase Auth/DB theo lựa chọn người dùng.** Người dùng xác nhận chưa tạo project, muốn hướng dẫn từ đầu. Chưa có URL public, migration hosted/SMTP, kết quả cloud hoặc điện thoại thật. DEPLOY-001 đã DONE, AI-001 vẫn chờ ngân sách/key/đối chiếu riêng.
 
-- Release mặc định khách, có lựa chọn account bằng JSON public đã kiểm tra; không kế thừa .env/biến VITE hoặc proxy local. Ép production và tắt AI rõ ràng trong UI. Mỗi lượt tạo thư mục mới, bản kê Git/dirty/hash/schema riêng, verify trước preview/upload.
-- site chứa 99 file, 10.124.043 bytes ở bản khách hiện tại: học liệu 28 bài + bốn kiểm tra, 57 WAV, app/worker/icon/header/404. Có CSP, cache phân biệt file có hash/đường dẫn cố định; preview 4176 áp cùng quy tắc và không proxy API. Chưa kiểm tra CDN/HTTPS thật.
-- Giữ phiên học thích ứng, lịch ôn, bản sao JSON, StudyState 3/đọc 1/2/3 và quy tắc offline cũ. Không migration/dependency mới, không đổi ngân sách AI hoặc thu dữ liệu học viên.
+- Có vercel.json, render.yaml, build:vercel và start:backend. Frontend vẫn dùng Supabase Auth/RLS/RPC cho đăng nhập/sync; Vercel chuyển API gia sư/health sang Render cùng origin. Build chỉ chọn ba env public, tạo 98 static file + config Build Output API v3, không publish metadata/secret/_headers.
+- Render production entrypoint dùng PORT/0.0.0.0/healthz, URL hosted/secret key, origins chính xác, cấu hình budget tồn tại trong DB và dọn response quá hạn. AI false/0 ban đầu; không worker nhắc production. Health chỉ xác nhận HTTP sau startup, không là kiểm tra DB liên tục.
+- Node nhánh 22 thống nhất package/lockfile/hosting; chưa thay dependency version. createRelease tái dùng cho artifact độc lập (AI tắt) và Vercel (UI hỏi trạng thái server). Khi build snapshot không có Git, SHA provider được ghi nguồn riêng, dirty null.
+- Giữ 28 bài + bốn kiểm tra, 57 WAV, phiên thích ứng, lịch ôn, bản sao/sync và StudyState 3/đọc 1/2/3. Không thêm tính năng học hoặc bật AI trả phí trong task này.
 
-## Dùng ngay
+## Hướng dẫn dùng/triển khai
 
-1. Bản khách phát hành: npm run release:build → npm run release:verify → npm run release:preview. Mở http://127.0.0.1:4176/#/today. Preview đã để chạy Node ẩn sau kiểm tra; xem cổng trước khi mở thêm. File .local/releases/latest.json chỉ tới artifact gần nhất; chỉ site được upload, giữ release.json ngoài web root.
-2. Bản tài khoản local cũ vẫn tại http://127.0.0.1:4175/#/today; Docker → npm run db:start → npm run db:migrate → npm run preview:local nếu cần khởi động lại. OTP ở 54324 chỉ là hộp thư thử. Máy AI/nhắc giữ nguyên, AI thật tắt.
-3. Vào #/install tải gói trước khi học offline. Mỗi origin có kho riêng; dùng bản sao JSON/sync rõ ràng khi chuyển 4175/4176 hoặc lên tên miền. Cache offline không là bản sao tiến độ.
+1. **Bắt đầu tại [DEPLOY_VERCEL_RENDER_SUPABASE.md](DEPLOY_VERCEL_RENDER_SUPABASE.md)**: tạo Supabase → dry-run/áp tám migration → OTP/SMTP → Render → Vercel → APP_ORIGINS/Site URL → kiểm tra URL thật. Bảng env/lỗi thường gặp ghi đúng lệnh và không yêu cầu gửi secret trong chat.
+2. Vercel: Other, npm ci, npm run build:vercel, không Output Directory override; VITE_SUPABASE_URL/VITE_SUPABASE_PUBLISHABLE_KEY/RENDER_API_URL. Render: Node 22.18, npm ci, npm run start:backend, healthz; SUPABASE_URL/SUPABASE_SECRET_KEY, APP_ORIGINS sau khi có Vercel URL, AI false/ngân sách 0.
+3. Bản khách local vẫn npm run release:build → release:verify → release:preview, http://127.0.0.1:4176/#/today; preview để chạy ẩn sau kiểm tra. Bản Auth local cũ 4175, OTP hộp thử 54324 và dịch vụ AI/nhắc cũ giữ nguyên. Không dùng ai:local trên Render.
+4. Mỗi origin có dữ liệu local riêng; chuyển sang tên miền cần sync hoặc bản JSON. Hướng Pages trong DEPLOYMENT chỉ là phương án thay thế cũ cho release:build; không dùng với artifact Vercel có API proxy.
 
 ## File quan trọng
 
-- [DEPLOYMENT.md](DEPLOYMENT.md): lệnh build/verify/preview, cấu hình khách/account/API, hướng dẫn Pages/HTTPS/cache/cập nhật/quay lui, checklist thiết bị và thông tin hosting còn thiếu.
-- scripts/release/config.js, build.js, artifact.js, preview.js, verify.js: ranh giới cấu hình công khai, tạo release mới, danh sách file/hash/header và preview từ artifact. deploy/account.example.json chỉ placeholder.
-- src/features/ai/AiHint.tsx: nhãn AI chưa bật cho bản phát hành; chế độ dev/Auth giữ luồng cũ.
-- scripts/release/config.test.ts, playwright.release.config.ts, tests/release/artifact.spec.ts và tests/offline-update-server.ts: test cấu hình/artifact và tái dùng luồng thật từ chính release.
-- [TASKS.md](TASKS.md), README, ARCHITECTURE/DECISIONS/TESTING đã cập nhật; chi tiết quy tắc học vẫn ở ADAPTATION/CURRICULUM.
+- [DEPLOY_VERCEL_RENDER_SUPABASE.md](DEPLOY_VERCEL_RENDER_SUPABASE.md), [TASKS.md](TASKS.md), DEC-021: hướng đi đã chốt và bước cần người dùng tạo project.
+- vercel.json/render.yaml, scripts/release/vercel.js/vercel-config.js/create.js/source.js: cấu hình deploy/build public, proxy/cache/404, metadata nguồn và thư mục generated riêng.
+- server/production.ts/deployment-config.ts, server/ai/http.ts: boot cloud không Docker, env/health, Auth/rate/budget giữ logic đã kiểm tra.
+- server/*test.ts và scripts/release/*test.ts: validation/origin/health/routing/metadata; .local giữ artifact, fixture, log, bản kê và script kiểm tra không commit.
 
 ## Kiểm tra
 
-- Lint/typecheck/build và **135/135 unit** đạt. **38/38 ca release** đạt trên Chrome desktop/viewport 360px: học/ôn/draft/backup/restore, thích ứng, WAV/offline, lỗi tải/quota, update giữ draft/outbox, header/CSP/404 và không gọi API từ bản khách. Ca update dùng origin thử riêng với chính file release.
-- **6/6 ca Auth–AI liên quan** đạt trên hai kích thước, Supabase local thật/provider fixture: AI chưa cấu hình, consent/gửi lại và đổi câu/chủ khi chờ. Không chạy lại toàn bộ 80 khách/50 Auth trong task này; kết quả hồi quy trước ở SESSION_LOG.
-- Thực thi build khách/account với giá trị thử: biến URL local/public key/khóa riêng không kế thừa, NODE_ENV development không đổi release thành dev. Artifact sửa file bị từ chối; giữ bản gốc. Tài khoản hosted trong build chỉ cấu hình thử, chưa gọi dịch vụ thật.
-- Prettier/diff, liên kết/task và quét secret thực trong artifact/build/staged được kiểm tra trước commit. Bundle khách khoảng 707 kB minified/205 kB gzip, vẫn cảnh báo chưa chia route. Ảnh/trace/log trong thư mục bỏ qua Git; kiểm tra trình duyệt không thay điện thoại thật.
+- Lint/typecheck/build, 144/144 unit đạt. 38/38 ca release khách (desktop/360px), năm/năm API Auth/DB local thật đạt; provider test fixture, không AI thật. Bản kê/hash kiểm tra Vercel 98 static file, cấu hình/route và không chứa marker secret/biến không được chọn; trường hợp không Git checkout dùng metadata provider đạt.
+- Entrypoint Node thực khởi động với transport DB fixture: health 200, không token 401, origin lạ 403, không lộ key trong log. Chưa chạy Render/HTTPS/CDN thật; không trình bày fixture là hosted DB.
+- Đã sửa lint quét nhầm .vercel/output bằng ignore thư mục sinh, không bỏ lint source. Lockfile chỉ đổi engines root, không dependency. Docs/diff/secret scan và Git kiểm tra trước commit/push. Bundle vẫn cảnh báo chưa chia route.
+- Smoke local AI vẫn tắt, paidRequests 0; sau dọn đúng tài khoản thử, user/profile/snapshot/commit/reminder/receipt/Mailpit 0, pilot budget false/0/spend0. Không reset DB hoặc xóa dữ liệu người dùng.
 
-## Tiếp theo và giới hạn
+## Tiếp theo
 
-**DEPLOY-002**: chọn tài khoản/project hosting có quyền triển khai, public bản khách từ commit sạch và kiểm tra URL HTTPS thực tế theo DEPLOYMENT. Chưa có hosting được kết nối, Supabase hosted/SMTP, domain hoặc thiết bị iOS/Android thật; không suy ra từ preview 4176 là đã phát hành.
+**Tiếp tục DEPLOY-002 cùng người dùng tạo project Supabase trước**, rồi Render/Vercel theo hướng dẫn. Khi có URL/ref công khai, ghi vào STATUS và đối chiếu env/migration/OTP/proxy trên host thật. Không yêu cầu key/password qua chat. Chỉ đánh dấu task DONE sau deployment và kiểm tra thực tế trong phạm vi công bố.
 
-AI-001 cần key/ngân sách máy chủ và người duyệt rubric để đối chiếu; chưa tự bật gọi trả phí, mic hoặc band. Học liệu/rule còn thử nghiệm, chưa giáo viên độc lập duyệt hoặc chương trình IELTS sáu tháng. Giới hạn dữ liệu/offline/nhắc/AI ở BACKEND/SYNC/OFFLINE/NOTIFICATIONS/AI vẫn áp dụng.
+Giới hạn: SMTP mặc định không gửi tự do đến học viên; Render Free có ngủ, không bảo đảm nhắc nền; chưa worker nhắc production, AI đã đối chiếu, mic, chương trình IELTS sáu tháng hoặc thiết bị thật. Nội dung/quy tắc học còn thử nghiệm như các tài liệu sản phẩm.

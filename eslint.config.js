@@ -6,7 +6,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
-  { ignores: ['dist/**', '.local/**', 'playwright-report/**', 'test-results/**'] },
+  { ignores: ['dist/**', '.local/**', '.vercel/**', 'playwright-report/**', 'test-results/**'] },
   js.configs.recommended,
   { files: ['**/*.js'], languageOptions: { globals: globals.node } },
   { files: ['src/offline/*.js'], languageOptions: { globals: globals.serviceworker } },

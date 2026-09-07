@@ -4,12 +4,14 @@
   "version": "0.1.0",
   "type": "module",
   "engines": {
-    "node": "^22.13.0 || ^24.0.0 || >=26.0.0"
+    "node": "^22.13.0"
   },
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
+    "start:backend": "node --experimental-strip-types server/production.ts",
+    "build:vercel": "npm run typecheck && node --experimental-strip-types scripts/release/vercel.js",
     "release:build": "npm run typecheck && node --experimental-strip-types scripts/release/build.js",
     "release:verify": "node --experimental-strip-types scripts/release/verify.js",
     "release:preview": "node --experimental-strip-types scripts/release/preview.js",

@@ -4,6 +4,7 @@ dist/
 build/
 coverage/
 .vite/
+.vercel/
 *.tsbuildinfo
 playwright-report/
 test-results/

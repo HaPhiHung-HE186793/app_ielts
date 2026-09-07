@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: moi-ngay-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm run start:backend
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: 22.18.0
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: AI_ENABLED
+        value: 'false'
+      - key: AI_TOTAL_BUDGET_USD
+        value: '0'

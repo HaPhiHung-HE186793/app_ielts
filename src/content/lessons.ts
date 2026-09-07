@@ -1,4 +1,4 @@
-import type { Lesson } from '../domain/types'
+import type { Lesson } from '../domain/types.ts'
 
 // Original project content; editorial review and limits: docs/CONTENT_REVIEW.md.
 export const lessons: Lesson[] = [

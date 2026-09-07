@@ -14,7 +14,7 @@ Chế độ khách vẫn hoạt động như trước. Bật đồng bộ là l�
 
 ## Khi gián đoạn
 
-- Khi app đã mở, mất mạng vẫn giữ các thay đổi học trong kho local và gửi lại khi online, lấy focus hoặc thử thủ công. Bản hiện tại chưa có service worker/gói offline; mở mới app khi mất mạng chưa được hỗ trợ. PWA-002 xử lý việc đó.
+- Khi app đã mở, mất mạng vẫn giữ các thay đổi học trong kho local và gửi lại khi online, lấy focus hoặc thử thủ công. PWA-002 thêm service worker/gói tải trước trên bản build để mở mới khi offline; xem [OFFLINE.md](OFFLINE.md). Dev vẫn cần server. Phiên cần refresh mở phần học local trước, sync chờ SDK xác nhận; cache công khai không giữ response tài khoản.
 - App đợi khoảng 800 ms sau thay đổi rồi đồng bộ, kiểm tra lại mỗi 15 giây khi trang hiển thị. Không hứa chạy nền khi OS đóng tab. Hộp cài đặt đang mở tạm hoãn đồng bộ để giữ nội dung chưa bấm lưu.
 - Một tài khoản có một tab được phép sửa kho học trong cùng origin, do Web Locks quản lý. Tab khác xem tài khoản/đăng xuất được và sẽ tiếp tục học khi tab giữ khóa đóng/rời tài khoản. Hai trình duyệt/thiết bị có khóa độc lập, dùng quy tắc xung đột server. Nếu thiếu Web Locks, chỉ dùng phần local; không bật sync.
 - Đăng xuất/đổi chủ hủy request và vô hiệu phản hồi cũ. Yêu cầu đã tới server có thể đã được ghi; phản hồi đó không cập nhật kho người đăng nhập sau.
@@ -25,7 +25,7 @@ Chế độ khách vẫn hoạt động như trước. Bật đồng bộ là l�
 
 `StudyState` và bản sao vẫn version 3, đọc version 1/2. Root localStorage giữ dữ liệu học cùng `_sync` version 1 gồm bản chung đã xác nhận, một payload đang gửi với UUID cố định, bản xung đột nếu có và thời điểm xác nhận. Các thay đổi mới trong lúc gửi được giữ ở trạng thái hiện tại cho lần sau. Metadata và tiến độ được ghi bằng cùng một `setItem`, tránh lệch outbox sau reload. Bản sao hợp lệ chỉ xuất StudyState; khi kho lỗi, xuất nguyên bản lỗi để khôi phục như trước.
 
-Không chạy song song bản app cũ chưa hiểu `_sync` trên cùng kho. Bản sao JSON vẫn tương thích, nhưng code cũ có thể ghi bỏ metadata. Chưa chuyển sang IndexedDB; dung lượng phụ thuộc quota trình duyệt và metadata có thể chứa nhiều bản của tiến độ. Cần xét chuyển kho ở giai đoạn offline/dữ liệu lớn.
+Không chạy song song bản app cũ chưa hiểu `_sync` trên cùng kho. Bản sao JSON vẫn tương thích, nhưng code cũ có thể ghi bỏ metadata. Chưa chuyển sang IndexedDB; dung lượng phụ thuộc quota trình duyệt và metadata có thể chứa nhiều bản của tiến độ. PWA-002 chỉ dùng Cache Storage cho file công khai, chưa chuyển tiến độ sang IndexedDB; cần xét khi dữ liệu lớn hơn.
 
 | Thành phần | Trách nhiệm |
 | --- | --- |

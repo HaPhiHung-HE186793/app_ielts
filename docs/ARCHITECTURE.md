@@ -1,15 +1,15 @@
 # Kiến trúc dự kiến
 
-Ngày cập nhật: 2026-09-06. Frontend, luồng học local, hướng dẫn cài PWA, Supabase Auth/RLS và đồng bộ tiến độ đã triển khai/kiểm tra trên Docker local. Cloud hosted, AI và PWA offline vẫn là kế hoạch. Các quyết định nằm trong [DECISIONS.md](DECISIONS.md).
+Ngày cập nhật: 2026-09-06. Frontend, luồng học local, hướng dẫn cài PWA, Supabase Auth/RLS và đồng bộ tiến độ đã triển khai/kiểm tra trên Docker local. PWA offline đã triển khai cho bảy bài; cloud hosted và AI vẫn là kế hoạch. Các quyết định nằm trong [DECISIONS.md](DECISIONS.md).
 
 ## Hiện có trong code
 
 - React + TypeScript + Vite, điều hướng hash cho năm khu vực, `/lesson/:id`, `/session`, `/install` và `/account`; không cần cấu hình rewrite để mở đường dẫn bài học trên static host.
-- `public/manifest.webmanifest`, `public/icons`, metadata trong `index.html`: tên, ID ở gốc origin, scope, start URL Hôm nay, standalone và bộ icon do dự án tạo. `scripts/generate-icons.js` tái tạo PNG từ SVG. Chưa có service worker; cài từ web không đồng nghĩa offline.
+- `public/manifest.webmanifest`, `public/icons`, metadata trong `index.html`: tên, ID ở gốc origin, scope, start URL Hôm nay, standalone và bộ icon do dự án tạo. `scripts/generate-icons.js` tái tạo PNG từ SVG. Worker sinh lúc build lưu shell theo hash và gói bài có phiên bản khi người học chọn; hướng dẫn/quyền audio ở [OFFLINE.md](OFFLINE.md).
 - `src/app/installation.ts` nhận sự kiện cài từ lúc khởi động, giữ prompt một lần qua điều hướng và xử lý từ chối/lỗi. Chỉ xác nhận chế độ cửa sổ từ display-mode hoặc navigator.standalone. `features/install/InstallPage.tsx` có hướng dẫn nền tảng và đường đến bản sao; xem [INSTALLATION.md](INSTALLATION.md), DEC-012.
 - `src/content/lessons.ts`: bảy bài thử nghiệm; nguồn và rà soát tại [CONTENT_REVIEW.md](CONTENT_REVIEW.md).
 - `src/domain/learning.ts` và `session.ts`: chấm đáp án đóng, quản lý lượt làm, kết quả độc lập và lịch ôn đơn giản.
-- `src/data/schema.ts`: schema Zod phiên bản 3 và đường đọc version 1/2, xem DEC-010/011. `study-store.ts` chứa logic độc lập, `store.ts` nối với trình duyệt; key khách giữ `moi-ngay.study.v1`, key tài khoản thêm URL backend và user ID. Giữ bản lỗi nguyên trạng, xuất/nhập bản sao, phản ánh lỗi ghi và giữ dữ liệu chưa lưu riêng trong bộ nhớ khi đổi chủ. Dữ liệu nhỏ gồm văn bản và tiến độ; chưa dùng IndexedDB/audio cache.
+- `src/data/schema.ts`: schema Zod phiên bản 3 và đường đọc version 1/2, xem DEC-010/011. `study-store.ts` chứa logic độc lập, `store.ts` nối với trình duyệt; key khách giữ `moi-ngay.study.v1`, key tài khoản thêm URL backend và user ID. Giữ bản lỗi nguyên trạng, xuất/nhập bản sao, phản ánh lỗi ghi và giữ dữ liệu chưa lưu riêng trong bộ nhớ khi đổi chủ. Dữ liệu nhỏ gồm văn bản và tiến độ; giữ localStorage cho tiến độ, dùng Cache Storage riêng cho file công khai theo DEC-015.
 - `src/services/supabase-config.ts` kiểm tra cấu hình công khai cả lúc Vite khởi động/build và trong client. Chỉ nhận publishable key, URL HTTPS hoặc HTTP loopback. `services/supabase.ts` tạo SDK có timeout request 12 giây, khóa phiên riêng theo backend; không xử lý token trong hash URL.
 - `src/app/auth.ts` khôi phục phiên và lắng nghe thay đổi Auth; callback đồng bộ chuyển kho trước khi công bố người dùng, không gọi API khi SDK đang giữ lock. Phiên local chỉ chọn giao diện; server xác thực request và kiểm tra RLS độc lập. `features/account/AccountPage.tsx` có OTP, hồ sơ tên, retry và logout; GET hồ sơ tắt retry tự động để trả lỗi kịp thời cho người học.
 - `supabase/migrations`: `account_profiles` với RLS CRUD; `study_snapshots` và `study_commits` đọc theo chủ, chỉ ghi qua RPC `commit_study`. Function xác nhận chủ, khóa hàng, kiểm tra revision, ghi snapshot/receipt atomic. Receipt dùng SHA-256 và các bản ghi thay đổi để chống gửi trùng, không sao chép cả lịch sử ở mỗi commit. Không có trigger nhập phần khách. Setup ở [BACKEND.md](BACKEND.md).
@@ -17,7 +17,9 @@ Ngày cập nhật: 2026-09-06. Frontend, luồng học local, hướng dẫn c�
 - `data/sync-engine.ts` giữ payload gửi cố định, retry/ack/rebase, không đánh dấu đã lưu trước server xác nhận; `services/study-sync.ts` validation response và AbortSignal. `app/sync.ts` quản lý vòng đời theo Auth, Web Locks một tab sửa theo chủ, online/focus/chu kỳ 15 giây. Hộp cài đặt tạm hoãn sync để giữ nội dung chưa lưu. UI ở `features/account/SyncPanel.tsx`; chi tiết [SYNC.md](SYNC.md).
 - `src/domain/planner.ts`: ghép phiên 2/5/15 phút/buổi đầy đủ từ học liệu và mục đến hạn, tra kết quả theo ID, chuyển bước và ghi lượt khởi động. Giao diện ở `SessionChoices.tsx`, `SessionPage.tsx`; form cài đặt mở rộng thành điểm bắt đầu tùy chọn.
 - `src/app/clock.ts`: đọc thời gian mới khi render/đổi trang, thông báo cập nhật sau 30 giây hoặc khi tab lấy lại focus/hiển thị. Lịch ôn lưu thời điểm tuyệt đối; ngày hiển thị theo múi giờ trình duyệt.
-- SpeechSynthesis cho câu mẫu tùy khả năng thiết bị; font và minh họa được đóng gói local. Không có lời gọi API AI.
+- `src/components/ListenButton.tsx` phát WAV eSpeak NG của bảy câu mẫu, có dừng/lỗi/transcript; worker trả byte range khi offline. Font/minh họa local. Không có lời gọi API AI.
+- `src/offline/worker.js` nhận allowlist sinh bởi `scripts/offline-build.js`, kiểm tra hash và lưu shell/gói riêng. `app/offline.ts` quản lý đăng ký/lệnh, `features/install/OfflinePanel.tsx` tải/dung lượng/xóa/thông báo cập nhật. Không skipWaiting hay đụng kho tiến độ; chỉ kích hoạt sau khi cửa sổ cũ đóng.
+- Khởi động mở chủ local từ phiên SDK lưu sẵn trước khi cần refresh token; sync chờ SDK xác nhận. UI phân biệt bản lưu với phiên đã khôi phục, không cấp quyền server từ thông tin local.
 - Một bài dở tại một thời điểm. Chuyển sang bài khác cần xác nhận trong giao diện; tiếp tục cùng bài giữ câu đang nhập, đáp án/gợi ý và bài tự viết.
 - Một phiên có danh sách hoạt động cố định, câu ôn/khởi động đang nhập, gợi ý và con trỏ lưu qua reload. Bài đầy đủ dùng lại LessonPlayer và draft cũ. Kết quả khởi động tách khỏi completions/reviewLog; chỉ chuyển bước khi có lượt thực tương ứng. `planner.ts` lưu snapshot `planHistory` khi hoàn tất/thay kế hoạch, giữ một bài dở.
 - `src/domain/activity.ts`: đồng hồ hoạt động độc lập giao diện, phân ngày địa phương, checkpoint cộng dồn không trùng. `ActivityMeter.tsx` gắn lifecycle/focus/visibility và thao tác vào đồng hồ; `ActivityGate` dừng khi mở cài đặt. Epoch store ngăn callback cũ tái tạo dữ liệu sau reset/import/đổi chủ sở hữu; shell dựng lại form theo key kho, import kiểm tra epoch sau khi đọc file bất đồng bộ.
@@ -34,7 +36,7 @@ Các lệnh và phạm vi kiểm tra nằm trong [TESTING.md](TESTING.md). Đọ
 | Dữ liệu local | IndexedDB khi cần lưu bài, lượt làm và tài nguyên offline | Giữ tiến độ giữa các lần mở; không được xem là bản sao lưu đám mây |
 | Tài khoản/backend | Supabase Auth, PostgreSQL, Storage | Đồng bộ tiến độ và quản lý dữ liệu riêng của người học |
 | AI | Dịch vụ phía máy chủ, provider chọn sau thử nghiệm | Quản lý khóa bí mật, ngân sách, phản hồi và audio |
-| Cài lên màn hình chính | Đã có manifest/icons/standalone; service worker dành cho PWA-002 | Chuẩn bị mở như ứng dụng; offline có phạm vi riêng, chưa triển khai |
+| Cài lên màn hình chính | Manifest/icons/standalone và service worker | Mở app với gói bảy bài đã tải; cần kiểm tra thiết bị thật trước phát hành |
 | App Store/Google Play | Capacitor ở giai đoạn sau | Tái sử dụng ứng dụng web, bổ sung tích hợp và quy trình phát hành riêng |
 
 Phiên bản đã chọn nằm trong `package.json` và lockfile: React 19, Vite 8, TypeScript 5.9; CSS trực tiếp và Lucide, không có bộ UI bên ngoài. Điều hướng hash và lịch ôn khởi đầu đã triển khai. Nhà cung cấp AI và nơi deploy chưa chốt. Dùng npm cùng lockfile.

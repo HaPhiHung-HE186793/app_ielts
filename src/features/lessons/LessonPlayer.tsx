@@ -1,42 +1,12 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { ArrowRight, Check, ChevronLeft, CircleHelp, PartyPopper, Volume2 } from 'lucide-react'
+import { ArrowRight, Check, ChevronLeft, CircleHelp, PartyPopper } from 'lucide-react'
 import type { Draft } from '../../data/schema'
 import { updateState } from '../../data/store'
 import { completeLesson, submitAnswer } from '../../domain/session'
 import type { Exercise, Lesson } from '../../domain/types'
 import { LessonArt } from '../../components/LessonCard'
 import { ActivityMeter } from '../../components/ActivityMeter'
-
-export function ListenButton({ phrase }: { phrase: string }) {
-  const [message, setMessage] = useState('')
-  useEffect(() => () => window.speechSynthesis?.cancel(), [])
-  return (
-    <>
-      <button
-        className="button secondary small-button"
-        onClick={() => {
-          if (!('speechSynthesis' in window)) {
-            setMessage('Trình duyệt này chưa hỗ trợ đọc câu. Bạn vẫn có thể học với văn bản.')
-            return
-          }
-          const voice = new SpeechSynthesisUtterance(phrase)
-          voice.lang = 'en-US'
-          voice.rate = 0.85
-          voice.onerror = () =>
-            setMessage('Chưa phát được giọng đọc. Bạn vẫn có thể đọc câu mẫu và tiếp tục.')
-          window.speechSynthesis.cancel()
-          window.speechSynthesis.speak(voice)
-          setMessage('Giọng đọc tổng hợp của thiết bị; không phải bản thu của giáo viên.')
-        }}
-      >
-        <Volume2 size={18} /> Nghe câu mẫu
-      </button>
-      <p className="muted small" role="status">
-        {message}
-      </p>
-    </>
-  )
-}
+import { ListenButton } from '../../components/ListenButton'
 
 function ExerciseStep({
   exercise,

@@ -66,9 +66,7 @@ export function App() {
     document.title = `${pageTitle} · Mỗi ngày`
     main.current?.focus({ preventScroll: true })
     window.scrollTo({ top: 0, behavior: 'instant' })
-    window.speechSynthesis?.cancel()
   }, [route, pageTitle, scopeKey, learningViewRevision, auth.status])
-  useEffect(() => () => window.speechSynthesis?.cancel(), [])
   useEffect(() => {
     suspendSync(settings)
     return () => suspendSync(false)

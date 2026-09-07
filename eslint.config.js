@@ -9,6 +9,7 @@ export default defineConfig([
   { ignores: ['dist/**', '.local/**', 'playwright-report/**', 'test-results/**'] },
   js.configs.recommended,
   { files: ['**/*.js'], languageOptions: { globals: globals.node } },
+  { files: ['src/offline/*.js'], languageOptions: { globals: globals.serviceworker } },
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

@@ -1,0 +1,62 @@
+{
+  "version": "foundation-v1-9c8deebb97942ab8",
+  "title": "Bảy ngày khởi đầu",
+  "resources": [
+    {
+      "path": "/packs/foundation-v1/hello.wav",
+      "bytes": 103674,
+      "sha256": "561bddc52c9843ecae064a6e2d971defd9fcd2cbc42ef3e320fad30de8cf3fb8",
+      "lessonId": "hello",
+      "phrase": "Hi! My name is Linh."
+    },
+    {
+      "path": "/packs/foundation-v1/friends.wav",
+      "bytes": 121176,
+      "sha256": "efd8c50dd8d093ef777a9d8b8a79aae88d883467eb808b72ecfe8d84a1e9baa2",
+      "lessonId": "friends",
+      "phrase": "I usually play games with my friends."
+    },
+    {
+      "path": "/packs/foundation-v1/tea.wav",
+      "bytes": 118252,
+      "sha256": "42d4121c697193be2ceaaf7555e314cd0cce02b8590c6fde3a5a35d877226989",
+      "lessonId": "tea",
+      "phrase": "I'd like a cup of tea, please."
+    },
+    {
+      "path": "/packs/foundation-v1/room.wav",
+      "bytes": 84604,
+      "sha256": "3268f3d5f4c77a3a72fc2bb2fec2cb062174e1dc88e5f179da409bbe1d18b16a",
+      "lessonId": "room",
+      "phrase": "There is a book on the table."
+    },
+    {
+      "path": "/packs/foundation-v1/morning.wav",
+      "bytes": 74084,
+      "sha256": "7797e2265bed8ffe1f5dabcd796b7c7ef8c54774fd7635ba5c5b5f7f472aa0fe",
+      "lessonId": "morning",
+      "phrase": "I get up at seven."
+    },
+    {
+      "path": "/packs/foundation-v1/yesterday.wav",
+      "bytes": 112318,
+      "sha256": "27e5c43e378fa6a942c912f630833cae4059435ed56d3272edfd23432177b518",
+      "lessonId": "yesterday",
+      "phrase": "Yesterday, I went to the park."
+    },
+    {
+      "path": "/packs/foundation-v1/tonight.wav",
+      "bytes": 113302,
+      "sha256": "02edc654157cdefc977acaa5be54647a3708cd997025a7cd73741c154d197e7e",
+      "lessonId": "tonight",
+      "phrase": "I'm going to study English tonight."
+    },
+    {
+      "path": "/packs/foundation-v1/lessons.json",
+      "bytes": 12625,
+      "sha256": "179d1da999ec5eb649da13e72baa13812d679fd3f16fa9231dc37e2de0abf5c9",
+      "lessonId": null,
+      "phrase": null
+    }
+  ]
+}

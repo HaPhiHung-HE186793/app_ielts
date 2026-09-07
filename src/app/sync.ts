@@ -41,7 +41,14 @@ export function initializeSync() {
   initialized = true
   const configure = () => {
     const userId = getAuthSnapshot().user?.id ?? null
-    if (activeUser === userId) return
+    if (activeUser === userId) {
+      // SDK callbacks are synchronous while its auth lock is held.
+      // Wake on a later task, after a cached owner becomes an authenticated session.
+      window.setTimeout(() => {
+        void engine?.run()
+      }, 0)
+      return
+    }
     activeUser = userId
     const run = ++generation
     engine?.dispose()
@@ -72,7 +79,7 @@ export function initializeSync() {
           (phase) => {
             if (generation === run) publish(phase, true)
           },
-          () => navigator.onLine,
+          () => navigator.onLine && getAuthSnapshot().status !== 'offline',
         )
         engine.suspend(suspended)
         await new Promise<void>((resolve) => {

@@ -120,6 +120,16 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 - Nhập phần khách có màn hình lựa chọn và giữ nguồn khách. Khôi phục JSON hoặc xóa dữ liệu trên thiết bị dừng đồng bộ tại trình duyệt đó, không xóa bản server; bật lại có thể tải bản server xuống. Chưa có nút xóa toàn bộ lịch sử server; không dùng reset local như xóa cloud.
 - Backend vẫn chạy Docker local, chưa triển khai hosted/SMTP ngoài máy. RPC dùng quyền definer chỉ để bảo vệ đường ghi atomic, khóa search_path và kiểm tra chủ rõ ràng; quyền đọc bảng vẫn dùng RLS. Tham khảo [Supabase functions](https://supabase.com/docs/guides/database/functions), [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [PostgreSQL transaction isolation](https://www.postgresql.org/docs/17/transaction-iso.html).
 
+## DEC-015 — Gói công khai và mở lại khi mất mạng
+
+- Ngày: 2026-09-07. PWA-002. Giữ StudyState version 3, localStorage/metadata đồng bộ và quy tắc chủ sở hữu. Dùng Cache Storage cho tài nguyên HTTP công khai, chưa chuyển tiến độ sang IndexedDB; không đưa dữ liệu Auth/câu trả lời vào cache dùng chung.
+- Phạm vi gói đầu: bảy bài hiện tại, JSON văn bản/hoạt động và bảy WAV câu mẫu tạo bằng eSpeak NG 1.51, giọng formant en-us/145 từ mỗi phút. Audio thử nghiệm có transcript, không phải bản thu giáo viên; nguồn/quyền lưu và giới hạn ở [OFFLINE.md](OFFLINE.md).
+- Build tạo allowlist, byte/hash tài nguyên và worker, kiểm tra học liệu trùng bản gói. Shell được lưu khi worker cài; tải gói cần thao tác người học. Marker hoàn tất sau khi đủ file có SHA-256 đúng; thiếu mạng/quota giữ trạng thái chưa đầy đủ, có kiểm tra/thử lại/xóa riêng.
+- Worker xử lý range cho WAV, không cache API/Auth/Authorization/query/origin ngoài. Lệnh tải/xóa xếp hàng và không nhận URL tùy ý. Xóa gói giữ shell, tiến độ và outbox; chỉ dọn cache có prefix dự án.
+- Không skipWaiting hoặc reload cưỡng bức; bản mới chờ các cửa sổ cũ đóng. Shell HTML được trả theo worker hiện tại để tránh trộn code; activation dọn cache cũ và giữ gói cùng phiên bản. Gói đổi cần tải lại. Tham khảo [vòng đời service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers) và [cache/thu hồi dung lượng](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Caching).
+- Khôi phục chủ local từ phiên SDK đã lưu trước khi chờ làm mới token, vì tín hiệu navigator.onLine có thể không phản ánh kết nối Internet thực. Chỉ chọn kho trên máy, không cấp quyền server; UI ghi đang mở bản lưu, sync hoãn đến khi SDK xác nhận phiên. SIGNED_OUT thực vẫn chuyển về khách. Khi SDK thông báo, engine được đánh thức ở task kế tiếp để không gọi API trong auth lock.
+- Chỉ đăng ký worker trong bản build. `preview:local` build với cấu hình công khai của Supabase Docker rồi mở cổng 4175 riêng; cổng khác là kho khác. Không tự triển khai hosted; không thay kiểm thử iOS/Android thật bằng viewport Chrome.
+
 ## Các giả định/chọn lựa còn mở
 
 | Mã | Vấn đề | Mặc định hiện tại | Thời điểm cần làm rõ |

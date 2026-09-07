@@ -6,7 +6,7 @@ Ngày: 2026-09-06. Task: CONTENT-001. File nội dung: `src/content/lessons.ts`.
 
 Toàn bộ câu, bản dịch, câu hỏi, giải thích và gợi ý được trợ lý biên soạn mới cho dự án trong session này. Không sao chép đề Cambridge, IELTS, video hoặc tài liệu trả phí. Hình minh họa SVG được viết trong code; icon dùng gói Lucide, font dùng Be Vietnam Pro và Lora qua Fontsource với giấy phép của các gói tương ứng.
 
-Không có file thu âm giáo viên. Nút nghe dùng SpeechSynthesis của thiết bị nếu hỗ trợ, có nhãn giọng tổng hợp và phương án học văn bản khi không phát được.
+Không có file thu âm giáo viên. PWA-002 thêm bảy WAV tổng hợp eSpeak NG 1.51 từ câu mẫu tự soạn, có transcript, dừng/lỗi và tải offline. Nguồn/quyền lưu ở [OFFLINE.md](OFFLINE.md). Giọng thử nghiệm còn cứng, tên Việt có thể chưa tự nhiên; chưa có giáo viên nghe duyệt, không coi là mẫu accent chuẩn.
 
 ## Rà soát nội bộ
 

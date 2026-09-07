@@ -1,10 +1,10 @@
 import type { Session, User } from '@supabase/supabase-js'
-import { publicConfig, supabase } from '../services/supabase'
+import { authStorageKey, publicConfig, supabase } from '../services/supabase'
 import { switchStudyOwner } from '../data/store'
 
 type AuthSnapshot = {
-  status: 'loading' | 'guest' | 'signed-in' | 'unavailable'
-  user: User | null
+  status: 'loading' | 'guest' | 'signed-in' | 'offline' | 'unavailable'
+  user: Pick<User, 'id' | 'email'> | null
   error: string | null
 }
 let snapshot: AuthSnapshot = { status: supabase ? 'loading' : 'guest', user: null, error: null }
@@ -27,15 +27,43 @@ function receiveSession(session: Session | null) {
 export function initializeAuth() {
   if (initialized || !supabase) return
   initialized = true
+  window.addEventListener('online', () => {
+    // Ask the SDK to refresh; its Auth events decide the actual owner/session.
+    void supabase?.auth.getSession().catch(() => {})
+  })
+  // An expired SDK session may need network before INITIAL_SESSION arrives.
+  // Read only its owner hint for local learning; this grants no server access.
+  if (authStorageKey && publicConfig.status === 'ready') {
+    try {
+      const cached = JSON.parse(localStorage.getItem(authStorageKey) ?? 'null')
+      if (typeof cached?.user?.id === 'string' && /^[a-f0-9-]{36}$/i.test(cached.user.id)) {
+        const user = {
+          id: cached.user.id,
+          email: typeof cached.user.email === 'string' ? cached.user.email : undefined,
+        }
+        switchStudyOwner({ project: publicConfig.url, userId: user.id })
+        publish({
+          status: 'offline',
+          user,
+          error:
+            'Đang mở phần học đã lưu trên máy. Phiên sẽ được xác nhận khi kết nối được máy chủ.',
+        })
+      }
+    } catch {
+      /* Unreadable auth data stays untouched; the SDK handles recovery. */
+    }
+  }
   // Synchronous callback: no Supabase API call while the auth client's lock is held.
-  supabase.auth.onAuthStateChange((_event, session) => {
+  supabase.auth.onAuthStateChange((event, session) => {
     receivedEvent = true
+    if (!session && event === 'INITIAL_SESSION' && snapshot.status === 'offline') return
     receiveSession(session)
   })
   void supabase.auth
     .getSession()
     .then(({ data, error }) => {
       if (receivedEvent) return
+      if (snapshot.status === 'offline') return
       if (error)
         publish({
           status: 'unavailable',
@@ -45,7 +73,7 @@ export function initializeAuth() {
       else receiveSession(data.session)
     })
     .catch(() => {
-      if (!receivedEvent)
+      if (!receivedEvent && snapshot.status !== 'offline')
         publish({
           status: 'unavailable',
           user: null,

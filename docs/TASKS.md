@@ -1,6 +1,6 @@
 # Danh sách task phát triển
 
-Cập nhật: 2026-09-06. Thực hiện theo thứ tự ưu tiên và phụ thuộc, không coi các tính năng dự kiến là đã có. Trạng thái tổng quan ở [STATUS.md](STATUS.md).
+Cập nhật: 2026-09-07. Thực hiện theo thứ tự ưu tiên và phụ thuộc, không coi các tính năng dự kiến là đã có. Trạng thái tổng quan ở [STATUS.md](STATUS.md).
 
 ## Quy ước
 
@@ -40,8 +40,8 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | DATA-001 | DONE | LEARN-002 | Supabase Docker local, email OTP thật, migration account_profiles/RLS và cấu hình mẫu công khai. Tách kho khách/tài khoản, bảo vệ callback/import khi đổi chủ. Kiểm tra quyền bằng hai tài khoản và 11 ca Auth/API/trình duyệt đạt; setup ở BACKEND. Chưa cấu hình hosted/SMTP thật; đồng bộ ở DATA-002. |
 | DATA-002 | DONE | DATA-001, REVIEW-001, PROGRESS-001 | Đồng bộ tự nguyện với outbox/revision, gộp lượt theo ID/checkpoint, lịch ôn và chọn bản xung đột; nhập phần khách có lựa chọn và giữ nguồn. RLS/RPC thật kiểm tra quyền, gửi trùng/đồng thời. Hai browser context kiểm tra tiếp tục, offline/response mất, reload, đổi chủ khi đang gửi; một tab sửa tài khoản theo Web Locks. Giới hạn thiết bị/hosted và cách dùng ở SYNC. |
 | PWA-001 | DONE | APP-002, LEARN-002 | Manifest/icon/standalone, hướng dẫn và prompt tự nguyện; Chrome đọc manifest/icon và không báo lỗi installability trong hồ sơ thử riêng. Luồng prompt/standalone có kiểm tra điều khiển; chưa cài/khởi chạy trên iPhone/Android hoặc cửa sổ app hệ điều hành. Phạm vi và bước xác minh ở INSTALLATION/TESTING. |
-| PWA-002 | READY | PWA-001, DATA-002 | Tải một gói bài/audio được phép lưu; mở và học offline, chờ gửi khi có mạng. Có quản lý dung lượng/xóa tải xuống; không rò cache giữa tài khoản, không giả lập AI offline. |
-| NOTIFY-001 | TODO | PWA-001, DATA-001, PLAN-001 | Nhắc học tự nguyện, múi giờ và giờ yên lặng, tắt/dời lịch được. Xin quyền từ thao tác người dùng, xử lý từ chối; xác minh nền tảng hỗ trợ, không phụ thuộc thông báo để vào bài. |
+| PWA-002 | DONE | PWA-001, DATA-002 | Gói bảy bài/bảy WAV được tạo từ nội dung dự án; worker/manifest có hash, tải/dung lượng/xóa/lỗi/quota, mở mới offline và chờ sync. Kiểm tra cập nhật giữ draft/outbox, file thiếu/thử lại, range audio và cache không chứa dữ liệu tài khoản. Hướng dẫn/quyền/giới hạn thiết bị ở OFFLINE. |
+| NOTIFY-001 | READY | PWA-001, DATA-001, PLAN-001 | Nhắc học tự nguyện, múi giờ và giờ yên lặng, tắt/dời lịch được. Xin quyền từ thao tác người dùng, xử lý từ chối; xác minh nền tảng hỗ trợ, không phụ thuộc thông báo để vào bài. |
 
 Điều kiện đạt mốc 2: dùng cùng tài khoản để tiếp tục trên hai thiết bị và học phần đã tải khi mất mạng, với giới hạn được hiển thị rõ.
 
@@ -67,22 +67,21 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | COACH-001 | TODO | BETA-001 | Nếu người dùng cần: dashboard gia sư, giao bài và nhận xét với quyền truy cập có lựa chọn; kiểm tra học viên khác không xem chéo dữ liệu. |
 | MOBILE-001 | TODO | BETA-001 | Nếu cần cửa hàng ứng dụng: đánh giá Capacitor, build/ký và kiểm thử native, chuẩn bị thông tin phát hành. Tài khoản, thiết bị và quyền phát hành phải có trước khi gửi lên cửa hàng. |
 
-## Chi tiết task tiếp theo: PWA-002
+## Chi tiết task tiếp theo: NOTIFY-001
 
 ### Thực hiện
 
-1. Đọc STATUS, INSTALLATION, SYNC, ARCHITECTURE và DEC-012/014. Kiểm tra code/Git/Docker; dùng db:migrate nếu stack local đã tồn tại. Không thay thuật toán gộp hoặc tự bật sync.
-2. Chốt phạm vi gói offline từ bảy bài hiện có, metadata phiên bản/dung lượng/nguồn tài nguyên. Chưa có audio file trong repo: SpeechSynthesis tùy thiết bị không được coi là audio đã tải. Xác định tài nguyên âm thanh có quyền lưu trước khi đóng task; không gắn nhãn gói đầy đủ khi phần đó chưa có.
-3. Thêm service worker và app shell theo phiên bản, xử lý cập nhật không làm mất bài dở/outbox. Không cache request/response Auth hoặc dữ liệu cá nhân vào cache dùng chung. Ghi quyết định cache, giới hạn và quá trình nâng phiên bản.
-4. Giao diện tải/xem dung lượng/xóa gói; lỗi mạng/quota giữ trạng thái trung thực và có thử lại. Phân biệt xóa tài nguyên tải với xóa tiến độ hoặc bản server. Xem lại nhu cầu IndexedDB cho dữ liệu lớn; nếu chuyển kho, cần migration an toàn và test quota/gián đoạn.
-5. Kiểm tra tải thành công rồi đóng/mở mới app khi offline, học/tiếp tục/lưu, trở lại mạng gửi outbox không trùng. Kiểm tra cập nhật version, gói tải dở, xóa tài nguyên và không rò cache giữa tài khoản. Phần cần mạng có trạng thái rõ; không giả lập AI.
-6. Kiểm tra Chrome có sẵn và các thiết bị/nền tảng thật nếu khả dụng. Mô phỏng viewport/offline không thay Safari/Android thật; giữ bước thiếu trong INSTALLATION/TESTING.
-7. Chạy kiểm tra phù hợp, cập nhật README/docs/task/status/session log và commit/push theo ủy quyền. Chưa tự triển khai host công khai hoặc phát hành cửa hàng.
+1. Đọc STATUS, OFFLINE, INSTALLATION, SYNC, ARCHITECTURE và DEC-015; kiểm tra Git/code/backend. Giữ worker theo phiên bản, outbox và phạm vi cache công khai. Đánh dấu IN_PROGRESS trước code.
+2. Kiểm tra tài liệu nền tảng hiện hành về Notifications/Web Push/iOS/Android và môi trường thật có sẵn. Chốt trong DECISIONS khác biệt giữa lời nhắc lúc app mở và thông báo khi đóng app; không gọi timer tab là lịch gửi nền đã hoạt động.
+3. Thiết lập mặc định tắt, người học chọn bật/giờ/múi giờ/ngày/giờ yên lặng, sửa/dời/tắt được. Quyền trình duyệt chỉ xin sau thao tác rõ ràng; từ chối/không hỗ trợ vẫn mở bài bình thường.
+4. Nếu cần push: thiết kế subscription riêng theo chủ/thiết bị, xác thực/RLS, khóa máy chủ không đưa vào VITE, xử lý logout/hủy đăng ký và endpoint hết hiệu lực. Dùng dữ liệu thử local; chưa tự phát thông báo cho người khác hoặc deploy hosted.
+5. Kiểm tra lịch qua ngày/múi giờ/DST, không gửi trùng hoặc trong giờ yên lặng; tắt/dời/thay chủ vô hiệu nhắc cũ. Nội dung không chứa câu trả lời cá nhân hoặc tạo áp lực streak. Chỉ báo delivery hoạt động khi đã xác minh thật; ghi rõ phần cần host/thiết bị nếu thiếu.
+6. Chạy kiểm tra phù hợp và hồi quy PWA/Auth phần thay đổi. Cập nhật README, STATUS/TASKS/SESSION_LOG và quyết định; commit/push theo ủy quyền đã có.
 
 ### Chưa thuộc task này
 
-AI, thông báo, deployment công khai, phát hành cửa hàng và chương trình học liệu đầy đủ.
+AI, chương trình học liệu đầy đủ, social/leaderboard, triển khai công khai hoặc phát hành cửa hàng.
 
-### Phần đã có nhưng chưa đóng task khác
+### Phần đã có nhưng chưa đóng mốc khác
 
-Mốc 1 local, PWA-001, DATA-001 và DATA-002 đã đóng. PWA-002 READY, chưa triển khai. Sync đã kiểm tra hai context trên backend local, chưa phải hai điện thoại thật. Mốc 2 còn gói offline và kiểm tra dùng trên thiết bị; bước thiếu ghi trong INSTALLATION/BETA-001.
+Mốc 1 local, PWA-001/002 và DATA-001/002 đã đóng. NOTIFY-001 READY. Tài khoản, sync và offline đã kiểm tra trên Chrome/backend local; mốc 2 còn xác minh hai thiết bị thật theo INSTALLATION/BETA-001. Không gọi bản hiện tại là beta hoàn chỉnh hoặc app native.

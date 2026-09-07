@@ -237,3 +237,35 @@ Người dùng yêu cầu tiếp tục. Đọc bàn giao và code tại `1dffddb
 - Giữ giới hạn: local chưa mã hóa/còn quota, request gửi snapshot, chưa benchmark dữ liệu nhiều tháng/hạn mức hosted hoặc UI xóa lịch sử server. Mỗi origin một tab sửa tài khoản, không hứa học khi mở mới app offline. Chưa kiểm tra iPhone/Safari/Android thật, AI, nguồn audio tải offline hoặc hiệu quả học tập.
 - Tiếp theo PWA-002: chốt gói bài/audio có quyền lưu, app shell/service worker có phiên bản, tải/xóa/dung lượng, không cache Auth/cá nhân dùng chung, kiểm tra mở mới offline và giữ outbox khi cập nhật. Không tự mở rộng sang deploy hoặc AI.
 - Commit/push sau rà soát đúng file; hash và kết quả remote được xác minh bằng Git trong bàn giao cuối.
+
+## 2026-09-07 — PWA-002: tải gói và mở lại khi mất mạng
+
+### Kết quả
+
+- Tiếp tục từ main sạch sau DATA-002, đọc tài liệu/code và đánh dấu PWA-002 IN_PROGRESS. Giữ scope bảy bài, không mở rộng sang AI/native/deploy. Người dùng tiếp tục ủy quyền phát triển/commit/push; không dùng sub-agent.
+- Tạo bảy WAV từ câu mẫu tự soạn bằng eSpeak NG 1.51, formant en-us/145 từ mỗi phút, qua Docker Debian. Bản văn bản/câu hỏi JSON và metadata SHA-256/byte cùng tạo bằng `scripts/generate-audio.js`. Gói 740.035 byte; giọng thử nghiệm chưa được giáo viên duyệt, có transcript và giới hạn rõ. Nguồn/quyền ở OFFLINE/CONTENT_REVIEW.
+- Build plugin kiểm tra học liệu/asset rồi tạo worker và manifest allowlist từ Vite output. Shell ~1,07 MB tự lưu khi cài worker; gói chỉ tải từ thao tác người học. Không cache Auth/API/Authorization/query/origin ngoài hoặc response cá nhân. Không thêm dependency/đổi lockfile.
+- Worker kiểm tra hash trước lưu, marker hoàn tất sau đủ file; tải/xóa tuần tự, có quota/timeout/integrity/thử lại và kiểm tra file bị thu hồi. Byte range 206/416 hỗ trợ WAV. Xóa gói giữ phần mở app, tiến độ và outbox; không xóa cache khác.
+- Không skipWaiting/reload cưỡng bức: worker mới đợi cửa sổ cũ đóng, giữ HTML theo build đang chạy; activation dọn cache phiên bản cũ của dự án. Gói đổi phiên bản cần tải lại. Dữ liệu học vẫn version 3/localStorage; không có migration IndexedDB.
+- Giao diện gói nằm ở phần Thêm vào màn hình chính, có dung lượng/trạng thái/kiểm tra/xóa/cập nhật. ListenButton chuyển từ SpeechSynthesis sang file thật, có dừng/lỗi và thử lại trên cùng trang sau mất mạng. File online không tự báo đã tải gói.
+- Phiên SDK cần refresh có thể chặn khởi động. App mở chủ local từ phiên đã lưu trước, có nhãn bản lưu; chưa cấp quyền server. Sync chờ SDK xác nhận và đánh thức ở task kế tiếp để không gọi API bên trong auth lock. SIGNED_OUT vẫn quay về khách. Không dựa một mình vào navigator.onLine.
+- Thêm `npm run preview:local` cho build Auth/offline tại 4175, tách dev 5173 và test 4173/4174. Chỉ đưa cấu hình công khai vào build. Cổng khác có kho khác; tài liệu chỉ đường sync/JSON.
+
+### Kiểm tra và sửa lỗi
+
+- Lint/typecheck/build đạt, Prettier các file mới/đổi đạt. Vitest **78/78** đạt, thêm hai ca byte range. Vite vẫn cảnh báo bundle ~632 kB minified/~181 kB gzip.
+- Chạy toàn bộ **68/68 ca khách** và **27/27 ca Auth/API/sync** đạt trên Chrome desktop/mobile viewport với backend Docker thật. Các ca PWA mới gồm tải/đóng/mở mới offline/phát audio/làm bài/lịch ôn; mất file/hash sai/quota giả lập/thử lại; xóa tài nguyên giữ dữ liệu; cache không chứa dữ liệu riêng A/B.
+- Ca tài khoản mở lại khi `expires_at` SDK đã qua hạn (giữ JWT thật), nộp khởi động offline; khi online, server đã commit nhưng nhận response 503; reload gửi lại UUID cũ, chỉ một receipt/kết quả. Các ca Auth/đồng bộ cũ vẫn đạt.
+- Ca cập nhật dùng server HTTP riêng/port ngẫu nhiên, hai bộ shell/manifest thật, draft/outbox fixture. Lượt đầu có race khi mở trang ngay trong lúc worker chuyển activation; sửa test đợi trạng thái activation thật sau khi đóng cửa sổ, không thêm skipWaiting hoặc delay đoán. Bộ đầy đủ sau sửa đạt ở cả hai viewport.
+- Lượt test đầu có import JSON thiếu import attribute trong Node và selector chưa khớp nhãn/nút hai bước của bài; đã sửa fixture/selector theo UI. Ca Auth lộ việc navigator.onLine trang mới còn báo online dù context offline: sửa khôi phục chủ local và chờ SDK thay vì kẹt màn hình loading; không sửa JWT để giả lập Auth thành công. Fixture profile null được sửa thành completion hợp lệ.
+- Sau bộ đầy đủ, chuẩn hóa MB theo 1.000.000 byte và sửa audio bị lỗi mạng cần `load()` trước phát lại. Chạy lại lint/typecheck/78 unit/build và hai ca tải/mở/học offline, bổ sung nghe thất bại sau xóa gói rồi có mạng phát lại trên cùng trang: đều đạt. Không chạy lại toàn bộ Auth vì các sửa cuối chỉ ở hiển thị dung lượng/player.
+- Axe A/AA không phát hiện vi phạm trong các vùng đã quét, không tràn ngang; đã xem ảnh desktop/mobile. Test WAV/phát/range không xác nhận phát âm/ngữ điệu đúng hay hiệu quả học.
+- Trong lúc chốt, Docker Desktop và preview đã dừng; mở lại Docker bằng tiến trình ẩn, các container của repo lên lại, không reset/xóa volume. `db:migrate` xác nhận không còn migration thiếu; số hàng Auth user/account_profiles/study_snapshots/study_commits đều 0 sau test. Mở lại preview 4175 để dùng thử.
+- Kiểm tra build từ chối tài nguyên bị sửa/học liệu chưa đóng gói, đọc header WAV 22.050 Hz/16 bit, kiểm tra secret trong build và staged ở bước rà soát cuối. Tài liệu hiện có 14 Markdown/64 liên kết nội bộ/24 task, NOTIFY-001 READY duy nhất; git diff --check đạt.
+
+### Bàn giao
+
+- **PWA-002 DONE; NOTIFY-001 READY** với các bước cụ thể trong TASKS. STATUS là trạng thái hiện tại; OFFLINE mô tả cách dùng, quyền audio, cache và cập nhật. README/ARCHITECTURE/PRODUCT/INSTALLATION/BACKEND/SYNC/TESTING/CONTENT_REVIEW/DEC-015 cùng cập nhật.
+- File chính: `src/offline/worker.js`, `range.js`, `src/app/offline.ts`, `OfflinePanel.tsx`, `ListenButton.tsx`, `scripts/offline-build.js`, `generate-audio.js`, `preview-local.js`, `public/packs/foundation-v1/` và các test offline.
+- Chưa có hosted/SMTP ngoài máy, public HTTPS, push/AI, kiểm thử iPhone/Safari/Android thật/cửa sổ OS hoặc giáo viên duyệt âm thanh. Cache có thể bị thu hồi, local chưa mã hóa, không đồng bộ khi app bị OS đóng. Bảy bài chưa đủ bốn tuần hoặc lộ trình sáu tháng.
+- Commit/push main sau rà soát; lấy hash và xác minh remote bằng Git trong bàn giao cuối, không tự sửa lịch sử/force-push.

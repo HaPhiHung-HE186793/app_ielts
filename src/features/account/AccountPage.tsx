@@ -293,11 +293,11 @@ export function AccountPage({ onSettings }: { onSettings: () => void }) {
           <section className="account-banner">
             <UserRound size={27} />
             <div>
-              <h2>Đã đăng nhập</h2>
+              <h2>{auth.status === 'offline' ? 'Đang học từ bản lưu trên máy' : 'Đã đăng nhập'}</h2>
               <p className="account-email">{auth.user.email}</p>
             </div>
           </section>
-          <AccountProfile userId={auth.user.id} />
+          {auth.status !== 'offline' && <AccountProfile userId={auth.user.id} />}
           <SyncPanel />
         </>
       ) : publicConfig.status !== 'ready' ? (

@@ -50,6 +50,8 @@ Lựa chọn key dựa trên [hướng dẫn API key của Supabase](https://sup
 
 ## Dữ liệu và đăng xuất
 
+Để thử cả tài khoản và offline: `npm run preview:local` build vào `.local/preview-dist` với cấu hình công khai rồi mở http://127.0.0.1:4175. Cổng này có kho riêng với dev 5173, dùng đồng bộ/JSON để chuyển. Không có server key trong build. Xem [OFFLINE.md](OFFLINE.md).
+
 | Dữ liệu | Nơi lưu hiện tại |
 | --- | --- |
 | Email, thông tin xác thực/phiên | Supabase Auth; phiên hiện tại do SDK giữ trong trình duyệt |

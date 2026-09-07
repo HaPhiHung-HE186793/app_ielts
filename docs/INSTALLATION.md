@@ -1,6 +1,6 @@
 # Mở Mỗi ngày từ màn hình chính
 
-Cập nhật: 2026-09-06. PWA-001 thêm cấu hình cài từ web và hướng dẫn; chưa có bản HTTPS công khai, gói offline, thông báo hoặc phát hành qua cửa hàng. Kết quả kiểm tra thực tế ở [TESTING.md](TESTING.md) và [STATUS.md](STATUS.md).
+Cập nhật: 2026-09-06. PWA-001 thêm cấu hình cài từ web và hướng dẫn; PWA-002 bổ sung gói offline ở bản build. Chưa có bản HTTPS công khai, thông báo hoặc phát hành qua cửa hàng. Kết quả kiểm tra thực tế ở [TESTING.md](TESTING.md) và [STATUS.md](STATUS.md).
 
 ## Mở hướng dẫn trong app
 
@@ -22,9 +22,9 @@ Nếu đang mở trong Zalo/Facebook hoặc trình duyệt nhúng, dùng Safari/
 ## Địa chỉ và tiến độ
 
 - Cần một địa chỉ HTTPS đã triển khai, truy cập được trên điện thoại để dùng ngoài máy phát triển. `127.0.0.1`/`localhost` luôn trỏ về thiết bị đang mở; link local máy tính không đưa app sang điện thoại. Chạy Vite qua IP LAN bằng HTTP không tương đương bản PWA trên HTTPS.
-- Cài trên máy local chỉ mở được khi server local còn chạy. `npm run dev` và `npm run preview` không phải hosting production. Chưa có URL công khai để gửi người học.
+- Lần đầu và lúc tải gói cần server local chạy; sau khi tải đủ bản build, có thể mở lại offline cùng origin khi cache còn đủ. Dev không hỗ trợ mở lại offline. `npm run dev` và `npm run preview` không phải hosting production. Chưa có URL công khai để gửi người học.
 - Tải bản sao JSON trong cài đặt trước khi đổi origin, trình duyệt hoặc dùng cửa sổ cài lần đầu. Nếu cửa sổ mới chưa có tiến độ, dùng Khôi phục. Bản sao chứa dữ liệu học cá nhân; không đưa vào repository.
-- App có đồng bộ tài khoản tự nguyện, đã kiểm tra trên backend local; chưa có cloud hosted hoặc gói học offline. Thêm biểu tượng không tự bật đồng bộ; kiểm tra trạng thái hoặc giữ bản sao trước khi đổi nơi mở. Xem [SYNC.md](SYNC.md).
+- App có đồng bộ tài khoản tự nguyện, đã kiểm tra trên backend local; chưa có cloud hosted. Gói offline có hướng dẫn tại [OFFLINE.md](OFFLINE.md). Thêm biểu tượng không tự bật đồng bộ; kiểm tra trạng thái hoặc giữ bản sao trước khi đổi nơi mở. Xem [SYNC.md](SYNC.md).
 
 Điều kiện manifest và HTTPS/localhost được tham khảo từ [MDN: Making PWAs installable](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable). Quy tắc local của dự án ở DEC-008/012 trong [DECISIONS.md](DECISIONS.md).
 
@@ -44,6 +44,6 @@ Nếu đang mở trong Zalo/Facebook hoặc trình duyệt nhúng, dùng Safari/
 3. Mở biểu tượng: xác nhận cửa sổ riêng, hướng dẫn báo chế độ ứng dụng và Hôm nay có phiên dở nếu dùng cùng kho. Nếu kho tách, nhập bản sao rồi tiếp tục.
 4. Đóng và mở app, kiểm tra nháp và lịch ôn; thử chuyển nền/quay lại, bàn phím, xoay ngang và khoảng an toàn quanh tai thỏ/thanh home.
 5. Hủy cài, thử trình duyệt nhúng hoặc không có nút cài. Người học vẫn có thể mở hướng dẫn và dùng web.
-6. Ghi rõ offline chưa hỗ trợ. Không dùng việc một trang còn nằm trong cache như bằng chứng PWA-002 đã hoàn tất.
+6. Trên bản build, tải đủ gói rồi đóng cửa sổ, tắt mạng, mở lại từ biểu tượng; phát câu nghe, làm bài và lưu nháp. Khôi phục mạng để kiểm tra đồng bộ/không trùng, xóa gói không xóa tiến độ. Thử phiên hết hạn và bản cập nhật, kiểm tra quota/thu hồi dữ liệu theo [OFFLINE.md](OFFLINE.md).
 
 Hiện chưa có kiểm tra cài/khởi chạy từ màn hình chính trên iPhone/iPad/Android thật hoặc cửa sổ app của hệ điều hành. Kiểm thử Chrome tự động và tín hiệu standalone có điều khiển không thay thế các bước trên.

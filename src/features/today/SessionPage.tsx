@@ -11,7 +11,8 @@ import {
   submitPlannedPractice,
 } from '../../domain/planner'
 import { navigate } from '../../app/router'
-import { LessonPlayer, ListenButton } from '../lessons/LessonPlayer'
+import { LessonPlayer } from '../lessons/LessonPlayer'
+import { ListenButton } from '../../components/ListenButton'
 import { ActivityMeter } from '../../components/ActivityMeter'
 import { formatDuration, measuredTime } from '../../domain/activity'
 

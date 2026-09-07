@@ -6,6 +6,7 @@ import {
   subscribeInstallation,
 } from '../../app/installation'
 import '../../styles/install.css'
+import { OfflinePanel } from './OfflinePanel'
 
 const guides = {
   ios: {
@@ -159,6 +160,7 @@ export function InstallPage({ onSettings }: { onSettings: () => void }) {
         </section>
       )}
 
+      <OfflinePanel />
       <section className="panel install-data" aria-labelledby="install-data-title">
         <h2 id="install-data-title">Mang theo cả hành trình của bạn</h2>
         <p>
@@ -170,8 +172,8 @@ export function InstallPage({ onSettings }: { onSettings: () => void }) {
           Mở cài đặt và bản sao <ArrowRight size={16} />
         </button>
         <p className="muted small">
-          Bản hiện tại cần mạng để mở app, chưa có gói học offline. Thêm biểu tượng không tự sao lưu
-          tiến độ; nếu dùng tài khoản, bật đồng bộ và kiểm tra trạng thái đã lưu trước khi đổi máy.
+          Tải gói ở trên để nghe và học khi mất mạng. Thêm biểu tượng không tự sao lưu tiến độ; nếu
+          dùng tài khoản, bật đồng bộ và kiểm tra trạng thái đã lưu trước khi đổi máy.
         </p>
       </section>
     </div>

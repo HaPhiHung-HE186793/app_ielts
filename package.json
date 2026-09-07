@@ -20,6 +20,8 @@
     "db:stop": "supabase stop",
     "db:migrate": "supabase migration up --local",
     "dev:local": "node scripts/dev-local.js",
+    "preview:local": "node scripts/preview-local.js",
+    "audio": "node scripts/generate-audio.js",
     "test:auth": "node scripts/test-auth.js"
   },
   "dependencies": {

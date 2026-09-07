@@ -1,7 +1,8 @@
 import type { Lesson } from '../domain/types.ts'
+import { additionalLessons, weeklyChecks } from './foundation.ts'
 
 // Original project content; editorial review and limits: docs/CONTENT_REVIEW.md.
-export const lessons: Lesson[] = [
+const initialLessons: Lesson[] = [
   {
     id: 'hello',
     day: 1,
@@ -371,4 +372,31 @@ export const lessons: Lesson[] = [
   },
 ]
 
+export const curriculum = [
+  {
+    week: 1,
+    title: 'Làm quen với câu trong cuộc sống',
+    goal: 'Giới thiệu, gọi món, nói giờ và tập dùng những cụm quen thuộc.',
+    lessons: [...initialLessons, weeklyChecks[0]],
+  },
+  {
+    week: 2,
+    title: 'Kể về mình và người quanh mình',
+    goal: 'Gia đình, sở thích, khả năng và thói quen; hỏi và đáp ngắn.',
+    lessons: [...additionalLessons.slice(0, 7), weeklyChecks[1]],
+  },
+  {
+    week: 3,
+    title: 'Tìm thông tin để làm một việc',
+    goal: 'Vị trí, chỉ đường, mua sắm, lịch hẹn và nhờ giúp.',
+    lessons: [...additionalLessons.slice(7, 14), weeklyChecks[2]],
+  },
+  {
+    week: 4,
+    title: 'Từ câu đơn đến chuyện ngắn',
+    goal: 'Kể việc đã qua, nêu dự định, lý do và viết lời nhắn.',
+    lessons: [...additionalLessons.slice(14, 21), weeklyChecks[3]],
+  },
+]
+export const lessons: Lesson[] = curriculum.flatMap((week) => week.lessons)
 export const findLesson = (id: string) => lessons.find((lesson) => lesson.id === id)

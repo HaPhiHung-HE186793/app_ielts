@@ -1,6 +1,6 @@
 {
-  "version": "foundation-v1-9c8deebb97942ab8",
-  "title": "Bảy ngày khởi đầu",
+  "version": "foundation-v1-d5e35f60ff8beaee",
+  "title": "Bốn tuần nền tảng",
   "resources": [
     {
       "path": "/packs/foundation-v1/hello.wav",
@@ -52,9 +52,359 @@
       "phrase": "I'm going to study English tonight."
     },
     {
+      "path": "/packs/foundation-v1/week-1-check.wav",
+      "bytes": 204298,
+      "sha256": "cf6acdd7c4ba5a73074f20f73bbd3a67851a1cdac698943b029fa044634ee1d7",
+      "lessonId": "week-1-check",
+      "phrase": "Take your time. Read, listen and try your own sentence."
+    },
+    {
+      "path": "/packs/foundation-v1/week-1-check-listening.wav",
+      "bytes": 152896,
+      "sha256": "31b8a741f5b32153f5ca43ec4852e671ed9b733aa903eba5b5b49fe607055000",
+      "lessonId": "week-1-check",
+      "phrase": "My name is Sam. There is a cup on the table."
+    },
+    {
+      "path": "/packs/foundation-v1/family.wav",
+      "bytes": 129010,
+      "sha256": "d102e0a02014fd8a2e8b2d894d8bd03938abcb391f1946da5c56762de9ded4da",
+      "lessonId": "family",
+      "phrase": "This is my sister. She is a student."
+    },
+    {
+      "path": "/packs/foundation-v1/family-listening.wav",
+      "bytes": 121182,
+      "sha256": "8b6e6aab6a062cf19c3eb3a7866338a9e8d44fbc387e2998411430928fb46e6b",
+      "lessonId": "family",
+      "phrase": "This is my mother. She is a teacher."
+    },
+    {
+      "path": "/packs/foundation-v1/have.wav",
+      "bytes": 136270,
+      "sha256": "8842a52ea244a8b930e789906237c8585c4733c2e38f8aa0b7ac00d715445819",
+      "lessonId": "have",
+      "phrase": "I have a bike. My friend has a car."
+    },
+    {
+      "path": "/packs/foundation-v1/have-listening.wav",
+      "bytes": 172938,
+      "sha256": "6e0a4057a550a145809e4d0d20972005cb8962b936e9f10b5e3dda9ebf17e3ca",
+      "lessonId": "have",
+      "phrase": "I have two books and a pencil. My bag is blue."
+    },
+    {
+      "path": "/packs/foundation-v1/likes.wav",
+      "bytes": 151332,
+      "sha256": "9e53842579f6ab5541d34961444a9b5bec9f34fcf8c71d04e02cd16b6476d07a",
+      "lessonId": "likes",
+      "phrase": "I like music. My brother likes films."
+    },
+    {
+      "path": "/packs/foundation-v1/likes-listening.wav",
+      "bytes": 133864,
+      "sha256": "835323e4cda58b2a190e21ec500f67f2bbd3c1ea7d5ebc4203a6da1140203f80",
+      "lessonId": "likes",
+      "phrase": "I like tea, but I do not like coffee."
+    },
+    {
+      "path": "/packs/foundation-v1/questions.wav",
+      "bytes": 144996,
+      "sha256": "8878b85e69a821ccbc830e7cfdce41ca5ef2b891fc22257aca6a917e63f6a822",
+      "lessonId": "questions",
+      "phrase": "Do you play tennis? Yes, I do."
+    },
+    {
+      "path": "/packs/foundation-v1/questions-listening.wav",
+      "bytes": 212912,
+      "sha256": "94ccd12a2fdbf0a840b24c7b64923f0d24ed1c8e31936f4f306a44071dba4593",
+      "lessonId": "questions",
+      "phrase": "Do you play football? No, I do not. I play tennis."
+    },
+    {
+      "path": "/packs/foundation-v1/negative.wav",
+      "bytes": 92396,
+      "sha256": "cd6fe691a289ccf4a8a51773f671080c18031f3cc77bfe8507c427c326260339",
+      "lessonId": "negative",
+      "phrase": "I do not work on Sundays."
+    },
+    {
+      "path": "/packs/foundation-v1/negative-listening.wav",
+      "bytes": 182304,
+      "sha256": "aeb2803c33f1c3cfcba3fd4d61a081e9e3641f19e9c2568b27c856ce882cb180",
+      "lessonId": "negative",
+      "phrase": "I do not watch TV in the morning. I listen to music."
+    },
+    {
+      "path": "/packs/foundation-v1/ability.wav",
+      "bytes": 128202,
+      "sha256": "e2da199a1b47295c0d62f3a6c928c0c5dbdc0b247e92c51c064689eae633d940",
+      "lessonId": "ability",
+      "phrase": "I can swim, but I cannot drive."
+    },
+    {
+      "path": "/packs/foundation-v1/ability-listening.wav",
+      "bytes": 145626,
+      "sha256": "4b261de3d4d4611700741871af1981a5d3ff5869f103186af536488521bf15af",
+      "lessonId": "ability",
+      "phrase": "I can sing, but I cannot play the piano."
+    },
+    {
+      "path": "/packs/foundation-v1/routine.wav",
+      "bytes": 184858,
+      "sha256": "4e3a2c683b7059ead5526243c473aceb086cd2037d0460c0586778755abf5bc8",
+      "lessonId": "routine",
+      "phrase": "First, I have breakfast. Then, I go to work."
+    },
+    {
+      "path": "/packs/foundation-v1/routine-listening.wav",
+      "bytes": 262970,
+      "sha256": "cdf9f47c904c6ed171da25644383bae428d651065d71fd62b7ed20d3a6ee2628",
+      "lessonId": "routine",
+      "phrase": "First, I wash my face. Then, I have tea. I leave home at seven."
+    },
+    {
+      "path": "/packs/foundation-v1/week-2-check.wav",
+      "bytes": 144202,
+      "sha256": "6d6ef2bd0b178f0e79c2b10e428e5ed87b7f508fad7b047edc07d42e4170de19",
+      "lessonId": "week-2-check",
+      "phrase": "Use familiar words to tell us about your day."
+    },
+    {
+      "path": "/packs/foundation-v1/week-2-check-listening.wav",
+      "bytes": 289612,
+      "sha256": "2e1f548326e13a45c814f86d961eb58bed73f8792502556e93c5aa2b2d38ec6a",
+      "lessonId": "week-2-check",
+      "phrase": "I can cook, but I cannot drive. First, I cook lunch. Then, I read."
+    },
+    {
+      "path": "/packs/foundation-v1/plural.wav",
+      "bytes": 95616,
+      "sha256": "4c03b28b4a32415f0e842d21bb2b797b32ae82415f791772ff8d0a8772d1e03f",
+      "lessonId": "plural",
+      "phrase": "There are three chairs in the room."
+    },
+    {
+      "path": "/packs/foundation-v1/plural-listening.wav",
+      "bytes": 162018,
+      "sha256": "32bb92d893370eda064a04fa3d0ff165fc81e5375fe94a4e8eaeb8621ddfceb6",
+      "lessonId": "plural",
+      "phrase": "There are five students and one teacher in the room."
+    },
+    {
+      "path": "/packs/foundation-v1/places.wav",
+      "bytes": 86050,
+      "sha256": "1e1a2367ec7e6f9bd6dfdcee186f865018963420936eda2577fb5dc3a7bc6869",
+      "lessonId": "places",
+      "phrase": "My keys are under the chair."
+    },
+    {
+      "path": "/packs/foundation-v1/places-listening.wav",
+      "bytes": 155354,
+      "sha256": "de04e578179a6ae3a60f1a393833e8a259f1b5f6fa2bef3b701261a3b6de7c13",
+      "lessonId": "places",
+      "phrase": "The book is on the desk. The pen is under the desk."
+    },
+    {
+      "path": "/packs/foundation-v1/directions.wav",
+      "bytes": 131916,
+      "sha256": "700512397aa0aae1cbeda88df23ec67f6e2f4fabbbc54ace9be3a9e3bb545d0b",
+      "lessonId": "directions",
+      "phrase": "Go straight and turn left at the bank."
+    },
+    {
+      "path": "/packs/foundation-v1/directions-listening.wav",
+      "bytes": 129856,
+      "sha256": "bd2eca12dc63b9a984dc1910c77238e34700b26fa01bdc4f09f735be914c1be2",
+      "lessonId": "directions",
+      "phrase": "Go straight and turn right at the school."
+    },
+    {
+      "path": "/packs/foundation-v1/shopping.wav",
+      "bytes": 109322,
+      "sha256": "124d2765e5bc368f05dd7847264bbe2f4d64676fdac47d6a79c21d048cfacddf",
+      "lessonId": "shopping",
+      "phrase": "I need an apple and some water."
+    },
+    {
+      "path": "/packs/foundation-v1/shopping-listening.wav",
+      "bytes": 183460,
+      "sha256": "2d13841c10a9cb0dde21e409cd8bb61d76ae6018643cb43f894fb6b6e83e50d8",
+      "lessonId": "shopping",
+      "phrase": "Please buy some bread and two apples. We have milk."
+    },
+    {
+      "path": "/packs/foundation-v1/prices.wav",
+      "bytes": 149442,
+      "sha256": "7b668e45c577ac138549bdc37f0e5d31f4b67ebc6cea19b16611563c16441a77",
+      "lessonId": "prices",
+      "phrase": "How much is this cup? It is five dollars."
+    },
+    {
+      "path": "/packs/foundation-v1/prices-listening.wav",
+      "bytes": 186390,
+      "sha256": "b28d33995e9b1e5dd4132a4b45448989a9798fede4c55c21e041e7608e8c5242",
+      "lessonId": "prices",
+      "phrase": "This sandwich is seven dollars. The tea is three dollars."
+    },
+    {
+      "path": "/packs/foundation-v1/schedule.wav",
+      "bytes": 120662,
+      "sha256": "c4c647757b39afa14b56e65af1a4cd126056fdc474894c20b25029765b32a925",
+      "lessonId": "schedule",
+      "phrase": "My class starts at nine on Monday."
+    },
+    {
+      "path": "/packs/foundation-v1/schedule-listening.wav",
+      "bytes": 122282,
+      "sha256": "aa1811a5c4bd7cface3b4be516984f3e68c00661dfacc87f92ac2bbbcbdef650",
+      "lessonId": "schedule",
+      "phrase": "The class starts at eight on Thursday."
+    },
+    {
+      "path": "/packs/foundation-v1/requests.wav",
+      "bytes": 118054,
+      "sha256": "61fb513b3f020673c071203b2c9bb821e506a14b5b6d1c8ec19c375d204c2091",
+      "lessonId": "requests",
+      "phrase": "Can you say that again, please?"
+    },
+    {
+      "path": "/packs/foundation-v1/requests-listening.wav",
+      "bytes": 115818,
+      "sha256": "32a379846d1df4de2fc5a6952c0a8d21670cd948db8295dcf236e69c20462070",
+      "lessonId": "requests",
+      "phrase": "Can you open the window, please?"
+    },
+    {
+      "path": "/packs/foundation-v1/week-3-check.wav",
+      "bytes": 147934,
+      "sha256": "f19501eff532dd961e607802345dfe67bc55a9bf653c20b0e67e5798e416934b",
+      "lessonId": "week-3-check",
+      "phrase": "Check the time, the place and what you need."
+    },
+    {
+      "path": "/packs/foundation-v1/week-3-check-listening.wav",
+      "bytes": 240316,
+      "sha256": "7838002e530d6b9b71f5d90b60cfc910ef8c79effed9e1a4ec1645c55cfba079",
+      "lessonId": "week-3-check",
+      "phrase": "Go straight. Turn left at the cafe. The school is next to the park."
+    },
+    {
+      "path": "/packs/foundation-v1/past-be.wav",
+      "bytes": 178408,
+      "sha256": "d59221bac926a14a61e50bb0ddc66be7711a01c71a6dcfe73b29750ad17adf4f",
+      "lessonId": "past-be",
+      "phrase": "I was at home yesterday. My friends were at the park."
+    },
+    {
+      "path": "/packs/foundation-v1/past-be-listening.wav",
+      "bytes": 180994,
+      "sha256": "10f20065f0d333e50fde0db45fd79301d75e2ac3cd4319e31b6f7ecbfcfe254e",
+      "lessonId": "past-be",
+      "phrase": "I was at the cafe yesterday. My brother was at home."
+    },
+    {
+      "path": "/packs/foundation-v1/past-actions.wav",
+      "bytes": 147102,
+      "sha256": "314ad3d8a301f53269a0fec5d93145ea983831c54dfb6e74671f2620a9bf77a6",
+      "lessonId": "past-actions",
+      "phrase": "I watched a film and cooked dinner yesterday."
+    },
+    {
+      "path": "/packs/foundation-v1/past-actions-listening.wav",
+      "bytes": 171758,
+      "sha256": "55e739f480e648c204d91d611d3a29f15df33f36fcd479133b2d7c3f903905ad",
+      "lessonId": "past-actions",
+      "phrase": "Yesterday, I cleaned my room and visited my aunt."
+    },
+    {
+      "path": "/packs/foundation-v1/past-negative.wav",
+      "bytes": 113248,
+      "sha256": "54db0577e60e6fe7c1a86293cc0cd4f6e4b136ab49159d225dcb2dd4d6604b93",
+      "lessonId": "past-negative",
+      "phrase": "I did not go to the park yesterday."
+    },
+    {
+      "path": "/packs/foundation-v1/past-negative-listening.wav",
+      "bytes": 181390,
+      "sha256": "9c5a81a5944bdc746dbc10bce6acf39968c29c21b82c21a9ed2810f4a8dc1435",
+      "lessonId": "past-negative",
+      "phrase": "I did not play tennis yesterday. I stayed at home."
+    },
+    {
+      "path": "/packs/foundation-v1/future-plans.wav",
+      "bytes": 133998,
+      "sha256": "a430f248b7b0259949a1aab8e30488aee10d2604b49cf48c646507e1d9fb89df",
+      "lessonId": "future-plans",
+      "phrase": "We are going to study at the library tomorrow."
+    },
+    {
+      "path": "/packs/foundation-v1/future-plans-listening.wav",
+      "bytes": 147664,
+      "sha256": "67cc29cb65c1ece1e5246673e0a58e616e4f0e9983b5f4def569c7db50d49521",
+      "lessonId": "future-plans",
+      "phrase": "We are going to meet at the library tomorrow morning."
+    },
+    {
+      "path": "/packs/foundation-v1/reasons.wav",
+      "bytes": 145228,
+      "sha256": "27c09f1e0c9b9c0ae9dd585b78bff29e53dc5e52f71af45b3f53a46180bdf53c",
+      "lessonId": "reasons",
+      "phrase": "I study English because I want to travel."
+    },
+    {
+      "path": "/packs/foundation-v1/reasons-listening.wav",
+      "bytes": 151758,
+      "sha256": "8590869ad1b5b5c435a45dba72a21c8eb39503c02deebb92d87c961586c45363",
+      "lessonId": "reasons",
+      "phrase": "I am going to stay at home because I am tired."
+    },
+    {
+      "path": "/packs/foundation-v1/messages.wav",
+      "bytes": 210346,
+      "sha256": "57a5bf799cdf56cc5f2808a0d86dcb0761c29478e427006a0e0246b159e463ed",
+      "lessonId": "messages",
+      "phrase": "Hi Ben, can we meet at the cafe at three? See you soon."
+    },
+    {
+      "path": "/packs/foundation-v1/messages-listening.wav",
+      "bytes": 230584,
+      "sha256": "8f6b43824620d1e7a5eb723a9869c221b28e1760a8285c46f4efe0da641adef8",
+      "lessonId": "messages",
+      "phrase": "Hi Anna. Please meet me at the park at six. Bring some water."
+    },
+    {
+      "path": "/packs/foundation-v1/small-story.wav",
+      "bytes": 242238,
+      "sha256": "6f5bb2d4c107a78ff59225132caa2336f4f763d404ca992199a04a732f21c44c",
+      "lessonId": "small-story",
+      "phrase": "Yesterday, I visited my friend. We cooked lunch. It was fun."
+    },
+    {
+      "path": "/packs/foundation-v1/small-story-listening.wav",
+      "bytes": 295688,
+      "sha256": "a990b8dd200913f3ee510e38ef62a1f7f31f795b8f49bfddafd71615cee5b856",
+      "lessonId": "small-story",
+      "phrase": "Yesterday, I went to the library. I read a book. Then, I had lunch with my friend."
+    },
+    {
+      "path": "/packs/foundation-v1/week-4-check.wav",
+      "bytes": 164190,
+      "sha256": "28ba57033130f44aace58758ead38107d1c77d7bca5afbaae640598d2573fa08",
+      "lessonId": "week-4-check",
+      "phrase": "Think about yesterday and one plan for tomorrow."
+    },
+    {
+      "path": "/packs/foundation-v1/week-4-check-listening.wav",
+      "bytes": 193812,
+      "sha256": "ae77f30e40102aeb720b9f6d2a44068a84db6819f566f9f6cd48500d68755d5a",
+      "lessonId": "week-4-check",
+      "phrase": "Tomorrow, I am going to meet my friend at the library at five."
+    },
+    {
       "path": "/packs/foundation-v1/lessons.json",
-      "bytes": 12625,
-      "sha256": "179d1da999ec5eb649da13e72baa13812d679fd3f16fa9231dc37e2de0abf5c9",
+      "bytes": 61317,
+      "sha256": "82c991fd60fd7f91ba344853495059d88804273ccef8038c5aa812860c717fd7",
       "lessonId": null,
       "phrase": null
     }

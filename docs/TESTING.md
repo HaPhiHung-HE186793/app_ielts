@@ -26,9 +26,11 @@ npm run test:e2e
 
 ## Phạm vi
 
-- Vitest: 89 ca về chấm đáp án, vòng đời bảy bài, lịch ôn, ghép phiên, thời gian, cấu hình/adapter AI và tương thích version 1/2/3. Có kiểm tra kho theo chủ, quota, dữ liệu lỗi và cấu hình công khai. DATA-002 thêm 8 ca gộp ba phía/lượt trùng/lịch ôn/checkpoint/xung đột và 9 ca engine: bật tự nguyện, outbox qua reload, mất phản hồi, thay đổi trong lúc gửi, offline, quota, đổi chủ, reset/import và hoãn khi mở cài đặt.
+- Vitest: 114 ca về chấm đáp án, vòng đời 32 bài/kiểm tra, lịch ôn, ghép phiên, thời gian, cấu hình/adapter AI và tương thích version 1/2/3. Có kiểm tra kho theo chủ, quota, dữ liệu lỗi và cấu hình công khai. DATA-002 thêm 8 ca gộp ba phía/lượt trùng/lịch ôn/checkpoint/xung đột và 9 ca engine: bật tự nguyện, outbox qua reload, mất phản hồi, thay đổi trong lúc gửi, offline, quota, đổi chủ, reset/import và hoãn khi mở cài đặt.
 - Playwright: luồng học thực trên bản build; giữ bài dở sau reload, giữ cả lựa chọn/câu đang nhập, ôn đến hạn khi đổi ngày, ghi lịch ôn một lần, cài đặt và bản sao xuất/nhập, dữ liệu lỗi, quota, bộ lọc và URL không tồn tại.
-- Tổng 68 ca trình duyệt chế độ khách (34 kịch bản × hai kích thước), gồm mục tiêu/ngày/loại thi chưa quyết định, phiên 2/5/15/buổi đầy đủ, tiếp tục, bản sao, bộ đo/lịch sử tiến bộ và PWA/offline. Có trang tài khoản chưa cấu hình, đường tiếp tục học/focus/axe. Ca buổi đầy đủ kiểm tra danh sách/ngân sách, không tự coi bảy bài đã hoàn thành.
+- Tổng 74 ca trình duyệt chế độ khách (37 kịch bản × hai kích thước), gồm mục tiêu/ngày/loại thi chưa quyết định, phiên 2/5/15/buổi đầy đủ, tiếp tục, bản sao, bộ đo/lịch sử tiến bộ và PWA/offline. Có trang tài khoản chưa cấu hình, đường tiếp tục học/focus/axe. Ca buổi đầy đủ kiểm tra tối đa 10 hoạt động và thời gian còn trống, không tự coi các bài đã hoàn thành.
+- `tests/curriculum.spec.ts`: bốn tuần hữu hạn, bộ lọc theo tuần, đọc/nghe trong bài mới, lời thoại tính là gợi ý qua reload, nút nghe không nộp form, lưu câu tự viết và ôn. Hoàn thành cả bốn kiểm tra cuối tuần qua UI sau khi đóng trang/mở mới offline, nghe WAV có `currentTime` tăng, giữ kết quả sau reload; quét axe và tràn ngang ở Khám phá. Không đo chất lượng âm thanh/phát âm hoặc hiệu quả học trên người thật.
+- Gói hiện tại có 58 tài nguyên, khoảng 8,92 MB. Worker vẫn xác minh mọi file; cập nhật tiến độ mỗi tám file để giảm quét cache. Các ca tải gói chờ tối đa 20 giây trên máy thử, không phải cam kết tốc độ tải trên thiết bị/mạng khác. Unit ghép phiên kiểm tra kế hoạch 10 hoạt động vẫn đọc được qua schema bản sao version 3.
 - `tests/progress.spec.ts`: không cộng thời gian nghỉ, dừng thủ công/cài đặt/rời bài, reload, giữ kết quả khởi động riêng, lịch sử phiên đổi/hoàn tất, và không ghi trở lại sau import/reset. Test đổi tab tắt focus emulation của Playwright qua CDP để dùng sự kiện blur/focus của trình duyệt.
 - Chrome headless vẫn có thể báo mọi tab là visible; ca visibility/pagehide/pageshow dùng giá trị/sự kiện được điều khiển rõ trong test để kiểm tra handler. Không xem ca mô phỏng này là xác minh lifecycle native trên iOS/Android hoặc thiết bị bị kill.
 - Điều hướng, focus bàn phím, không tràn ngang ở 360px và desktop.
@@ -47,7 +49,7 @@ npm run db:migrate
 npm run test:auth
 ```
 
-Cần Docker và Supabase local của repo đang chạy; xem [BACKEND.md](BACKEND.md). Runner tự build vào `.local/auth-dist` chỉ với cấu hình công khai, mở preview 4174 và dùng `playwright.auth.config.ts`. Chạy tuần tự một worker, tách khỏi 68 ca khách; không cần `.env`. Khi chạy bộ khách, để hai biến Supabase trống vì ca chưa cấu hình kiểm tra chính trạng thái này.
+Cần Docker và Supabase local của repo đang chạy; xem [BACKEND.md](BACKEND.md). Runner tự build vào `.local/auth-dist` chỉ với cấu hình công khai, mở preview 4174 và dùng `playwright.auth.config.ts`. Chạy tuần tự một worker, tách khỏi 74 ca khách; không cần `.env`. Khi chạy bộ khách, để hai biến Supabase trống vì ca chưa cấu hình kiểm tra chính trạng thái này.
 
 - 50 ca: mười hai ca API và mười chín kịch bản UI ở mỗi kích thước 1440×1000/360×800. Dùng Auth/PostgreSQL thật và thư từ Mailpit, không thay phản hồi đăng nhập thành công bằng mock. Riêng provider AI dùng fixture có nhãn, chưa gọi dịch vụ thật.
 - `tests/auth/rls.spec.ts`: hai người dùng thực có phiên riêng; đọc/tạo/sửa/xóa của mình, chặn đọc/ghi/đổi chủ/xóa của người khác, chặn chưa đăng nhập và sửa thời điểm tạo, giới hạn tên. Xóa hàng của mình được kiểm tra ở API; app chưa có giao diện xóa tài khoản.
@@ -64,7 +66,7 @@ Cần Docker và Supabase local của repo đang chạy; xem [BACKEND.md](BACKEN
 
 ## PWA offline trên bản build
 
-- `src/offline/range.test.ts`: hai ca đơn vị cho khoảng byte có chặn biên, suffix, EOF và khoảng sai/nhiều khoảng. Mốc PWA-002 có 78 ca, NOTIFY-001 có 82; tổng hiện tại 89 sau phần nền tảng AI-001.
+- `src/offline/range.test.ts`: hai ca đơn vị cho khoảng byte có chặn biên, suffix, EOF và khoảng sai/nhiều khoảng. Mốc PWA-002 có 78 ca, NOTIFY-001 có 82, nền tảng AI-001 có 89; tổng hiện tại 114 sau CONTENT-002.
 - `tests/offline.spec.ts`: năm kịch bản × desktop/mobile = 10 ca, gồm tải/đóng cửa sổ/mở mới khi context offline/phát WAV thật, trả HTTP 206/416, hoàn thành và lưu bài/lịch ôn; xóa gói giữ tiến độ/shell/cache khác; integrity thất bại/reload/thử lại và file bị thu hồi; giả lập `QuotaExceededError` ở worker rồi tải lại; allowlist loại request cá nhân.
 - Kịch bản nâng phiên bản dùng `tests/offline-update-server.ts`, HTTP server riêng/port ngẫu nhiên cho từng ca, phục vụ hai bộ shell/pack manifest khác nhau từ bản build thật. Worker cũ chờ các cửa sổ đóng; test đợi trạng thái activation thực rồi mở bản mới, kiểm tra nguyên văn draft/outbox ở cả key khách/tài khoản fixture, dọn cache cũ, tải gói mới và reload offline. Không sửa dist của test khác hoặc gọi skipWaiting trong fixture.
 - `tests/auth/offline.spec.ts`: hai kịch bản × hai kích thước = bốn ca, mở mới offline với `expires_at` của phiên SDK đã qua hạn (JWT server vẫn do Auth cấp), làm/nộp khởi động, kết nối lại, nhận 503 sau commit thật rồi reload/gửi lại đúng UUID. Kiểm tra riêng A/B dùng chung gói công khai nhưng cache không chứa response/token/nội dung riêng và B không thấy tiến độ A.
@@ -76,16 +78,16 @@ Cần Docker và Supabase local của repo đang chạy; xem [BACKEND.md](BACKEN
 
 - Test dùng browser context tách biệt và dữ liệu giả riêng; không dùng hồ sơ học thật của người dùng.
 - Ảnh, trace và báo cáo lỗi nằm trong test-results hoặc .local, được gitignore. Không đưa audio hoặc bản sao cá nhân vào Git.
-- Chưa kiểm thử Safari/iPhone hoặc Android thật, cài/khởi chạy từ biểu tượng hệ điều hành, microphone, AI, tài khoản trên cloud hosted, notification. PWA offline đã kiểm tra trên Chrome như bên dưới. Auth/RLS local đã kiểm tra riêng ở trên. Quy trình kiểm tra thiết bị nằm trong [INSTALLATION.md](INSTALLATION.md).
-- Bảy WAV eSpeak NG giải mã/phát được trong Chrome, chưa được giáo viên nghe duyệt; không xác minh chất lượng phát âm bằng test trình duyệt.
-- Bộ bảy bài được rà soát nội bộ; test không thay đánh giá của giáo viên hay đo hiệu quả sau thời gian học.
+- Chưa kiểm thử Safari/iPhone hoặc Android thật, cài/khởi chạy từ biểu tượng hệ điều hành, microphone, provider AI thật hoặc tài khoản cloud hosted. PWA offline/Auth/RLS/nhắc học đã kiểm tra trên Chrome/local trong phạm vi các mục riêng. Quy trình kiểm tra thiết bị nằm trong [INSTALLATION.md](INSTALLATION.md).
+- 57 WAV có byte/hash/header hợp lệ; các ca Chrome xác minh phát thật ở bài cũ, bài shopping và bốn kiểm tra tuần. Chưa nghe duyệt toàn bộ âm thanh bằng người; không xác minh chất lượng phát âm bằng test trình duyệt.
+- Bộ 28 bài + bốn kiểm tra được rà soát nội bộ; test không thay đánh giá của giáo viên hay đo hiệu quả sau thời gian học. Xem [CONTENT_REVIEW.md](CONTENT_REVIEW.md).
 
 ## Gia sư AI
 
-- `server/ai/provider.test.ts`: thêm 7 ca; tổng hiện tại **89 unit**. Kiểm tra cấu hình tắt/khóa/hạn mức, JSON schema, prompt tách dữ liệu, body/output, refusal/incomplete, quote không tồn tại, không retry provider và dự toán token. Không gọi mạng OpenAI.
+- `server/ai/provider.test.ts`: 7 ca trong tổng hiện tại **114 unit**. Kiểm tra cấu hình tắt/khóa/hạn mức, JSON schema, prompt tách dữ liệu, body/output, refusal/incomplete, quote không tồn tại, không retry provider và dự toán token. Không gọi mạng OpenAI.
 - `tests/auth/ai-api.spec.ts`: **5 ca** với JWT/Auth/PostgreSQL thật và provider fixture: giả mạo/khác chủ/RLS/service-only/body/origin; giữ chỗ đồng thời, replay sau restart, đổi hash/24 giờ, ngân sách không reset sau xóa user; timeout unknown giữ tiền, cooldown/quota/cap active và tự tắt khi usage bất thường.
 - `tests/auth/ai.spec.ts`: **3 ca × 2 viewport**. AI chưa cấu hình vẫn lưu/reload/hoàn thành; chưa đồng ý không gọi; sau xử lý thật ở server fixture mới làm mất response, reload khi hết ngân sách vẫn replay UUID cũ/1 lần provider; sửa câu/đổi chủ khi chờ giữ draft và không lộ kết quả. API test được chuyển qua route đến HTTP server riêng, Auth/RLS thật; không gọi đây là AI thật.
-- Tổng bộ Auth hiện tại **50 ca**, khách giữ **68 ca**. Axe A/AA vùng AI, không tràn ngang, xem ảnh desktop/mobile. Chưa thử Safari/điện thoại thật. Không có API key/tokens trong trace/report Git.
+- Tổng bộ Auth hiện tại **50 ca**, khách **74 ca**. Axe A/AA vùng AI, không tràn ngang, xem ảnh desktop/mobile. Chưa thử Safari/điện thoại thật. Không có API key/tokens trong trace/report Git.
 - `npm run ai:evaluate` đã kiểm tra 10 mẫu gốc; đây là validation không đánh giá chất lượng. Nhánh `--live` cần cấu hình và có thể tốn phí, chưa chạy với provider thật; quy trình/rubric ở [AI_EVALUATION.md](AI_EVALUATION.md).
 - Đã kiểm tra Node chạy máy AI local mặc định tắt; build chặn `VITE_OPENAI_API_KEY`, không đóng gói secret máy chủ hoặc adapter OpenAI. Tài liệu setup/retention/hạn mức ở [AI.md](AI.md).
 

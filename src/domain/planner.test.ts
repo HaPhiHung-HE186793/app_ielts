@@ -30,12 +30,13 @@ describe('finite duration plans', () => {
     expect(buildPlan(state, '15', now, '15').items).toHaveLength(3)
     const full = buildPlan(state, 'full', now, 'full')
     expect(full.budget).toBe(60)
-    expect(full.items).toHaveLength(7)
-    expect(full.items.reduce((sum, item) => sum + item.minutes, 0)).toBe(35)
+    expect(full.items).toHaveLength(10)
+    expect(full.items.reduce((sum, item) => sum + item.minutes, 0)).toBe(50)
+    expect(parseBackup(JSON.stringify({ ...state, plan: full })).plan).toEqual(full)
   })
   it('prioritizes the oldest due reviews with a cap of three and respects the budget', () => {
     const state = emptyState()
-    lessons.forEach((lesson, index) => {
+    lessons.slice(0, 7).forEach((lesson, index) => {
       state.reviews[lesson.id] = { ...initialReview(now), dueAt: now - index * DAY }
     })
     const plan = buildPlan(state, '15', now, 'plan')

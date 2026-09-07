@@ -15,7 +15,9 @@ async function prepare(page: Page) {
 async function download(page: Page) {
   await prepare(page)
   await page.getByRole('button', { name: 'Tải gói để học offline' }).click()
-  await expect(page.getByText('Sẵn sàng học offline', { exact: true })).toBeVisible()
+  await expect(page.getByText('Sẵn sàng học offline', { exact: true })).toBeVisible({
+    timeout: 20_000,
+  })
 }
 
 test('quota failure preserves progress and can retry without claiming completion', async ({
@@ -41,7 +43,9 @@ test('quota failure preserves progress and can retry without claiming completion
   await expect(page.getByText('Gói còn thiếu file', { exact: true })).toBeVisible()
   expect(await page.evaluate(() => localStorage.getItem('unrelated-progress'))).toBe('keep')
   await page.getByRole('button', { name: 'Thử tải lại' }).click()
-  await expect(page.getByText('Sẵn sàng học offline', { exact: true })).toBeVisible()
+  await expect(page.getByText('Sẵn sàng học offline', { exact: true })).toBeVisible({
+    timeout: 20_000,
+  })
 })
 
 test('new release waits for all old windows and preserves draft and durable outbox', async ({
@@ -54,7 +58,9 @@ test('new release waits for all old windows and preserves draft and durable outb
     await page.goto(`${server.url}/#/install`)
     await expect(page.getByRole('button', { name: 'Tải gói để học offline' })).toBeEnabled()
     await page.getByRole('button', { name: 'Tải gói để học offline' }).click()
-    await expect(page.getByText('Sẵn sàng học offline', { exact: true })).toBeVisible()
+    await expect(page.getByText('Sẵn sàng học offline', { exact: true })).toBeVisible({
+      timeout: 20_000,
+    })
     const state = startLesson(emptyState(), 'hello', 'upgrade-draft')
     state.draft!.pendingAnswer = 'my preserved answer'
     const raw = encodeStudy(state, {
@@ -111,7 +117,9 @@ test('new release waits for all old windows and preserves draft and durable outb
       ),
     ).toEqual(['moi-ngay.shell.integration-update-v2'])
     await updated.getByRole('button', { name: 'Tải gói để học offline' }).click()
-    await expect(updated.getByText('Sẵn sàng học offline', { exact: true })).toBeVisible()
+    await expect(updated.getByText('Sẵn sàng học offline', { exact: true })).toBeVisible({
+      timeout: 20_000,
+    })
     await context.setOffline(true)
     await updated.reload()
     await expect(updated.getByText('Sẵn sàng học offline', { exact: true })).toBeVisible()
@@ -127,7 +135,9 @@ test('download, close and open offline, hear real audio, save and resume a lesso
   baseURL,
 }, info) => {
   await download(page)
-  await expect(page.locator('.offline-panel')).toContainText('8/8 file')
+  await expect(page.locator('.offline-panel')).toContainText(
+    `${pack.resources.length}/${pack.resources.length} file`,
+  )
   expect(
     (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze())
       .violations,

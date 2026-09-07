@@ -326,3 +326,30 @@ Người dùng yêu cầu tiếp tục. Đọc bàn giao và code tại `1dffddb
 - README/STATUS/TASKS/ARCHITECTURE/TESTING/DECISIONS cập nhật cùng AI.md và AI_EVALUATION.md. STATUS là trạng thái ngắn hiện tại; session mới không cần dựng lại nền tảng hoặc coi mock đã qua đánh giá chất lượng.
 - Giữ preview 4175, AI 8787 gọi thật tắt và máy nhắc Node ẩn; log trong .local, có thể dừng giữa session. Không commit khóa/.local/dữ liệu thử; chưa có hosted/SMTP/HTTPS, thiết bị thật hoặc giáo viên duyệt học liệu/audio.
 - Rà soát diff/tài liệu/secret staged, commit và push main theo ủy quyền đã có. Hash/remote xác minh bằng Git trong kết quả cuối, không force-push hoặc sửa lịch sử dùng chung.
+
+## 2026-09-07 — CONTENT-002: bốn tuần nền tảng và bài nghe offline
+
+### Kết quả
+
+- Tiếp tục main sạch sau 7552260; đọc tài liệu/Git/code, đánh dấu CONTENT-002 IN_PROGRESS trước triển khai. Chọn phần độc lập khi AI-001 chưa có key/ngân sách/đối chiếu thật. Không sub-agent, không gọi AI trả phí hoặc phát hành công khai.
+- Thêm 21 bài và bốn kiểm tra, tổng 28 bài + bốn kiểm tra chia bốn tuần gợi ý, tám mục/tuần. Giữ toàn bộ định nghĩa bảy bài cũ. Mục tiêu tăng từ giới thiệu/thói quen tới chỉ dẫn, mua sắm, quá khứ/dự định/lời nhắn; tuần đầu giữ cụm cũ và tuần sau giải thích dần, không hứa chuẩn CEFR/IELTS.
+- Bài mới có đoạn đọc 11–21 từ, tự nhớ, nghe tình huống khác, tự nói và viết có tiêu chí. Lời thoại trước trả lời tính hintUsed và giữ qua reload; phát audio không nộp form. Phần tự nói/viết không có điểm, có thể bỏ qua; n/3 không là đánh giá bốn kỹ năng. AI cuối bài giữ tự nguyện/tắt như mốc trước.
+- Khám phá chọn tuần và chủ đề, có điểm dừng; Hôm nay hiển thị tiến độ bốn tuần. Bộ ghép phiên chặn tối đa 10 hoạt động như schema vốn có; buổi 60 phút mới xếp 50 phút, hiển thị phần chưa xếp. Giữ StudyState 3/đọc 1/2/3, không migration hoặc dependency mới.
+- Tạo 50 WAV mới eSpeak NG 1.51, giữ bảy WAV cũ nguyên byte: tổng 57 WAV + JSON, 8.921.491 byte. Script dùng type stripping Node và giữ file khớp câu/hash, lần chạy lại tạo 0 file. Không dùng câu/audio học viên để sinh học liệu.
+- Hồ sơ CURRICULUM/CONTENT_REVIEW ghi nguồn ngữ pháp British Council, nội dung tự biên soạn và rà soát nội bộ; không sao chép bài luyện. Chưa có giáo viên độc lập nghe duyệt/hiệu chỉnh độ khó bằng người học thật. Ghi DEC-018 và tương thích: các máy cần cập nhật app trước nhận ID mới qua sync/JSON.
+
+### Kiểm tra và sửa lỗi
+
+- Lint/typecheck/build đạt; 114/114 unit, 74/74 khách và 50/50 Auth/API/UI đạt trên Chrome desktop 1440×1000/viewport 360×800 sau sửa liên quan. Thêm sáu ca UI chương trình; vòng đời có dữ liệu chạy cả 32 bài/kiểm tra. Bộ API dùng Auth/PostgreSQL thật, provider AI vẫn fixture có nhãn.
+- Lần hồi quy đầu có 5/74 ca khách và 2/50 ca Auth hết thời gian chờ tải gói 5 giây, ảnh cho thấy đang tải 56/58 file. Worker cũ quét toàn cache sau từng file; đổi báo tiến độ mỗi tám file và cuối lượt, vẫn xác minh từng file/marker cuối. Các ca tải chờ tối đa 20 giây cho gói lớn hơn. Chạy lại toàn bộ 74/50 đạt; không chỉ tăng timeout mà bỏ kiểm tra hoàn tất.
+- Sửa planner có thể tạo trên 10 hoạt động khi danh mục lớn, không đọc lại qua schema; thêm kiểm tra kế hoạch/bản sao thật. Chỉnh hai giải thích nội dung: gets đúng chủ ngữ; câu hỏi quá khứ không suy thứ tự từ and. Giữ nguyên dữ liệu bài cũ.
+- So bảy định nghĩa với Git 7552260 không đổi; kiểm tra ID, đáp án trong lựa chọn, ba câu và input thứ hai, toàn bộ byte/SHA/header WAV đạt. Kiểm tra cấu trúc không thay người kiểm duyệt chất lượng.
+- Kiểm tra UI cả bốn bài cuối tuần khi đóng/mở mới offline, phát audio thực, lưu bài/ôn/kết quả qua reload. Transcript dùng hỗ trợ không được tính độc lập; bản nháp câu sai còn giữ; nghe không tự submit. Axe A/AA và không tràn ngang ở Khám phá; preview 4175 kiểm tra thêm nghe/tự viết hai kích thước, không runtime error. Đã xem ảnh desktop/mobile.
+- ai:evaluate dry đạt 10 mẫu, chưa gọi provider. Bundle khách ~709 kB/206 kB gzip vẫn cảnh báo chia route. Giới hạn iOS/Android/Safari, cài native, mạng thực và độ khó sư phạm còn nguyên.
+
+### Bàn giao
+
+- CONTENT-002 DONE trong phạm vi học liệu thử nghiệm; ADAPT-001 READY là task độc lập tiếp theo. AI-001 vẫn IN_PROGRESS, chờ cấu hình/ngân sách/đối chiếu thật; không đánh dấu beta hoàn chỉnh. STATUS/TASKS/README/PRODUCT/ARCHITECTURE/DECISIONS/TESTING/OFFLINE và hồ sơ nội dung cùng cập nhật.
+- Preview 4175 đã build lại và giữ chạy Node ẩn; máy nhắc không đổi. Lệnh khởi động lại AI 8787 bị cơ chế duyệt tự động chặn với thông báo blocked by policy, không có lý do chi tiết. Giữ tiến trình AI cũ gọi thật tắt; trước thử provider phải nạp lại danh mục mới. Không xin thêm quyền hoặc tìm đường vượt chặn để làm học liệu.
+- Rà soát diff/tài liệu/secret staged trước commit/push theo ủy quyền đã có. Không commit .local/log/trace/khóa/dữ liệu cá nhân. Hash/remote kiểm tra bằng Git và báo cuối; không force-push hoặc sửa lịch sử.
+- Rà soát cuối đạt: Prettier các file code đổi, diff --check, 18 Markdown/94 liên kết nội bộ/24 task, ADAPT-001 READY duy nhất. Build từ chối cấu hình Supabase secret, quét bốn file build và 84 file staged không thấy service key/VAPID private. Smoke qua proxy preview với Auth thật xác nhận AI unavailable/503, không lượt trả phí. Sau dọn đúng tài khoản thử, Auth/profile/snapshot/commit/reminder/AI receipt/Mailpit đều 0; giữ một budget pilot false/0/spend 0. Không xóa dữ liệu người dùng có trước.

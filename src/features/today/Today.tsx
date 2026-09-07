@@ -2,7 +2,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   BookOpen,
-  Check,
   ChevronRight,
   Clock3,
   Leaf,
@@ -12,7 +11,7 @@ import {
   Sun,
   Target,
 } from 'lucide-react'
-import { lessons, findLesson } from '../../content/lessons'
+import { lessons, findLesson, curriculum } from '../../content/lessons'
 import type { StudyState } from '../../data/schema'
 import type { Lesson } from '../../domain/types'
 import { BookScene } from '../../components/BookScene'
@@ -156,24 +155,28 @@ export function Today({
               Từng bước nhỏ, <br />
               một nền tảng vững.
             </h2>
-            <p className="muted small">Tuần làm quen · 7 bài đầu tiên</p>
+            <p className="muted small">Bốn tuần gợi ý · 28 bài và 4 lần kiểm tra</p>
             <div className="journey-progress">
               <strong>
                 {completed.size}
-                <span> / 7 bài</span>
+                <span> / {lessons.length} bài</span>
               </strong>
-              <span>{Math.round((completed.size / 7) * 100)}%</span>
+              <span>{Math.round((completed.size / lessons.length) * 100)}%</span>
             </div>
-            <progress max={7} value={completed.size} aria-label="Số bài nền tảng đã hoàn thành" />
-            <div className="week-dots" aria-label="Bảy bài nền tảng">
-              {lessons.map((lesson) => (
-                <span
-                  key={lesson.id}
-                  className={completed.has(lesson.id) ? 'done' : ''}
-                  title={lesson.title}
-                >
-                  {completed.has(lesson.id) ? <Check size={13} /> : lesson.day}
-                </span>
+            <progress
+              max={lessons.length}
+              value={completed.size}
+              aria-label="Số bài nền tảng đã hoàn thành"
+            />
+            <div className="curriculum-mini" aria-label="Tiến độ bốn tuần">
+              {curriculum.map((week) => (
+                <p key={week.week}>
+                  <span>Tuần {week.week}</span>
+                  <strong>
+                    {week.lessons.filter((lesson) => completed.has(lesson.id)).length}/
+                    {week.lessons.length}
+                  </strong>
+                </p>
               ))}
             </div>
             <a className="text-link" href="#/progress">

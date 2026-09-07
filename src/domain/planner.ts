@@ -46,7 +46,7 @@ export function buildPlan(state: StudyState, mode: PlanMode, now: number, id: st
     }
     let used = items.reduce((sum, item) => sum + item.minutes, 0)
     for (const lesson of candidates) {
-      if (used + lesson.minutes > budget) break
+      if (items.length >= 10 || used + lesson.minutes > budget) break
       add('lesson', lesson.id, lesson.minutes)
       used += lesson.minutes
     }

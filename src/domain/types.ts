@@ -6,6 +6,8 @@ export type Exercise = {
   answers: string[]
   hint: string
   explanation: string
+  passage?: string
+  audioText?: string
 }
 
 export type Lesson = {
@@ -23,4 +25,8 @@ export type Lesson = {
   exercises: Exercise[]
   review: Exercise
   reflection: string
+  goal?: string
+  speaking?: string
+  selfCheck?: string[]
+  checkpoint?: number
 }

@@ -35,7 +35,7 @@ Chọn mục tiêu và sở thích → khai báo thời gian → đánh giá n�
 
 Không gán band IELTS từ một bài kiểm tra nền tảng ngắn. Cho phép bỏ qua phần chưa thể làm; ghi nhận mức độ thiếu dữ liệu.
 
-Hiện thực trong PLAN-001: form thiết lập có thể bỏ qua, sau đó chọn một phiên từ bảy bài hiện có. Chưa triển khai bài đánh giá hoặc kế hoạch tuần/sáu tháng cá nhân. Phiên 2 phút có kết quả khởi động riêng; phiên 5 phút là bài đầy đủ, phiên 15 phút/buổi đầy đủ ghép bài và tối đa ba câu đến hạn. Chi tiết thời lượng và giới hạn ở DEC-010.
+Hiện thực trong PLAN-001: form thiết lập có thể bỏ qua, sau đó chọn một phiên từ catalogue. CONTENT-002 mở rộng thành bốn nhóm tuần/28 bài/bốn kiểm tra luyện tập; chưa có đánh giá đầu vào hoặc kế hoạch tuần/sáu tháng cá nhân. Phiên 2 phút có kết quả khởi động riêng; phiên 5 phút là bài đầy đủ, phiên 15 phút/buổi đầy đủ ghép bài và tối đa ba câu đến hạn, tổng tối đa 10 hoạt động. Chi tiết thời lượng và giới hạn ở DEC-010/018 và [CURRICULUM.md](CURRICULUM.md).
 
 ### Mỗi ngày
 
@@ -102,7 +102,7 @@ PROGRESS-001 đã có tổng thời gian hoạt động đo trên thiết bị, 
 
 Chưa đặt ngưỡng thành công định lượng trước khi có dữ liệu thử nghiệm; không dùng số giả như kết quả đo thực.
 
-DATA-002 đã có đồng bộ tự nguyện và tiếp tục tiến độ giữa hai phiên trình duyệt, kiểm tra bằng backend local thật. Không tự gửi phần khách, không dùng bản đến sau để ngầm xóa bài của phía khác. Người học chọn phần giữ lại khi hai nơi cùng sửa, có đường tải cả hai bản. PWA-002 đã thêm gói bảy bài/bảy câu nghe để mở lại offline, có tải/kiểm tra/xóa; chưa có host cho điện thoại. Chi tiết ở [SYNC.md](SYNC.md) và [OFFLINE.md](OFFLINE.md).
+DATA-002 đã có đồng bộ tự nguyện và tiếp tục tiến độ giữa hai phiên trình duyệt, kiểm tra bằng backend local thật. Không tự gửi phần khách, không dùng bản đến sau để ngầm xóa bài của phía khác. Người học chọn phần giữ lại khi hai nơi cùng sửa, có đường tải cả hai bản. Gói PWA-002 đã mở rộng trong CONTENT-002 thành 32 bài/kiểm tra và 57 file nghe, có tải/kiểm tra/xóa; chưa có host cho điện thoại. Chi tiết ở [SYNC.md](SYNC.md) và [OFFLINE.md](OFFLINE.md).
 
 ## 11. Nguồn tham khảo
 

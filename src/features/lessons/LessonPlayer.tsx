@@ -45,18 +45,63 @@ function ExerciseStep({
     requestAnimationFrame(() => nextButton.current?.focus())
   }
 
+  function showHint() {
+    updateState((state) => {
+      if (!state.draft) return state
+      const current = state.draft.responses[exercise.id] ?? {
+        submissions: [],
+        hintUsed: false,
+        passed: false,
+      }
+      return {
+        ...state,
+        draft: {
+          ...state.draft,
+          responses: { ...state.draft.responses, [exercise.id]: { ...current, hintUsed: true } },
+        },
+      }
+    })
+  }
+
   return (
     <form className="exercise-step" onSubmit={submit}>
       <p className="eyebrow">
-        {exercise.kind === 'input'
-          ? 'TỰ NHỚ LẠI'
-          : draft.index === 2
-            ? 'THỬ MỘT TÌNH HUỐNG MỚI'
-            : 'HIỂU CÂU MẪU'}
+        {exercise.audioText
+          ? 'NGHE VÀ TÌM THÔNG TIN'
+          : exercise.passage
+            ? 'ĐỌC MỘT ĐOẠN NGẮN'
+            : exercise.kind === 'input'
+              ? 'TỰ NHỚ LẠI'
+              : draft.index === 2
+                ? 'THỬ MỘT TÌNH HUỐNG MỚI'
+                : 'HIỂU CÂU MẪU'}
       </p>
       <h2 ref={heading} tabIndex={-1}>
         {exercise.prompt}
       </h2>
+      {exercise.passage && (
+        <blockquote className="reading-passage" lang="en">
+          {exercise.passage}
+        </blockquote>
+      )}
+      {exercise.audioText && (
+        <div className="listening-task">
+          <ListenButton phrase={exercise.audioText} label="Nghe tình huống" />
+          {!response?.hintUsed && !showFeedback && (
+            <button type="button" className="text-button" onClick={showHint}>
+              Xem lời thoại (tính là có gợi ý)
+            </button>
+          )}
+          {(response?.hintUsed || showFeedback) && (
+            <blockquote className="reading-passage" lang="en">
+              {exercise.audioText}
+            </blockquote>
+          )}
+          <p className="small muted">
+            Có thể nghe lại. Nếu chưa nghe được, xem lời thoại để tiếp tục; lượt này sẽ có hỗ trợ.
+          </p>
+        </div>
+      )}
       {exercise.kind === 'choice' ? (
         <fieldset className="answer-options">
           <legend className="sr-only">Chọn một câu trả lời</legend>
@@ -93,30 +138,7 @@ function ExerciseStep({
       )}
       {!showFeedback && (
         <>
-          <button
-            className="text-button hint-button"
-            type="button"
-            onClick={() =>
-              updateState((state) => {
-                if (!state.draft) return state
-                const current = state.draft.responses[exercise.id] ?? {
-                  submissions: [],
-                  hintUsed: false,
-                  passed: false,
-                }
-                return {
-                  ...state,
-                  draft: {
-                    ...state.draft,
-                    responses: {
-                      ...state.draft.responses,
-                      [exercise.id]: { ...current, hintUsed: true },
-                    },
-                  },
-                }
-              })
-            }
-          >
+          <button className="text-button hint-button" type="button" onClick={showHint}>
             <CircleHelp size={16} /> Mình cần một gợi ý
           </button>
           {response?.hintUsed && <p className="hint-box">{exercise.hint}</p>}
@@ -194,7 +216,7 @@ export function LessonPlayer({
         </div>
         <p className="muted">
           Cụm từ này đã vào sổ ôn. Nếu đây là lần đầu học, bạn sẽ gặp lại sau một ngày. Kết quả này
-          chưa đo khả năng nhớ lâu hay band IELTS.
+          chưa đo khả năng nhớ lâu hay band IELTS. Phần tự nói và viết chưa được chấm điểm.
         </p>
         <button className="button primary" onClick={onExit}>
           Về Hôm nay <ArrowRight size={18} />
@@ -222,7 +244,11 @@ export function LessonPlayer({
         <button className="text-button" onClick={onExit}>
           <ChevronLeft size={17} /> Tạm dừng
         </button>
-        <span>Bài {String(lesson.day).padStart(2, '0')} · Nền tảng</span>
+        <span>
+          {lesson.checkpoint
+            ? `Kiểm tra tuần ${lesson.checkpoint}`
+            : `Bài ${String(lesson.day).padStart(2, '0')} · Nền tảng`}
+        </span>
         <span>{lesson.minutes} phút</span>
       </div>
       <div
@@ -262,6 +288,12 @@ export function LessonPlayer({
           <p className="eyebrow">MỘT CÂU CHO HÔM NAY</p>
           <blockquote lang="en">{lesson.phrase}</blockquote>
           <p>{lesson.translation}</p>
+          {lesson.goal && (
+            <p className="learning-goal">
+              <strong>Mục tiêu: </strong>
+              {lesson.goal}
+            </p>
+          )}
           <ListenButton phrase={lesson.phrase} />
           <div className="note-box">
             <BookNote />
@@ -298,6 +330,15 @@ export function LessonPlayer({
         <div className="reflection">
           <p className="eyebrow">BIẾN CÂU MẪU THÀNH CÂU CỦA BẠN</p>
           <h2>Đến lượt câu chuyện của bạn.</h2>
+          <div className="speaking-task">
+            <strong>Tự nói thành tiếng</strong>
+            <p>{lesson.speaking ?? lesson.reflection}</p>
+            <p className="small muted">
+              Nghe lại câu mẫu nếu cần, rồi thử nói bằng ý của mình. App chưa ghi âm hoặc chấm phát
+              âm.
+            </p>
+            <ListenButton phrase={lesson.phrase} />
+          </div>
           <p>{lesson.reflection}</p>
           <label className="field">
             Ghi lại câu của bạn (không bắt buộc)
@@ -314,6 +355,22 @@ export function LessonPlayer({
               }}
             />
           </label>
+          <details className="writing-check">
+            <summary>Tự xem lại câu đã viết</summary>
+            <ul>
+              {(
+                lesson.selfCheck ?? [
+                  'Câu có chủ ngữ và động từ.',
+                  'Đã thay một chi tiết để nói điều mình muốn.',
+                ]
+              ).map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+            <p className="small muted">
+              Đây là tiêu chí để bạn tự sửa, không phải kết quả chấm bài.
+            </p>
+          </details>
           <p className="muted small">
             Câu này được lưu để bạn xem lại. Gợi ý AI là tùy chọn và không ảnh hưởng kết quả hoàn
             thành bài.

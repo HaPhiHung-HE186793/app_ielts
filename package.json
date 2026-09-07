@@ -21,7 +21,7 @@
     "db:migrate": "supabase migration up --local",
     "dev:local": "node scripts/dev-local.js",
     "preview:local": "node scripts/preview-local.js",
-    "audio": "node scripts/generate-audio.js",
+    "audio": "node --experimental-strip-types scripts/generate-audio.js",
     "reminders:local": "node scripts/reminders-local.js",
     "reminders:verify": "node scripts/verify-reminder-push.js",
     "ai:local": "node --experimental-strip-types --env-file-if-exists=.local/ai.env server/local.ts",

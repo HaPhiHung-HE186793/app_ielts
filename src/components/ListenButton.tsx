@@ -2,7 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { Square, Volume2 } from 'lucide-react'
 import pack from '../content/offline-pack.json'
 
-export function ListenButton({ phrase }: { phrase: string }) {
+export function ListenButton({
+  phrase,
+  label = 'Nghe câu mẫu',
+}: {
+  phrase: string
+  label?: string
+}) {
   const source = pack.resources.find((asset) => asset.phrase === phrase)?.path
   const audio = useRef<HTMLAudioElement>(null)
   const [playing, setPlaying] = useState(false)
@@ -36,6 +42,7 @@ export function ListenButton({ phrase }: { phrase: string }) {
       />
       <button
         className="button secondary small-button"
+        type="button"
         onClick={() => {
           if (playing) {
             audio.current?.pause()
@@ -59,7 +66,7 @@ export function ListenButton({ phrase }: { phrase: string }) {
         }}
       >
         {playing ? <Square size={18} /> : <Volume2 size={18} />}
-        {playing ? 'Dừng nghe' : 'Nghe câu mẫu'}
+        {playing ? 'Dừng nghe' : label}
       </button>
       <p className="muted small" role="status">
         {message}

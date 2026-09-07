@@ -17,7 +17,9 @@ async function pack(page: Page) {
   await page.goto('/#/install')
   await expect(page.getByRole('button', { name: 'Tải gói để học offline' })).toBeEnabled()
   await page.getByRole('button', { name: 'Tải gói để học offline' }).click()
-  await expect(page.getByText('Sẵn sàng học offline', { exact: true })).toBeVisible()
+  await expect(page.getByText('Sẵn sàng học offline', { exact: true })).toBeVisible({
+    timeout: 20_000,
+  })
 }
 
 test('reopens an expired cached session offline, learns, and retries one accepted commit after reconnect', async ({

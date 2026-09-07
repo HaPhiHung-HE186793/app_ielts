@@ -57,7 +57,11 @@ export function LessonCard({
               <Check size={15} /> Đã học · Có thể luyện lại
             </>
           ) : (
-            <>Bài {String(lesson.day).padStart(2, '0')} · Nền tảng</>
+            <>
+              {lesson.checkpoint
+                ? `Kiểm tra tuần ${lesson.checkpoint}`
+                : `Bài ${String(lesson.day).padStart(2, '0')} · Nền tảng`}
+            </>
           )}
           <ArrowUpRight size={18} />
         </span>

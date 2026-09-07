@@ -64,9 +64,9 @@ test('first setup saves optional goals without assigning an entry band', async (
   await startMode(page, 'full')
   await expect(
     page.getByRole('list', { name: 'Các hoạt động của phiên' }).getByRole('listitem'),
-  ).toHaveCount(7)
+  ).toHaveCount(10)
   await expect(
-    page.getByText('Tổng khoảng 35 phút dự kiến, trong 60 phút đã chọn.', { exact: false }),
+    page.getByText('Tổng khoảng 50 phút dự kiến, trong 60 phút đã chọn.', { exact: false }),
   ).toBeVisible()
   await noAxeViolations(page)
 })

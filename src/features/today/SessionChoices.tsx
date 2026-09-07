@@ -67,8 +67,8 @@ export function SessionChoices({
         </p>
         {mode !== '2' && minutes < preview.budget && (
           <p className="small muted">
-            Kho bài hiện có 7 bài nền tảng. Phần thời gian còn lại chưa được xếp; không tự thêm bài
-            hoặc tính là đã học.
+            Mỗi phiên xếp tối đa 10 hoạt động trong kho hiện có. Phần thời gian còn lại chưa được
+            xếp và không tính là đã học. Bạn có thể dành thêm thời gian tự nói, viết hoặc nghỉ.
           </p>
         )}
       </div>

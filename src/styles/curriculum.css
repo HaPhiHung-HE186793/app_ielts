@@ -1,0 +1,78 @@
+.curriculum-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0;
+}
+.week-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+  text-align: left;
+  color: var(--green-dark);
+}
+.week-choice.selected {
+  background: #eaf0e3;
+  border-color: var(--green);
+}
+.week-choice span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.curriculum-mini {
+  margin: 14px 0;
+}
+.curriculum-mini p {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+.reading-passage {
+  margin: 18px 0;
+  padding: 18px;
+  border-left: 3px solid #90a782;
+  border-radius: 0 12px 12px 0;
+  background: #f3f6ee;
+  font-size: 18px;
+  line-height: 1.7;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.listening-task,
+.speaking-task {
+  margin: 18px 0;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.speaking-task > p,
+.listening-task > p {
+  margin: 10px 0;
+}
+.writing-check {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.writing-check summary {
+  cursor: pointer;
+  color: var(--green-dark);
+}
+.writing-check li {
+  margin: 8px 0;
+}
+.learning-goal {
+  font-size: 14px;
+}
+@media (max-width: 520px) {
+  .curriculum-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

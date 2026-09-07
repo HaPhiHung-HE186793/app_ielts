@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import { Download, HardDrive, Trash2 } from 'lucide-react'
+import { lessons } from '../../content/lessons'
 import {
   getOfflineSnapshot,
   subscribeOffline,
@@ -30,7 +31,11 @@ export function OfflinePanel() {
         <div>
           <p className="eyebrow">GÓI NỀN TẢNG · V1</p>
           <h3>{offlinePack.title}</h3>
-          <p>7 bài học · 7 câu nghe · khoảng {size(total)}</p>
+          <p>
+            {lessons.length} bài học/kiểm tra ·{' '}
+            {offlinePack.resources.filter((asset) => asset.phrase !== null).length} file nghe ·
+            khoảng {size(total)}
+          </p>
           <p className="muted small">
             Giọng tổng hợp eSpeak NG, chưa được giáo viên kiểm duyệt. Có câu mẫu bằng chữ đi kèm.
           </p>

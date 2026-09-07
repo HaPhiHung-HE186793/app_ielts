@@ -40,7 +40,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | DATA-001 | DONE | LEARN-002 | Supabase Docker local, email OTP thật, migration account_profiles/RLS và cấu hình mẫu công khai. Tách kho khách/tài khoản, bảo vệ callback/import khi đổi chủ. Kiểm tra quyền bằng hai tài khoản và 11 ca Auth/API/trình duyệt đạt; setup ở BACKEND. Chưa cấu hình hosted/SMTP thật; đồng bộ ở DATA-002. |
 | DATA-002 | DONE | DATA-001, REVIEW-001, PROGRESS-001 | Đồng bộ tự nguyện với outbox/revision, gộp lượt theo ID/checkpoint, lịch ôn và chọn bản xung đột; nhập phần khách có lựa chọn và giữ nguồn. RLS/RPC thật kiểm tra quyền, gửi trùng/đồng thời. Hai browser context kiểm tra tiếp tục, offline/response mất, reload, đổi chủ khi đang gửi; một tab sửa tài khoản theo Web Locks. Giới hạn thiết bị/hosted và cách dùng ở SYNC. |
 | PWA-001 | DONE | APP-002, LEARN-002 | Manifest/icon/standalone, hướng dẫn và prompt tự nguyện; Chrome đọc manifest/icon và không báo lỗi installability trong hồ sơ thử riêng. Luồng prompt/standalone có kiểm tra điều khiển; chưa cài/khởi chạy trên iPhone/Android hoặc cửa sổ app hệ điều hành. Phạm vi và bước xác minh ở INSTALLATION/TESTING. |
-| PWA-002 | DONE | PWA-001, DATA-002 | Gói bảy bài/bảy WAV được tạo từ nội dung dự án; worker/manifest có hash, tải/dung lượng/xóa/lỗi/quota, mở mới offline và chờ sync. Kiểm tra cập nhật giữ draft/outbox, file thiếu/thử lại, range audio và cache không chứa dữ liệu tài khoản. Hướng dẫn/quyền/giới hạn thiết bị ở OFFLINE. |
+| PWA-002 | DONE | PWA-001, DATA-002 | Gói học liệu được tạo từ nội dung dự án (ban đầu bảy bài/bảy WAV, đã mở rộng ở CONTENT-002); worker/manifest có hash, tải/dung lượng/xóa/lỗi/quota, mở mới offline và chờ sync. Kiểm tra cập nhật giữ draft/outbox, file thiếu/thử lại, range audio và cache không chứa dữ liệu tài khoản. Hướng dẫn/quyền/giới hạn thiết bị ở OFFLINE. |
 | NOTIFY-001 | DONE | PWA-001, DATA-001, PLAN-001 | Nhắc học tự nguyện, múi giờ và giờ yên lặng, tắt/dời lịch được. Xin quyền từ thao tác người dùng, xử lý từ chối; xác minh nền tảng hỗ trợ, không phụ thuộc thông báo để vào bài. |
 
 Điều kiện đạt mốc 2: dùng cùng tài khoản để tiếp tục trên hai thiết bị và học phần đã tải khi mất mạng, với giới hạn được hiển thị rõ.
@@ -52,8 +52,8 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | AI-001 | IN_PROGRESS | DATA-001 | Chọn nhà cung cấp từ thử nghiệm chất lượng/độ trễ/chi phí, ghi ngân sách và hạn mức; API máy chủ có xác thực, validation, timeout và giới hạn dùng. Kiểm tra không lộ secret và lỗi dịch vụ không làm mất bài. Không ghi AI thật hoạt động khi chỉ có mock. |
 | AI-002 | TODO | AI-001, LEARN-001 | Luyện nói: xin quyền mic, ghi/hủy/nghe lại/gửi, nhận phản hồi và thử lại. Chốt thời gian lưu/xóa trước audio thật; đối chiếu mẫu. Chỉ nhận xét phát âm khi thực sự xử lý âm thanh phù hợp. |
 | AI-003 | TODO | AI-001, LEARN-001 | Luyện viết: lưu nháp → nộp → gợi ý theo mức độ → tự sửa → so sánh. Phản hồi có căn cứ, giới hạn và nguồn; kiểm tra tập bài đối chiếu, xử lý phản hồi sai/timeout. |
-| CONTENT-002 | TODO | CONTENT-001, LEARN-001 | Mở rộng bốn tuần nền tảng với bốn kỹ năng, mục tiêu và bài kiểm tra; có hồ sơ kiểm duyệt và nguồn/quyền sử dụng. Kiểm tra bài mới phù hợp độ khó, không chỉ tăng số lượng. |
-| ADAPT-001 | TODO | PLAN-001, REVIEW-001, PROGRESS-001, CONTENT-002 | Xếp bài theo kiến thức tiên quyết, ôn đến hạn, điểm yếu và sở thích; có “khó quá”, “hôm nay mệt”, quay lại sau nghỉ. Kiểm tra không dồn bài nợ và không bỏ toàn bộ kỹ năng yếu chỉ vì ít thích. |
+| CONTENT-002 | DONE | CONTENT-001, LEARN-001 | Có 28 bài + bốn kiểm tra theo mục tiêu tăng dần, đoạn đọc/nghe, tự nói/viết và tiêu chí tự xem lại; gói 57 WAV offline. Giữ bảy bài cũ và dữ liệu v3; kiểm tra cả bốn bài tuần qua UI offline, hint/reload/lưu/ôn. Hồ sơ nguồn/rà soát nội bộ ở CURRICULUM/CONTENT_REVIEW; học liệu thử nghiệm, chưa có giáo viên độc lập hoặc hiệu chỉnh độ khó bằng người học thật. |
+| ADAPT-001 | READY | PLAN-001, REVIEW-001, PROGRESS-001, CONTENT-002 | Xếp bài theo kiến thức tiên quyết, ôn đến hạn, điểm yếu và sở thích; có “khó quá”, “hôm nay mệt”, quay lại sau nghỉ. Kiểm tra không dồn bài nợ và không bỏ toàn bộ kỹ năng yếu chỉ vì ít thích. |
 | BETA-001 | TODO | DATA-002, PWA-002, AI-002, AI-003, CONTENT-002, ADAPT-001, NOTIFY-001 | Chuẩn bị bản triển khai, cấu hình, hướng dẫn dùng/khôi phục/xóa dữ liệu và kiểm tra luồng chính trên web/iOS/Android. Thử nghiệm học theo lịch, ghi phản hồi và hạn chế. Việc phát hành thực tế chỉ thực hiện trong phạm vi đã được cho phép. |
 
 Điều kiện đạt mốc 3: người học có thể mở app hằng ngày, dùng học liệu bốn tuần và nhận phản hồi AI đã được kiểm tra trong phạm vi công bố. Không coi beta này là đã hoàn thành chương trình luyện IELTS sáu tháng.
@@ -67,23 +67,20 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | COACH-001 | TODO | BETA-001 | Nếu người dùng cần: dashboard gia sư, giao bài và nhận xét với quyền truy cập có lựa chọn; kiểm tra học viên khác không xem chéo dữ liệu. |
 | MOBILE-001 | TODO | BETA-001 | Nếu cần cửa hàng ứng dụng: đánh giá Capacitor, build/ký và kiểm thử native, chuẩn bị thông tin phát hành. Tài khoản, thiết bị và quyền phát hành phải có trước khi gửi lên cửa hàng. |
 
-## Chi tiết task tiếp theo: AI-001
+## Chi tiết task tiếp theo: ADAPT-001
 
-**IN_PROGRESS — đã có API/UI/hạn mức và bộ 10 mẫu, chưa đóng task.** Xem [AI.md](AI.md) và [AI_EVALUATION.md](AI_EVALUATION.md). Chưa có API key/ngân sách được xác nhận hoặc kết quả đối chiếu provider thật; tiếp tục từ bước 5 khi có cấu hình hợp lệ, không dựng lại nền tảng. Kiểm thử hiện tại dùng provider fixture có nhãn; Auth/PostgreSQL là local thật.
+**READY — cá nhân hóa phiên từ tín hiệu học thật.** Phụ thuộc đã hoàn thành; AI-001 còn chờ cấu hình và đối chiếu thật, không cản trở task này. Đọc [CURRICULUM.md](CURRICULUM.md), DEC-009/010/011/018 và kiểm tra code bộ ghép phiên trước khi triển khai.
 
-### Thực hiện
+1. Đánh dấu IN_PROGRESS; xác định kiến thức tiên quyết của bộ bài, mức hỗ trợ và tín hiệu yếu từ trả lời/ôn thực tế. Không suy band từ hoàn thành, sở thích hoặc thời gian.
+2. Ghép phiên hữu hạn ưu tiên ôn đến hạn, kiến thức còn thiếu rồi mới cân bằng sở thích; không dồn toàn bộ bài nợ hoặc loại kỹ năng yếu. Giữ giới hạn 10 hoạt động/schema và ngân sách thời gian, bảo toàn kế hoạch đã lưu.
+3. Thêm lựa chọn “khó quá”, “hôm nay mệt” và quay lại sau nghỉ: giảm tải có chủ đích, giải thích ngắn bài được chọn, cho người học điều chỉnh. Không trừng phạt mất ngày hoặc hứa vài phút là đủ IELTS.
+4. Kiểm tra lịch ôn/ưu tiên/cap/tương thích bản sao, reload, offline và đồng bộ; kiểm tra UI điện thoại/desktop. Nếu cần đổi dữ liệu, ghi quyết định và đường đọc bản cũ trước sửa.
+5. Cập nhật tài liệu, chạy kiểm tra phù hợp và commit/push theo ủy quyền đã có.
 
-1. Đọc STATUS, PRODUCT, ARCHITECTURE, DEC-016 và các giới hạn Auth/sync/offline/nhắc học; kiểm tra Git/code. Đánh dấu IN_PROGRESS trước triển khai.
-2. Chuẩn bị tập câu trả lời thử ở trình độ nền tảng và tiêu chí đối chiếu phản hồi bằng tiếng Việt: đúng ngôn ngữ, chỉ ra bằng chứng, vừa trình độ, gợi ý tự sửa; không tự gán band/phát âm từ văn bản.
-3. Kiểm tra tài liệu nhà cung cấp hiện hành, khả năng xử lý cần thiết, chi phí và môi trường có thật. Ghi lựa chọn/ngân sách/hạn mức trong DECISIONS. Nếu chưa có key hoặc ngân sách, làm phần API/validation và tập đánh giá độc lập, chỉ hỏi thông tin cần cho bước gọi dịch vụ thật. Không đưa key vào VITE/Git.
-4. API máy chủ xác thực tài khoản, giới hạn kích thước/tần suất/thời gian/chi phí; hủy/timeout, xử lý nội dung gửi như dữ liệu, phân biệt lỗi dịch vụ và phản hồi thật. Không mất bài khi gọi thất bại, không tự gửi nháp.
-5. Đo/đối chiếu chất lượng, độ trễ và chi phí bằng mẫu thử khi có cấu hình hợp lệ. Không gọi response fixture là AI thật hoặc đánh dấu DONE trước khi đáp ứng tiêu chí.
-6. Chạy kiểm tra phù hợp, cập nhật README/STATUS/TASKS/SESSION_LOG và quyết định, commit/push theo ủy quyền đã có.
+## AI-001 đang chờ bước đối chiếu
 
-### Chưa thuộc task này
+**IN_PROGRESS — đã có API/UI/hạn mức và bộ 10 mẫu, chưa đóng task.** Xem [AI.md](AI.md), [AI_EVALUATION.md](AI_EVALUATION.md), DEC-017. Chưa có API key/ngân sách được xác nhận hoặc kết quả provider thật; không dựng lại nền tảng, tự bật dịch vụ hoặc chuyển sang AI-002/003.
 
-Phát hành công khai, thu âm cá nhân, AI nói/viết đầy đủ, mở rộng IELTS, social/leaderboard hoặc app native.
+Khi có cấu hình máy chủ và khoản chi hợp lệ: khởi động lại dịch vụ để nạp danh mục mới, chạy tập mẫu qua API có hạn mức, ghi chất lượng/độ trễ/chi phí và người duyệt rubric, rồi mới chốt provider/DONE. Không gửi key vào chat/VITE/Git. Provider trong kiểm thử là fixture có nhãn; Auth/PostgreSQL là local thật.
 
-### Phần đã có nhưng chưa đóng mốc khác
-
-Mốc 1 local, PWA-001/002, DATA-001/002 và NOTIFY-001 đã đóng. AI-001 IN_PROGRESS. Tài khoản/sync/offline/nhắc học đã kiểm tra trên Chrome/backend local; mốc 2 còn xác minh thiết bị thật theo INSTALLATION/NOTIFICATIONS/BETA-001. Không gọi bản hiện tại là beta hoàn chỉnh hoặc app native.
+Mốc 1 local, PWA-001/002, DATA-001/002, NOTIFY-001 và CONTENT-002 đã đóng trong phạm vi công bố. Chưa có bản beta hoàn chỉnh, thiết bị thật, học liệu giáo viên phê duyệt hoặc chương trình luyện IELTS sáu tháng. Giới hạn triển khai/cài đặt ở STATUS/INSTALLATION/NOTIFICATIONS/BETA-001.

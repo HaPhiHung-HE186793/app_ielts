@@ -7,14 +7,15 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 ## Trạng thái hiện tại
 
 - Có bản học thử tên **Mỗi ngày**, React + TypeScript + Vite, năm khu vực và giao diện cho điện thoại/desktop.
-- Bảy bài nền tảng: đọc/nghe câu mẫu, trả lời, nhận giải thích, thử lại và tự viết câu của mình.
+- Bộ bốn tuần thử nghiệm: **28 bài + 4 bài kiểm tra**, chọn tuần/chủ đề trong Khám phá; đọc ngắn, nghe tình huống, tự nói và viết có tiêu chí tự xem lại. Bảy bài cũ giữ nguyên câu hỏi/đáp án.
 - Lưu bài dở, cả câu đang nhập; ôn theo lịch, thống kê thật và xuất/khôi phục bản sao JSON.
 - Thiết lập mục tiêu/ngày tùy chọn và tự nhận xét nền tảng; chọn phiên 2/5/15 phút hoặc buổi đầy đủ, tạm dừng và tiếp tục phiên.
 - Tiến bộ có thời gian hoạt động đo được, biểu đồ bảy ngày, lịch sử phiên hoàn tất/đã đổi và bộ lọc bài học/ôn/khởi động.
 - Hoàn thành mốc 1 local, PWA-001/002, DATA-001/002: đăng nhập, kho riêng, đồng bộ có lựa chọn, chống gửi trùng và xử lý xung đột. Đã kiểm tra hai phiên trình duyệt độc lập trên Supabase Docker local.
-- Có gói bảy bài/bảy file nghe tải trước để mở lại và học offline; quản lý dung lượng, thử lại và xóa tải xuống riêng với tiến độ.
+- Có gói **57 file nghe + JSON học liệu**, khoảng **8,92 MB**, tải trước để mở lại và học offline; quản lý dung lượng, thử lại và xóa tải xuống riêng với tiến độ.
 - NOTIFY-001: nhắc học tự nguyện theo thiết bị, múi giờ/ngày/giờ yên lặng, dời và tắt; Web Push thật đã nhận trong Chrome thử nghiệm khi đóng các trang app. Chưa xác minh điện thoại thật hoặc màn hình OS.
 - **AI-001 đang thực hiện**: API có xác thực/hạn mức/chống gọi lặp và gợi ý tùy chọn ở câu tự viết cuối bài. AI thật mặc định tắt, chưa có khóa/ngân sách và kết quả đối chiếu; chưa đóng task. Chưa có Supabase hosted hoặc triển khai công khai.
+- **CONTENT-002 đã hoàn thành trong phạm vi học liệu thử nghiệm. Tiếp theo: ADAPT-001**, điều chỉnh bài theo kiến thức tiên quyết, kết quả học và lựa chọn hôm nay mệt/khó quá.
 - Trạng thái chi tiết và bước tiếp theo luôn được cập nhật tại [docs/STATUS.md](docs/STATUS.md).
 
 ## Bắt đầu hoặc tiếp tục phát triển
@@ -28,7 +29,7 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 5. [Các quyết định](docs/DECISIONS.md): lý do chọn hướng triển khai và các giả định chưa xác nhận.
 6. [Nhật ký bàn giao](docs/SESSION_LOG.md): những thay đổi quan trọng qua từng session.
 
-Tài liệu bổ sung: [tài khoản và backend](docs/BACKEND.md), [đồng bộ và xung đột](docs/SYNC.md), [kiểm tra ứng dụng](docs/TESTING.md), [cài lên màn hình chính](docs/INSTALLATION.md), [tải gói offline](docs/OFFLINE.md), [nhắc học](docs/NOTIFICATIONS.md), [gia sư AI](docs/AI.md), [đối chiếu AI](docs/AI_EVALUATION.md), [nguồn và rà soát học liệu](docs/CONTENT_REVIEW.md).
+Tài liệu bổ sung: [tài khoản và backend](docs/BACKEND.md), [đồng bộ và xung đột](docs/SYNC.md), [kiểm tra ứng dụng](docs/TESTING.md), [cài lên màn hình chính](docs/INSTALLATION.md), [tải gói offline](docs/OFFLINE.md), [nhắc học](docs/NOTIFICATIONS.md), [gia sư AI](docs/AI.md), [đối chiếu AI](docs/AI_EVALUATION.md), [chương trình bốn tuần](docs/CURRICULUM.md), [nguồn và rà soát học liệu](docs/CONTENT_REVIEW.md).
 
 Trước khi sửa, kiểm tra `git status --short --branch` và `git log -5 --oneline`. Đối chiếu tài liệu với code thực tế; không coi tính năng trong kế hoạch là tính năng đã tồn tại.
 
@@ -54,7 +55,7 @@ npm run preview
 
 `build` tạo `dist/`; `preview` dùng để kiểm tra bản build local, không phải máy chủ production.
 
-`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 89 unit test, 68 ca trình duyệt khách và 50 ca Auth/RLS/đồng bộ/offline/nhắc học/API AI trên Supabase local. Provider AI trong test là fixture có nhãn. Kết quả thực tế ở STATUS/SESSION_LOG.
+`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 114 unit test, 74 ca trình duyệt khách và 50 ca Auth/RLS/đồng bộ/offline/nhắc học/API AI trên Supabase local. Provider AI trong test là fixture có nhãn. Kết quả thực tế ở STATUS/SESSION_LOG.
 
 Để thử tài khoản, mở Docker rồi chạy:
 
@@ -87,11 +88,11 @@ Dừng dev server cũ của dự án nếu đang chiếm cổng 5173. Mở http:
 
 Dùng nhất quán `127.0.0.1:5173` để giữ kho local. Khi chưa bật đồng bộ, tiến độ chỉ ở trình duyệt; khi bật, xem trạng thái xác nhận server. Khôi phục JSON hoặc xóa trên thiết bị dừng sync ở đó, không xóa bản server; bật lại có thể tải bản cũ xuống. Trên máy chung, tải bản sao, xóa phần hiện tại rồi đăng xuất vì kho chưa mã hóa. Chỉ giữ một bài đang làm; app hỏi trước khi chuyển bài.
 
-Phút trong kế hoạch là ước tính, tách với thời gian hoạt động được đo. Chỉ có bảy bài: buổi 60 phút ban đầu xếp khoảng 35 phút học liệu; phần còn lại chưa được xếp. Phiên mới lưu lịch sử kế hoạch cũ và giữ bài dở. Những kế hoạch đã bị thay trước bản cập nhật này không thể khôi phục; dữ liệu cũ chưa đo giờ giữ trạng thái chưa có số đo. Chưa có lộ trình sáu tháng cá nhân.
+Phút trong kế hoạch là ước tính, tách với thời gian hoạt động được đo. Mỗi phiên tối đa 10 hoạt động; buổi 60 phút khi bắt đầu xếp khoảng 50 phút, phần còn lại được ghi là chưa xếp. Tự nói/viết kỹ có thể lâu hơn. Phiên mới lưu lịch sử kế hoạch cũ và giữ bài dở; dữ liệu cũ chưa đo giờ giữ trạng thái chưa có số đo. Khung bốn tuần không phải lộ trình sáu tháng cá nhân; xem [CURRICULUM.md](docs/CURRICULUM.md).
 
 Bộ đo phản ánh tương tác trên app, không khẳng định mức chú ý; đọc/nói yên lặng lâu có thể bị tính thiếu. App lưu mốc mỗi năm giây và khi rời hoạt động; đóng đột ngột có thể mất phần chưa lưu. Không quy đổi thời gian thành band IELTS.
 
-Giọng đọc là bảy WAV tổng hợp eSpeak NG, có thể tải trước; câu tự viết không được chấm điểm, gợi ý AI là tùy chọn khi máy chủ đã bật. Học liệu được biên soạn mới và rà soát nội bộ, chưa có giáo viên độc lập xác nhận. Chưa có đánh giá đầu vào hoặc kiểm chứng chất lượng AI thật; file nghe chưa được giáo viên kiểm duyệt. Chưa kiểm thử cài/khởi chạy trên iPhone/Safari và Android thật.
+Giọng đọc là WAV tổng hợp eSpeak NG, có thể tải trước; câu tự viết không được chấm điểm, gợi ý AI là tùy chọn khi máy chủ đã bật. Học liệu được biên soạn mới và rà soát nội bộ, chưa có giáo viên độc lập xác nhận. Chưa có đánh giá đầu vào hoặc kiểm chứng chất lượng AI thật; file nghe chưa được giáo viên kiểm duyệt. Chưa kiểm thử cài/khởi chạy trên iPhone/Safari và Android thật.
 
 Để dùng trên điện thoại cần địa chỉ HTTPS đã triển khai; link localhost trên máy tính chưa đáp ứng điều đó. Sau khi tải đủ gói ở bản build, có thể mở lại đúng địa chỉ khi mất mạng; thêm biểu tượng không tự bật đồng bộ. Xem [hướng dẫn cài và giữ tiến độ](docs/INSTALLATION.md). `npm run icons` tái tạo PNG từ SVG trong repo bằng Chrome/Playwright đã có; không cần chạy lại mỗi lần build.
 

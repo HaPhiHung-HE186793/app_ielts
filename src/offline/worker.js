@@ -105,10 +105,15 @@ self.addEventListener('message', (event) => {
           if (!(await shell.match(asset.path)))
             await shell.put(asset.path, await verifiedResponse(asset))
         }
+        let checked = 0
         for (const asset of manifest.pack.resources) {
           // Recheck every asset on retry; an interrupted download is never "ready".
           await cache.put(asset.path, await verifiedResponse(asset))
-          port.postMessage({ progress: await packStatus() })
+          // Scanning all cached files after every WAV made larger packs needlessly slow.
+          // Keep progress factual, with a complete scan after each small batch and at the end.
+          checked++
+          if (checked % 8 === 0 || checked === manifest.pack.resources.length)
+            port.postMessage({ progress: await packStatus() })
         }
         await cache.put(marker, new Response(manifest.pack.version))
       }

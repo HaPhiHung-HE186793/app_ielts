@@ -49,7 +49,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 
 | ID | Trạng thái | Phụ thuộc | Kết quả và tiêu chí hoàn thành |
 | --- | --- | --- | --- |
-| AI-001 | READY | DATA-001 | Chọn nhà cung cấp từ thử nghiệm chất lượng/độ trễ/chi phí, ghi ngân sách và hạn mức; API máy chủ có xác thực, validation, timeout và giới hạn dùng. Kiểm tra không lộ secret và lỗi dịch vụ không làm mất bài. Không ghi AI thật hoạt động khi chỉ có mock. |
+| AI-001 | IN_PROGRESS | DATA-001 | Chọn nhà cung cấp từ thử nghiệm chất lượng/độ trễ/chi phí, ghi ngân sách và hạn mức; API máy chủ có xác thực, validation, timeout và giới hạn dùng. Kiểm tra không lộ secret và lỗi dịch vụ không làm mất bài. Không ghi AI thật hoạt động khi chỉ có mock. |
 | AI-002 | TODO | AI-001, LEARN-001 | Luyện nói: xin quyền mic, ghi/hủy/nghe lại/gửi, nhận phản hồi và thử lại. Chốt thời gian lưu/xóa trước audio thật; đối chiếu mẫu. Chỉ nhận xét phát âm khi thực sự xử lý âm thanh phù hợp. |
 | AI-003 | TODO | AI-001, LEARN-001 | Luyện viết: lưu nháp → nộp → gợi ý theo mức độ → tự sửa → so sánh. Phản hồi có căn cứ, giới hạn và nguồn; kiểm tra tập bài đối chiếu, xử lý phản hồi sai/timeout. |
 | CONTENT-002 | TODO | CONTENT-001, LEARN-001 | Mở rộng bốn tuần nền tảng với bốn kỹ năng, mục tiêu và bài kiểm tra; có hồ sơ kiểm duyệt và nguồn/quyền sử dụng. Kiểm tra bài mới phù hợp độ khó, không chỉ tăng số lượng. |
@@ -69,6 +69,8 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 
 ## Chi tiết task tiếp theo: AI-001
 
+**IN_PROGRESS — đã có API/UI/hạn mức và bộ 10 mẫu, chưa đóng task.** Xem [AI.md](AI.md) và [AI_EVALUATION.md](AI_EVALUATION.md). Chưa có API key/ngân sách được xác nhận hoặc kết quả đối chiếu provider thật; tiếp tục từ bước 5 khi có cấu hình hợp lệ, không dựng lại nền tảng. Kiểm thử hiện tại dùng provider fixture có nhãn; Auth/PostgreSQL là local thật.
+
 ### Thực hiện
 
 1. Đọc STATUS, PRODUCT, ARCHITECTURE, DEC-016 và các giới hạn Auth/sync/offline/nhắc học; kiểm tra Git/code. Đánh dấu IN_PROGRESS trước triển khai.
@@ -84,4 +86,4 @@ Phát hành công khai, thu âm cá nhân, AI nói/viết đầy đủ, mở r�
 
 ### Phần đã có nhưng chưa đóng mốc khác
 
-Mốc 1 local, PWA-001/002, DATA-001/002 và NOTIFY-001 đã đóng. AI-001 READY. Tài khoản/sync/offline/nhắc học đã kiểm tra trên Chrome/backend local; mốc 2 còn xác minh thiết bị thật theo INSTALLATION/NOTIFICATIONS/BETA-001. Không gọi bản hiện tại là beta hoàn chỉnh hoặc app native.
+Mốc 1 local, PWA-001/002, DATA-001/002 và NOTIFY-001 đã đóng. AI-001 IN_PROGRESS. Tài khoản/sync/offline/nhắc học đã kiểm tra trên Chrome/backend local; mốc 2 còn xác minh thiết bị thật theo INSTALLATION/NOTIFICATIONS/BETA-001. Không gọi bản hiện tại là beta hoàn chỉnh hoặc app native.

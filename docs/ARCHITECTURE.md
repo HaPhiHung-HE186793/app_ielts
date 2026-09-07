@@ -1,6 +1,6 @@
 # Kiến trúc dự kiến
 
-Ngày cập nhật: 2026-09-07. Frontend, luồng học local, PWA/offline, Supabase Auth/RLS, đồng bộ và nhắc học Web Push đã triển khai/kiểm tra local. Cloud hosted và AI vẫn là kế hoạch. Các quyết định nằm trong [DECISIONS.md](DECISIONS.md).
+Ngày cập nhật: 2026-09-07. Frontend, luồng học local, PWA/offline, Supabase Auth/RLS, đồng bộ và nhắc học Web Push đã triển khai/kiểm tra local. Nền tảng API/giao diện AI đã có, chưa gọi/đối chiếu provider thật; cloud hosted chưa triển khai. Các quyết định nằm trong [DECISIONS.md](DECISIONS.md).
 
 ## Hiện có trong code
 
@@ -17,7 +17,8 @@ Ngày cập nhật: 2026-09-07. Frontend, luồng học local, PWA/offline, Supa
 - `data/sync-engine.ts` giữ payload gửi cố định, retry/ack/rebase, không đánh dấu đã lưu trước server xác nhận; `services/study-sync.ts` validation response và AbortSignal. `app/sync.ts` quản lý vòng đời theo Auth, Web Locks một tab sửa theo chủ, online/focus/chu kỳ 15 giây. Hộp cài đặt tạm hoãn sync để giữ nội dung chưa lưu. UI ở `features/account/SyncPanel.tsx`; chi tiết [SYNC.md](SYNC.md).
 - `src/domain/planner.ts`: ghép phiên 2/5/15 phút/buổi đầy đủ từ học liệu và mục đến hạn, tra kết quả theo ID, chuyển bước và ghi lượt khởi động. Giao diện ở `SessionChoices.tsx`, `SessionPage.tsx`; form cài đặt mở rộng thành điểm bắt đầu tùy chọn.
 - `src/app/clock.ts`: đọc thời gian mới khi render/đổi trang, thông báo cập nhật sau 30 giây hoặc khi tab lấy lại focus/hiển thị. Lịch ôn lưu thời điểm tuyệt đối; ngày hiển thị theo múi giờ trình duyệt.
-- `src/components/ListenButton.tsx` phát WAV eSpeak NG của bảy câu mẫu, có dừng/lỗi/transcript; worker trả byte range khi offline. Font/minh họa local. Không có lời gọi API AI.
+- `src/components/ListenButton.tsx` phát WAV eSpeak NG của bảy câu mẫu, có dừng/lỗi/transcript; worker trả byte range khi offline. Font/minh họa local; phát mẫu không gọi AI.
+- `src/ai` chứa contract/client và UUID/hash theo kho; `features/ai/AiHint.tsx` gợi ý tùy chọn ở cuối bài. `server/ai` xác thực JWT, validation và adapter OpenAI Responses, `server/local.ts` mở HTTP loopback 8787 sau proxy cùng origin. `ai_budgets`/`ai_requests` có RLS, giữ ngân sách/receipt atomic trước gọi. AI mặc định tắt/0 USD; không đổi StudyState, lịch ôn hoặc nháp. `server/evaluate.ts` có chế độ kiểm tra mẫu không gọi AI và nhánh live cần cấu hình. Xem [AI.md](AI.md), [AI_EVALUATION.md](AI_EVALUATION.md), DEC-017.
 - `src/offline/worker.js` nhận allowlist sinh bởi `scripts/offline-build.js`, kiểm tra hash và lưu shell/gói riêng. `app/offline.ts` quản lý đăng ký/lệnh, `features/install/OfflinePanel.tsx` tải/dung lượng/xóa/thông báo cập nhật. Không skipWaiting hay đụng kho tiến độ; chỉ kích hoạt sau khi cửa sổ cũ đóng.
 - Khởi động mở chủ local từ phiên SDK lưu sẵn trước khi cần refresh token; sync chờ SDK xác nhận. UI phân biệt bản lưu với phiên đã khôi phục, không cấp quyền server từ thông tin local.
 - `features/reminders` có form/lớp điều phối theo chủ, revision và Web Lock riêng. `src/reminders` được ghép vào worker khi build: IndexedDB chỉ giữ binding/ngày nhắc để lọc payload và chống lặp, không thay kho tiến độ. Ba bảng `reminder_service/devices/deliveries` lưu cấu hình công khai/lịch/receipt; Auth/RLS/RPC bảo vệ quyền và tính lịch trong PostgreSQL. Bộ gửi Node `scripts/reminder-sender.js`/`reminders-local.js` dùng `web-push` 3.6.7, khóa riêng chỉ ở `.local`. Xem [NOTIFICATIONS.md](NOTIFICATIONS.md), DEC-016; thông báo thật đã kiểm tra trong Chrome, chưa xác minh điện thoại/OS thật.
@@ -88,7 +89,7 @@ Tránh tạo kiến trúc nhiều tầng khi chưa có nhu cầu. Đã có `feat
 
 ## 4. Mô hình dữ liệu ban đầu
 
-Migration hiện có lưu `account_profiles`, `study_snapshots(user_id, revision, state, updated_at)` và `study_commits(user_id, mutation_id, base_revision, revision, payload_hash, changes, created_at)`. Các nhóm khái niệm dưới đây nằm trong StudyState hoặc là mục tiêu sau này; chưa có bảng AI/audio riêng:
+Migration hiện có lưu `account_profiles`, `study_snapshots(user_id, revision, state, updated_at)`, `study_commits(user_id, mutation_id, base_revision, revision, payload_hash, changes, created_at)`, ba bảng nhắc và `ai_budgets`/`ai_requests`. Các nhóm khái niệm dưới đây nằm trong StudyState hoặc là mục tiêu sau này; chưa có lưu audio cá nhân hoặc bảng bài Writing đầy đủ:
 
 | Nhóm | Thông tin cần lưu |
 | --- | --- |

@@ -298,3 +298,31 @@ Người dùng yêu cầu tiếp tục. Đọc bàn giao và code tại `1dffddb
 - Chưa có hosted/SMTP/HTTPS, UI quản lý thiết bị từ xa/retention receipt, giáo viên duyệt audio hoặc chương trình bốn tuần/sáu tháng. Giữ giới hạn sync/offline/local chưa mã hóa như mốc trước.
 - Rà soát diff, kiểm tra tài liệu/secret/build/staged, commit và push main; hash/remote xác minh bằng Git ở bàn giao cuối, không force-push hoặc sửa lịch sử.
 - Rà soát cuối: 15 Markdown/72 liên kết nội bộ/24 task hợp lệ, AI-001 READY duy nhất; diff --check đạt. Build từ chối cấu hình secret, quét auth build/worker và 37 file staged không thấy service key hoặc VAPID private key. Sau test/probe, Auth user, profile, snapshot, commit, reminder device/receipt và Mailpit đều 0; chỉ giữ cấu hình công khai/khóa local để dùng tiếp. Preview 4175 có worker nhắc; mở máy nhắc Node ẩn sau khi dọn test (log riêng trong .local).
+
+## 2026-09-07 — AI-001: nền tảng API, hạn mức và gợi ý tự sửa
+
+### Kết quả
+
+- Tiếp tục main sạch sau c294ccb; đọc tài liệu/Git/code và đánh dấu AI-001 IN_PROGRESS. Không dùng sub-agent, không triển khai công khai hoặc giả định có API key/ngân sách. Đã hỏi tên dịch vụ/ngân sách bằng câu hỏi bất đồng bộ, yêu cầu không gửi khóa trong chat; chưa có câu trả lời trong lần bàn giao này.
+- Áp dụng skill openai-docs, đối chiếu tài liệu OpenAI chính thức về model/giá, Responses JSON schema và chính sách dữ liệu. Chọn ứng viên `gpt-4.1-mini-2025-04-14` để chuẩn bị đối chiếu, chưa gọi hoặc xác minh chất lượng/quyền truy cập thật. Ghi DEC-017 và AI/AI_EVALUATION; không gọi đây là model tốt nhất/mới nhất hoặc lựa chọn đã thắng thử nghiệm.
+- Có `server/ai` chạy Node HTTP/fetch/type stripping, không thêm dependency. JWT xác minh qua Auth, owner/lesson/input chặt, endpoint/model cố định, không tools, timeout/body/output cap. Adapter chỉ nhận feedback đúng schema, quote có trong câu và verdict phù hợp cấu trúc; đây chưa phải kiểm chứng nhận xét đúng ngôn ngữ.
+- Migration `20260907000500_ai_request_budget.sql` đã áp dụng local không reset: RLS riêng, chỉ service role ghi, giữ 0,01 USD trước mỗi request bằng transaction khóa budget. 10 lượt/tài khoản/ngày UTC, cách 20 giây, cap hai đang xử lý. Usage hợp lệ quyết toán, unknown giữ tiền; bất thường vượt giữ chỗ tự tắt. Tổng tích lũy không reset khi restart/xóa user.
+- UUID/hash lưu client trước gửi, receipt/hash server giữ retry qua reload/restart, payload khác bị chặn; response replay theo chủ 24 giờ, pending quá hai phút không gọi lại. Bộ dọn response chạy lúc start và mỗi phút khi dịch vụ còn chạy; metadata chưa tự hết hạn. Không lưu nguyên câu/prompt vào receipt/log, nhưng response có trích đoạn. Không đồng bộ feedback AI vào StudyState.
+- Giao diện cuối bài có consent, nguồn/model/ngày, một gợi ý và bước tự sửa. Câu nháp vẫn lưu/hoàn thành độc lập; đổi câu/owner hoặc rời bài ngăn phản hồi cũ. Không gán band, viết đè hoặc đổi lịch ôn. Fixture chỉ ở test với nhãn rõ; server local không có mock mode và gọi thật mặc định false/0.
+- Có 10 mẫu gốc/rubric nội bộ và `ai:evaluate`: mặc định chỉ kiểm tra mẫu/giới hạn; `--live` cần cấu hình, tạo/dọn tài khoản local riêng, dùng chính API/hạn mức, không retry, lưu báo cáo từng mẫu trong .local. Nhánh live chưa chạy với provider thật; chưa có người duyệt/độ trễ/chi phí thực tế.
+
+### Kiểm tra và sửa lỗi
+
+- Lint/typecheck/build đạt, Prettier file code mới/đổi đạt. Vitest 89/89; toàn bộ khách 68/68 và Auth/API/UI 50/50 đạt trên Chrome desktop 1440×1000 và viewport 360×800. Build ~659 kB minified/189 kB gzip vẫn cảnh báo chưa chia route.
+- Thêm 7 unit, 5 API và 6 UI cho AI. Backend là Auth/PostgreSQL thật, provider là fixture được tiêm qua adapter; UI route chuyển tới HTTP server thử riêng. Kiểm tra giả mạo/khác chủ/origin/body, RLS/service-only, reserve đồng thời, replay/restart/hash/retention, quota/cap/expiry/unknown và budget còn giữ sau xóa user. Không ghi fixture là AI thật.
+- Ca mất response làm mất phản hồi sau khi server đã xử lý, reload và giảm budget còn đúng chi phí đã tính: nhận lại cùng UUID, provider chỉ gọi một lần. Sửa client đọc UUID/hash đã lưu trước hiển thị nút, để ngân sách hết không chặn replay sau reload. Đổi text ẩn feedback cũ; đổi owner khi provider còn chờ không lộ kết quả hoặc sửa nháp.
+- AI chưa cấu hình vẫn sửa/reload/hoàn thành bài được. Axe A/AA không báo vi phạm vùng quét, không tràn ngang; đã xem ảnh mobile/desktop. Giữ 89/68/50 là kết quả sau các sửa code liên quan, không dùng pass trước sửa thay bằng chứng.
+- `ai:evaluate` dry kiểm tra đủ 10 mẫu đạt. Kiểm tra `--live` với false/0 từ chối trước gọi. Vite từ chối VITE_OPENAI_API_KEY; build với marker khóa máy chủ không đóng gói marker/service key/VAPID private hoặc endpoint adapter. Không dùng khóa thật cho phép thử này.
+- Máy AI native Node đã mở 8787, gọi thiếu JWT trả 401. Smoke qua proxy preview 4175 với tài khoản Auth thử thật: status unavailable, feedback 503, không receipt/lượt trả phí. Sau dọn tài khoản, Auth/profile/snapshot/commit/reminder device/receipt/AI receipt/Mailpit đều 0; chỉ có một budget pilot false/0/spend 0. Không xóa dữ liệu có trước của người dùng.
+
+### Bàn giao
+
+- **AI-001 giữ IN_PROGRESS**, chưa đáp ứng phần đối chiếu provider thật. Việc tiếp theo là xác nhận ngân sách và cấu hình khóa chỉ ở máy chủ, chạy bộ mẫu có ghi độ trễ/chi phí, người duyệt ghi rubric rồi mới chốt provider/DONE. AI-002/003 chưa triển khai đầy đủ; các mốc cũ giữ trạng thái DONE.
+- README/STATUS/TASKS/ARCHITECTURE/TESTING/DECISIONS cập nhật cùng AI.md và AI_EVALUATION.md. STATUS là trạng thái ngắn hiện tại; session mới không cần dựng lại nền tảng hoặc coi mock đã qua đánh giá chất lượng.
+- Giữ preview 4175, AI 8787 gọi thật tắt và máy nhắc Node ẩn; log trong .local, có thể dừng giữa session. Không commit khóa/.local/dữ liệu thử; chưa có hosted/SMTP/HTTPS, thiết bị thật hoặc giáo viên duyệt học liệu/audio.
+- Rà soát diff/tài liệu/secret staged, commit và push main theo ủy quyền đã có. Hash/remote xác minh bằng Git trong kết quả cuối, không force-push hoặc sửa lịch sử dùng chung.

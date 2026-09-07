@@ -13,7 +13,8 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 - Tiến bộ có thời gian hoạt động đo được, biểu đồ bảy ngày, lịch sử phiên hoàn tất/đã đổi và bộ lọc bài học/ôn/khởi động.
 - Hoàn thành mốc 1 local, PWA-001/002, DATA-001/002: đăng nhập, kho riêng, đồng bộ có lựa chọn, chống gửi trùng và xử lý xung đột. Đã kiểm tra hai phiên trình duyệt độc lập trên Supabase Docker local.
 - Có gói bảy bài/bảy file nghe tải trước để mở lại và học offline; quản lý dung lượng, thử lại và xóa tải xuống riêng với tiến độ.
-- NOTIFY-001: nhắc học tự nguyện theo thiết bị, múi giờ/ngày/giờ yên lặng, dời và tắt; Web Push thật đã nhận trong Chrome thử nghiệm khi đóng các trang app. Chưa xác minh điện thoại thật hoặc màn hình OS. Task tiếp theo: **AI-001 — nền tảng gia sư AI**; chưa có AI, Supabase hosted hoặc bản triển khai công khai.
+- NOTIFY-001: nhắc học tự nguyện theo thiết bị, múi giờ/ngày/giờ yên lặng, dời và tắt; Web Push thật đã nhận trong Chrome thử nghiệm khi đóng các trang app. Chưa xác minh điện thoại thật hoặc màn hình OS.
+- **AI-001 đang thực hiện**: API có xác thực/hạn mức/chống gọi lặp và gợi ý tùy chọn ở câu tự viết cuối bài. AI thật mặc định tắt, chưa có khóa/ngân sách và kết quả đối chiếu; chưa đóng task. Chưa có Supabase hosted hoặc triển khai công khai.
 - Trạng thái chi tiết và bước tiếp theo luôn được cập nhật tại [docs/STATUS.md](docs/STATUS.md).
 
 ## Bắt đầu hoặc tiếp tục phát triển
@@ -27,7 +28,7 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 5. [Các quyết định](docs/DECISIONS.md): lý do chọn hướng triển khai và các giả định chưa xác nhận.
 6. [Nhật ký bàn giao](docs/SESSION_LOG.md): những thay đổi quan trọng qua từng session.
 
-Tài liệu bổ sung: [tài khoản và backend](docs/BACKEND.md), [đồng bộ và xung đột](docs/SYNC.md), [kiểm tra ứng dụng](docs/TESTING.md), [cài lên màn hình chính](docs/INSTALLATION.md), [tải gói offline](docs/OFFLINE.md), [nhắc học](docs/NOTIFICATIONS.md), [nguồn và rà soát học liệu](docs/CONTENT_REVIEW.md).
+Tài liệu bổ sung: [tài khoản và backend](docs/BACKEND.md), [đồng bộ và xung đột](docs/SYNC.md), [kiểm tra ứng dụng](docs/TESTING.md), [cài lên màn hình chính](docs/INSTALLATION.md), [tải gói offline](docs/OFFLINE.md), [nhắc học](docs/NOTIFICATIONS.md), [gia sư AI](docs/AI.md), [đối chiếu AI](docs/AI_EVALUATION.md), [nguồn và rà soát học liệu](docs/CONTENT_REVIEW.md).
 
 Trước khi sửa, kiểm tra `git status --short --branch` và `git log -5 --oneline`. Đối chiếu tài liệu với code thực tế; không coi tính năng trong kế hoạch là tính năng đã tồn tại.
 
@@ -53,7 +54,7 @@ npm run preview
 
 `build` tạo `dist/`; `preview` dùng để kiểm tra bản build local, không phải máy chủ production.
 
-`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 82 unit test, 68 ca trình duyệt khách và 39 ca Auth/RLS/đồng bộ/offline/nhắc học trên Supabase local. Kết quả thực tế ở STATUS/SESSION_LOG.
+`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 89 unit test, 68 ca trình duyệt khách và 50 ca Auth/RLS/đồng bộ/offline/nhắc học/API AI trên Supabase local. Provider AI trong test là fixture có nhãn. Kết quả thực tế ở STATUS/SESSION_LOG.
 
 Để thử tài khoản, mở Docker rồi chạy:
 
@@ -70,6 +71,8 @@ Dừng dev server cũ của dự án nếu đang chiếm cổng 5173. Mở http:
 Để thử nhắc học, giữ preview 4175 và chạy `npm run reminders:local` ở terminal khác. Mở http://127.0.0.1:4175/#/reminders, đăng nhập, tải lại trạng thái, chọn lịch và bật quyền. Máy gửi/Docker cần tiếp tục chạy; chưa có máy gửi hosted. Hướng dẫn, khóa local và lệnh kiểm tra push thật `npm run reminders:verify` ở [NOTIFICATIONS.md](docs/NOTIFICATIONS.md).
 
 ## Dùng thử
+
+Để kiểm tra phần AI, giữ backend/preview và chạy thêm `npm run ai:local`. Máy chủ mặc định không gọi AI thật; thông báo trong câu tự viết cuối bài cho biết trạng thái. `npm run ai:evaluate` kiểm tra 10 mẫu không tốn phí. Cách cấu hình khóa **chỉ ở máy chủ**, ngân sách và thử thật nằm trong [AI.md](docs/AI.md) / [AI_EVALUATION.md](docs/AI_EVALUATION.md).
 
 1. Mở Hôm nay, chọn **Thiết lập nhịp học** nếu muốn ghi mục tiêu/sở thích/thời gian. Có thể đóng để học ngay.
 2. Chọn 2 phút để khởi động một câu, 5 phút để học một bài, 15 phút hoặc buổi đầy đủ để ghép bài và ôn. **Bắt đầu học** ở thẻ đầu vẫn mở bài trực tiếp.
@@ -88,7 +91,7 @@ Phút trong kế hoạch là ước tính, tách với thời gian hoạt độn
 
 Bộ đo phản ánh tương tác trên app, không khẳng định mức chú ý; đọc/nói yên lặng lâu có thể bị tính thiếu. App lưu mốc mỗi năm giây và khi rời hoạt động; đóng đột ngột có thể mất phần chưa lưu. Không quy đổi thời gian thành band IELTS.
 
-Giọng đọc là bảy WAV tổng hợp eSpeak NG, có thể tải trước; câu tự viết chưa được chấm. Học liệu được biên soạn mới và rà soát nội bộ, chưa có giáo viên độc lập xác nhận. Chưa có đánh giá đầu vào hoặc AI; file nghe chưa được giáo viên kiểm duyệt. Chưa kiểm thử cài/khởi chạy trên iPhone/Safari và Android thật.
+Giọng đọc là bảy WAV tổng hợp eSpeak NG, có thể tải trước; câu tự viết không được chấm điểm, gợi ý AI là tùy chọn khi máy chủ đã bật. Học liệu được biên soạn mới và rà soát nội bộ, chưa có giáo viên độc lập xác nhận. Chưa có đánh giá đầu vào hoặc kiểm chứng chất lượng AI thật; file nghe chưa được giáo viên kiểm duyệt. Chưa kiểm thử cài/khởi chạy trên iPhone/Safari và Android thật.
 
 Để dùng trên điện thoại cần địa chỉ HTTPS đã triển khai; link localhost trên máy tính chưa đáp ứng điều đó. Sau khi tải đủ gói ở bản build, có thể mở lại đúng địa chỉ khi mất mạng; thêm biểu tượng không tự bật đồng bộ. Xem [hướng dẫn cài và giữ tiến độ](docs/INSTALLATION.md). `npm run icons` tái tạo PNG từ SVG trong repo bằng Chrome/Playwright đã có; không cần chạy lại mỗi lần build.
 

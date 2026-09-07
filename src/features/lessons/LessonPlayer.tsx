@@ -7,6 +7,7 @@ import type { Exercise, Lesson } from '../../domain/types'
 import { LessonArt } from '../../components/LessonCard'
 import { ActivityMeter } from '../../components/ActivityMeter'
 import { ListenButton } from '../../components/ListenButton'
+import { AiHint } from '../ai/AiHint'
 
 function ExerciseStep({
   exercise,
@@ -314,8 +315,15 @@ export function LessonPlayer({
             />
           </label>
           <p className="muted small">
-            Câu này được lưu để bạn xem lại, chưa được AI hay giáo viên chấm.
+            Câu này được lưu để bạn xem lại. Gợi ý AI là tùy chọn và không ảnh hưởng kết quả hoàn
+            thành bài.
           </p>
+          <AiHint
+            key={current.id}
+            lessonId={lesson.id}
+            draftId={current.id}
+            text={current.reflection}
+          />
           <button
             className="button primary full-width"
             onClick={() => {

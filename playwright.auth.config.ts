@@ -18,16 +18,28 @@ export default defineConfig({
   projects: [
     {
       name: 'supabase-api',
-      testMatch: ['rls.spec.ts', 'sync-api.spec.ts', 'reminders-api.spec.ts'],
+      testMatch: ['rls.spec.ts', 'sync-api.spec.ts', 'reminders-api.spec.ts', 'ai-api.spec.ts'],
     },
     {
       name: 'account-desktop',
-      testMatch: ['account.spec.ts', 'sync.spec.ts', 'offline.spec.ts', 'reminders.spec.ts'],
+      testMatch: [
+        'account.spec.ts',
+        'sync.spec.ts',
+        'offline.spec.ts',
+        'reminders.spec.ts',
+        'ai.spec.ts',
+      ],
       use: { viewport: { width: 1440, height: 1000 } },
     },
     {
       name: 'account-mobile',
-      testMatch: ['account.spec.ts', 'sync.spec.ts', 'offline.spec.ts', 'reminders.spec.ts'],
+      testMatch: [
+        'account.spec.ts',
+        'sync.spec.ts',
+        'offline.spec.ts',
+        'reminders.spec.ts',
+        'ai.spec.ts',
+      ],
       use: { viewport: { width: 360, height: 800 }, isMobile: true, hasTouch: true },
     },
   ],

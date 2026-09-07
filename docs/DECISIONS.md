@@ -157,6 +157,15 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 - Dùng câu/đoạn biên soạn mới và giọng eSpeak NG thử nghiệm, đóng gói offline bằng hash. Hồ sơ rà soát nội bộ/phạm vi và nguồn ngữ pháp ghi cùng học liệu; chưa có giáo viên độc lập duyệt audio/bộ bài. Phản hồi đóng giữ nguồn biên soạn, AI chỉ là gợi ý tùy chọn đã tách.
 - Danh mục lớn hơn làm lộ giới hạn schema kế hoạch vốn tối đa 10 hoạt động. Chặn bộ ghép phiên ở cùng giới hạn, hiển thị thời gian chưa xếp; giữ schema version 3 thay vì thay đổi bản sao không cần thiết. Gói 57 WAV + JSON vẫn xác minh từng file; báo tiến độ mỗi tám file và quét đầy đủ cuối lượt để giảm số lần đọc cache.
 
+## DEC-019 — Phiên thích ứng có lý do, giữ kế hoạch đã bắt đầu
+
+- Ngày 2026-09-07, ADAPT-001 đã triển khai và kiểm tra trong phạm vi quy tắc thử nghiệm. Dùng quy tắc xác định được từ dữ liệu học hiện có, không gọi AI hoặc tự suy band. Metadata kiến thức tiên quyết nằm riêng học liệu, không sửa ID/câu/âm thanh cũ. Hoàn thành bài chỉ mở đường gợi ý, không là xác nhận thành thạo; người học vẫn tự chọn bài ở Khám phá.
+- Chọn ôn đến hạn với trần ba; một bài cần luyện thêm từ kết quả gần nhất trước sở thích. Đi theo tuần và quan hệ bài trước; xen lựa chọn sở thích trong các bài sẵn sàng gần nhất để không bỏ kiến thức khác. Mọi bài đầy đủ giữ hoạt động nghe/đọc/tự nói/viết; dữ liệu cũ chỉ cho biết kết quả bài/truy hồi, không đủ chẩn đoán từng kỹ năng nói/viết.
+- Nhịp mệt/khó/quay lại giới hạn một bài đầy đủ và một hoặc hai câu ôn; “khó quá” gợi ý phiên hai phút về câu nền tảng liên quan, giữ bài dở. Sau ít nhất bảy ngày không có lượt học ghi nhận, mời quay lại nhẹ; ngưỡng là lựa chọn sản phẩm cần thử nghiệm, không là kết luận tâm lý. Người học có thể đổi nhịp/thời gian.
+- PlanItem thêm reason tùy chọn, plan/lịch sử thêm adaptation tùy chọn (nhịp, phiên bản quy tắc), vẫn StudyState 3/đọc 1/2/3. Không thay schema bắt buộc hoặc backend; bản cũ có thể bỏ metadata này nhưng đọc được danh sách/kết quả. Các máy nên dùng bản mới để giữ lý do/nhịp qua sync. Chốt danh sách/lý do khi tạo; không tự thay giữa bài, qua reload hoặc khi đổi ngày. Thay phiên giữ xác nhận hiện có, lưu lịch sử và giữ draft.
+
+- Sau ADAPT-001, tách DEPLOY-001 từ phần chuẩn bị triển khai của BETA-001 để tiếp tục artifact/cấu hình/hướng dẫn độc lập khi AI chờ key/ngân sách. Không mở rộng sang app native hoặc tự coi beta đã hoàn chỉnh/phát hành. BETA-001 thêm phụ thuộc DEPLOY-001; việc triển khai thật vẫn theo phạm vi được cho phép.
+
 ## Các giả định/chọn lựa còn mở
 
 | Mã | Vấn đề | Mặc định hiện tại | Thời điểm cần làm rõ |

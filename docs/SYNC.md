@@ -40,6 +40,8 @@ Lịch sử completion/review/quick/plan được hợp nhất theo ID, không d
 
 Hồ sơ, draft và plan dùng gộp ba phía: chỉ một phía thay thì nhận phía đó; cả hai thay khác nhau thì dừng để chọn. Form bài học được dựng lại khi cần nhận phiên/draft mới; không dựng lại toàn bộ trang tài khoản và làm mất tên đang nhập. Epoch ngăn bộ đo/file import cũ ghi vào bộ dữ liệu vừa thay.
 
+ADAPT-001 thêm nhịp/phiên bản quy tắc tùy chọn ở plan/lịch sử và lý do từng item, vẫn state v3. Những trường này đi cùng plan qua sync; không tính lại danh sách theo sở thích/giờ của máy nhận. Bản app cũ có thể bỏ metadata tùy chọn, nên cập nhật các máy để giữ lý do/nhịp. Danh sách/kết quả cũ vẫn đọc được; xem [ADAPTATION.md](ADAPTATION.md).
+
 ## Server
 
 - Migration `20260906000200_study_sync.sql` tạo `study_snapshots`, `study_commits` và RPC `commit_study`. Migration `20260906000300_study_commit_changes.sql` chuyển receipt sang hash SHA-256 và các phần thay đổi; bảo toàn receipt cũ nếu có. Cả hai migration cần áp dụng đúng thứ tự.

@@ -56,8 +56,9 @@ async function device(browser: Browser, info: TestInfo) {
     hasTouch: info.project.use.hasTouch,
   })
 }
-async function quickDraft(page: Page, answer: string) {
+async function quickDraft(page: Page, answer: string, light = false) {
   await page.goto('/#/today')
+  if (light) await page.getByRole('radio', { name: 'Hôm nay mệt', exact: true }).check()
   await page.getByRole('button', { name: /^2 phút/ }).click()
   await page.getByRole('button', { name: 'Bắt đầu phiên 2 phút' }).click()
   await page.getByRole('button', { name: 'Ẩn câu và thử nhớ' }).click()
@@ -88,11 +89,14 @@ test('two independent devices resume real progress and a pending answer after op
     await openOwner(page, account, baseline)
     expect(await remoteState(account)).toBeNull()
     await enable(page)
-    await quickDraft(page, 'a draft to continue')
+    await quickDraft(page, 'a draft to continue', true)
     await syncNow(page)
+    const originalPlan = (await localState(page, account)).plan!
+    expect(originalPlan.adaptation).toEqual({ rule: 1, pace: 'tired' })
     const other = await otherDevice.newPage()
     await verifyCode(other, await requestCode(other, account.email))
     await enable(other)
+    expect((await localState(other, account)).plan).toEqual(originalPlan)
     expect((await localState(other, account)).completions).toEqual(baseline.completions)
     expect((await localState(other, account)).reviews.hello).toEqual(baseline.reviews.hello)
     await other.getByRole('link', { name: 'Về Hôm nay', exact: true }).click()

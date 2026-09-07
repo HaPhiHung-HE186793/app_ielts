@@ -353,3 +353,28 @@ Người dùng yêu cầu tiếp tục. Đọc bàn giao và code tại `1dffddb
 - Preview 4175 đã build lại và giữ chạy Node ẩn; máy nhắc không đổi. Lệnh khởi động lại AI 8787 bị cơ chế duyệt tự động chặn với thông báo blocked by policy, không có lý do chi tiết. Giữ tiến trình AI cũ gọi thật tắt; trước thử provider phải nạp lại danh mục mới. Không xin thêm quyền hoặc tìm đường vượt chặn để làm học liệu.
 - Rà soát diff/tài liệu/secret staged trước commit/push theo ủy quyền đã có. Không commit .local/log/trace/khóa/dữ liệu cá nhân. Hash/remote kiểm tra bằng Git và báo cuối; không force-push hoặc sửa lịch sử.
 - Rà soát cuối đạt: Prettier các file code đổi, diff --check, 18 Markdown/94 liên kết nội bộ/24 task, ADAPT-001 READY duy nhất. Build từ chối cấu hình Supabase secret, quét bốn file build và 84 file staged không thấy service key/VAPID private. Smoke qua proxy preview với Auth thật xác nhận AI unavailable/503, không lượt trả phí. Sau dọn đúng tài khoản thử, Auth/profile/snapshot/commit/reminder/AI receipt/Mailpit đều 0; giữ một budget pilot false/0/spend 0. Không xóa dữ liệu người dùng có trước.
+
+## 2026-09-07 — ADAPT-001: chọn phiên theo kết quả và sức học
+
+### Kết quả
+
+- Tiếp tục main sạch sau 98313d9, đọc tài liệu/Git/code và đánh dấu ADAPT-001 IN_PROGRESS. Không sub-agent, không gọi AI, không thêm dependency/migration hoặc thay nội dung/âm thanh. Mục tiêu tiếp tục app theo task đã bàn giao.
+- Thêm prerequisites riêng cho 32 đơn vị, không vòng; bài mới theo tuần đầu còn thiếu và bài trước đã hoàn thành/được xếp trước trong phiên. Draft tự chọn ngoài thứ tự vẫn được tiếp tục. Hoàn thành không được diễn giải là thành thạo.
+- Tín hiệu hỗ trợ từ lượt bài/truy hồi gần nhất (completion dưới 2/3 hoặc ôn/khởi động chưa độc lập), ưu tiên một bài trước sở thích. Lượt mới thay tín hiệu cũ, phá hòa theo timestamp/ID để không lệ thuộc thứ tự mảng sau sync; không chẩn đoán kỹ năng từ điểm tổng. Sở thích xen trong ba bài sẵn sàng gần nhất, không bỏ hoạt động nghe/đọc/tự nói/viết.
+- Nhịp mệt/khó có tối đa một bài/một ôn; quay lại một bài/hai ôn; bình thường ba ôn/tổng 10 hoạt động trong ngân sách. Khó quá gợi ý hai phút về nền tảng, giữ draft. Gap ít nhất bảy ngày mời quay lại có lựa chọn, không sửa lịch ôn. Hết bài mới, nhịp nhẹ chọn bài nền tảng quen khác phần ôn, không đưa kiểm tra cuối tuần vào chỉ để lấp thời gian.
+- UI chọn nhịp, xem trước loại hoạt động/bài/lý do, giữ nhịp của phiên dở khi về Hôm nay; có đường về điều chỉnh/nghỉ. Danh sách/lý do chốt lúc tạo, không tự thay do dữ liệu mới. Metadata optional reason/adaptation được schema v3 kiểm tra, giữ qua backup/lịch sử/sync; bản cũ có thể bỏ metadata nhưng vẫn đọc danh sách/kết quả.
+
+### Kiểm tra và sửa
+
+- Lint/typecheck/build đạt, unit 125/125 gồm 11 ca mới. Sáu ca UI mới đạt sau sửa layout radio bị CSS input chung làm rộng/tràn trên điện thoại và sửa chữ hoa trong kỳ vọng tiêu đề test. Không dùng force click để né lỗi giao diện.
+- Chạy toàn bộ khách 80 ca: 79 đạt, ca clock desktop nhận 15.071 ms so với trần 15.000 vì clock install vẫn trôi theo thời gian thao tác. Sửa test nạp trang rồi pauseAt trước đo và chỉ tiến bằng runFor, không sửa code đồng hồ/giới hạn assertions. Chạy lại cả nhóm thích ứng/tiến bộ: 16/16 đạt trên desktop/mobile.
+- Chạy toàn bộ Auth/API 50 ca: 49 đạt, ca notification mobile kiểm tra local subscription trước khi cleanup async xong. Sửa riêng assertion chờ poll giá trị null sau mất owner, không thay code Auth/nhắc. Chạy lại cả nhóm nhắc/đồng bộ: 18/18 đạt, gồm nhịp/lý do qua hai phiên thật cùng một tài khoản; test UI push dùng fixture có nhãn như trước, không gọi đây là thử push mạng mới.
+- Nhánh fallback nhịp nhẹ đã điều chỉnh chọn bài nền tảng đã học khác mục ôn; preview có nhãn loại hoạt động. Unit mới xác minh không trùng bài ôn/fallback, bộ 125 unit và 16 UI liên quan chạy sau sửa. Không ghi lượt hồi quy đầu là sạch; ca không liên quan đã đạt ở bộ toàn bộ, ca liên quan có lượt chạy lại trên code cuối.
+- Kiểm tra tự động không thay giáo viên, dữ liệu người học hoặc iPhone/Android/Safari thật. Axe A/AA/overflow vùng quét đạt, xem ảnh mobile/desktop; ảnh/trace trong .local. Bundle ~716 kB/208 kB gzip vẫn cảnh báo chưa chia route. Không dùng công thức học/nghỉ như kết luận tâm lý.
+
+### Bàn giao
+
+- ADAPT-001 DONE trong phạm vi quy tắc thử nghiệm. DEPLOY-001 READY được tách từ chuẩn bị triển khai của BETA-001 để làm artifact/cấu hình/hướng dẫn độc lập, không tự phát hành. AI-001 vẫn IN_PROGRESS chờ key/ngân sách/đối chiếu thật, BETA-001/AI-002/003 chưa đóng.
+- ADAPTATION mới và STATUS/TASKS/README/PRODUCT/ARCHITECTURE/DECISIONS/CURRICULUM/SYNC/TESTING cập nhật. Preview 4175 build lại; giữ máy nhắc/AI gọi thật tắt. Không xử lý lại việc restart AI bị chặn ở mốc trước vì không cần cho task này.
+- Kiểm tra diff/liên kết/task/secret staged trước commit và push main theo ủy quyền. Không stage .local/token/trace/dữ liệu cá nhân; hash và remote xác minh bằng Git rồi báo cuối. Không force-push.
+- Rà soát cuối đạt: Prettier/lint/typecheck/build, diff --check, 19 Markdown/100 liên kết nội bộ/25 task, DEPLOY-001 READY duy nhất. Build từ chối cấu hình secret; bốn file build/25 file staged không chứa service key/VAPID private. Preview 4175 đã build code cuối, kiểm tra chọn khó quá/lưu/reload ở 360px đạt, không runtime error/tràn ngang. Smoke qua Auth/proxy thật xác nhận AI tắt/503/không lượt trả phí; sau dọn đúng tài khoản thử, user/profile/snapshot/commit/reminder/AI receipt/Mailpit đều 0, budget pilot false/0/spend 0. Giữ kho cá nhân nếu có, không reset DB.

@@ -1,5 +1,6 @@
-import { findLesson, lessons } from '../content/lessons'
-import type { PlanItem, PlanMode, StudyPlan, StudyState } from '../data/schema'
+import { findLesson } from '../content/lessons'
+import type { PlanItem, PlanMode, PlanPace, StudyPlan, StudyState } from '../data/schema'
+import { quickRecommendation, recommendLessons } from './adaptation'
 import { isCorrect } from './learning'
 import { recordReview, startLesson } from './session'
 
@@ -15,15 +16,16 @@ export const freshPractice = (): StudyPlan['practice'] => ({
   hinted: false,
 })
 
-export function buildPlan(state: StudyState, mode: PlanMode, now: number, id: string): StudyPlan {
+export function buildPlan(
+  state: StudyState,
+  mode: PlanMode,
+  now: number,
+  id: string,
+  pace: PlanPace = 'normal',
+): StudyPlan {
   const budget = mode === 'full' ? (state.profile?.dailyMinutes ?? 30) : Number(mode)
   const items: PlanItem[] = []
-  const completed = new Set(state.completions.map((item) => item.lessonId))
-  const remaining = lessons.filter(
-    (lesson) => !completed.has(lesson.id) && lesson.id !== state.draft?.lessonId,
-  )
-  const candidates = state.draft ? [findLesson(state.draft.lessonId)!, ...remaining] : remaining
-  const add = (kind: PlanItem['kind'], lessonId: string, minutes: number) => {
+  const add = (kind: PlanItem['kind'], lessonId: string, minutes: number, reason: string) => {
     items.push({
       id:
         kind === 'lesson' && state.draft?.lessonId === lessonId
@@ -32,26 +34,48 @@ export function buildPlan(state: StudyState, mode: PlanMode, now: number, id: st
       kind,
       lessonId,
       minutes,
+      reason,
     })
   }
-  if (mode === '2') add('quick', (candidates[0] ?? lessons[0]).id, 2)
-  else {
+  if (mode === '2') {
+    const choice = quickRecommendation(state, now, pace)
+    add('quick', choice.lessonId, 2, choice.reason)
+  } else {
     // Keep review finite after a gap; do not fill all available time with overdue cards.
     if (mode === '15' || mode === 'full') {
       Object.entries(state.reviews)
         .filter(([, card]) => card.dueAt <= now)
         .sort((a, b) => a[1].dueAt - b[1].dueAt)
-        .slice(0, 3)
-        .forEach(([lessonId]) => add('review', lessonId, 1))
+        .slice(0, pace === 'normal' ? 3 : pace === 'returning' ? 2 : 1)
+        .forEach(([lessonId]) =>
+          add('review', lessonId, 1, 'Đã đến hạn theo lịch ôn; phần còn lại để dành phiên khác.'),
+        )
     }
     let used = items.reduce((sum, item) => sum + item.minutes, 0)
-    for (const lesson of candidates) {
+    const candidates = recommendLessons(
+      state,
+      now,
+      pace,
+      pace === 'normal' ? 10 : 1,
+      items.map((item) => item.lessonId),
+    )
+    for (const choice of candidates) {
+      const lesson = findLesson(choice.lessonId)!
       if (items.length >= 10 || used + lesson.minutes > budget) break
-      add('lesson', lesson.id, lesson.minutes)
+      add('lesson', lesson.id, lesson.minutes, choice.reason)
       used += lesson.minutes
     }
   }
-  return { id, mode, budget, createdAt: now, items, cursor: 0, practice: freshPractice() }
+  return {
+    id,
+    mode,
+    budget,
+    createdAt: now,
+    items,
+    cursor: 0,
+    practice: freshPractice(),
+    adaptation: { rule: 1, pace },
+  }
 }
 
 export function itemResult(state: StudyState, item: PlanItem) {
@@ -79,6 +103,7 @@ export function archivePlan(state: StudyState, now: number): StudyState {
         createdAt: plan.createdAt,
         endedAt: Math.max(now, plan.createdAt),
         status: items.every((item) => item.completed) ? 'completed' : 'replaced',
+        ...(plan.adaptation ? { adaptation: plan.adaptation } : {}),
         items,
       },
     ],
@@ -90,9 +115,10 @@ export function replacePlan(
   mode: PlanMode,
   now: number,
   id: string,
+  pace: PlanPace = 'normal',
 ): StudyState {
   if (state.plan?.id === id || state.planHistory.some((entry) => entry.id === id)) return state
-  return { ...archivePlan(state, now), plan: buildPlan(state, mode, now, id) }
+  return { ...archivePlan(state, now), plan: buildPlan(state, mode, now, id, pace) }
 }
 
 export function advancePlan(state: StudyState, now = Date.now()): StudyState {

@@ -4,40 +4,39 @@ Cập nhật: 2026-09-07, múi giờ Asia/Saigon.
 
 ## Đang ở đâu
 
-**CONTENT-002 DONE trong phạm vi học liệu thử nghiệm; ADAPT-001 READY để tiếp tục.** Có 28 bài nền tảng + bốn kiểm tra, chia bốn tuần gợi ý. AI-001 giữ IN_PROGRESS: API/UI/hạn mức đã có, chưa có key/ngân sách được xác nhận hoặc đối chiếu provider thật; gọi thật vẫn false/0 USD. Chưa có beta đầy đủ hoặc chương trình luyện IELTS sáu tháng.
+**ADAPT-001 DONE; DEPLOY-001 READY để chuẩn bị triển khai web HTTPS.** Bộ gợi ý bài chạy offline bằng quy tắc thử nghiệm. AI-001 vẫn IN_PROGRESS, thiếu key/ngân sách được xác nhận và đối chiếu provider thật; không tự bật gọi trả phí hoặc coi beta hoàn chỉnh.
 
-- Branch main, origin https://github.com/HaPhiHung-HE186793/app_ielts.git; xác minh commit/remote bằng Git.
-- Khám phá chọn tuần/chủ đề, tám mục/tuần; Hôm nay có tiến độ từng tuần. Bài mới có đọc ngắn, điền tự nhớ, nghe tình huống với lời thoại là gợi ý, tự nói và viết có tiêu chí tự xem lại.
-- Kết quả n/3 chỉ là câu đóng đúng lần đầu không gợi ý. Nói/viết có thể bỏ qua, chưa thu âm/chấm điểm; “đã học” không chứng minh đủ bốn kỹ năng hoặc mức thành thạo. Có mục tiêu tăng dần và hồ sơ rà soát nội bộ, chưa có giáo viên độc lập/hiệu chỉnh độ khó trên người học.
-- Giữ nguyên bảy bài/bảy WAV cũ, StudyState/bản sao version 3 và đường đọc 1/2/3. Phiên tối đa 10 hoạt động phù hợp schema. Auth/OTP, sync tự nguyện/outbox/CAS/xung đột, nhắc học và AI tùy chọn vẫn có trong phạm vi mốc trước.
+- Hôm nay chọn bình thường/mệt/khó/quay lại, thời gian và xem lý do từng bài. Phiên dài ưu tiên tối đa ba câu ôn, giữ bài dở, một bài cần hỗ trợ rồi bài mới theo tuần/kiến thức trước và sở thích. Nhịp nhẹ giới hạn một bài và một hoặc hai câu ôn, không dồn toàn bộ thẻ cũ.
+- “Khó quá” chuyển gợi ý sang hai phút với câu nền tảng liên quan, không thay draft. Sau bảy ngày không có hoạt động ghi nhận, mời quay lại nhẹ; người học được đổi lựa chọn. Kết quả bài/truy hồi chưa đủ chẩn đoán riêng nghe/đọc/nói/viết hoặc band.
+- Plan/lịch sử lưu nhịp và lý do tùy chọn, vẫn StudyState 3/đọc 1/2/3, không migration/dependency mới. Không tự đổi phiên đang học khi có kết quả mới/reload/đổi ngày; thay phiên có xác nhận và giữ draft. Các máy nên cập nhật để giữ metadata tùy chọn qua sync.
+- Giữ 28 bài + bốn kiểm tra/57 WAV (~8,92 MB), học liệu thử nghiệm chưa giáo viên độc lập duyệt. Auth/OTP, sync/outbox/xung đột, nhắc học và nền tảng API AI giữ phạm vi mốc trước.
 
-## Chạy và dùng ngay
+## Dùng ngay
 
-1. Docker → npm run db:start → npm run db:migrate → npm run preview:local. Mở http://127.0.0.1:4175/#/discover để chọn tuần. Email thử tại http://127.0.0.1:54324, không gửi ra ngoài.
-2. Offline: vào #/install, chủ động tải gói **57 WAV + JSON, 8.921.491 byte (~8,92 MB)** và chờ sẵn sàng. Cập nhật app trên các máy trước khi đồng bộ/nhập bản sao có ID bài mới; xem [OFFLINE.md](OFFLINE.md).
-3. Nhắc học: npm run reminders:local, trang #/reminders, tự chọn lịch/quyền. AI: npm run ai:local; khi chưa cấu hình chỉ báo chưa bật. npm run ai:evaluate kiểm tra 10 mẫu không gọi provider; hướng dẫn ở [AI.md](AI.md).
-4. npm run dev cho khách hoặc npm run dev:local cho Auth tại 5173; dev không đăng ký worker. Các origin có kho riêng, chuyển bằng sync/JSON và giữ dữ liệu cũ.
+1. Docker → npm run db:start → npm run db:migrate → npm run preview:local. Mở http://127.0.0.1:4175/#/today, chọn nhịp và thời gian. Preview đang để chạy Node ẩn; kiểm tra cổng trước mở thêm.
+2. Vào #/install để tải gói trước khi học offline. Khám phá vẫn chọn bài tự do. Mỗi origin có kho riêng, dùng sync/JSON khi chuyển từ 5173 sang 4175. Dev không đăng ký worker.
+3. OTP ở http://127.0.0.1:54324, không gửi ra ngoài. Máy nhắc dùng npm run reminders:local, đăng nhập/chọn lịch tự nguyện. Máy AI 8787 vẫn gọi thật tắt; cần nạp lại server khi tới bước đối chiếu thật. Không thay cấu hình AI/nhắc trong task này.
 
-Preview 4175 đã build lại bộ bốn tuần và đang chạy Node ẩn; máy nhắc được giữ nguyên. Máy AI 8787 vẫn là tiến trình mốc trước, gọi thật tắt: lệnh khởi động lại bị cơ chế duyệt tự động chặn, không có lý do chi tiết ngoài “blocked by policy”. Trước đối chiếu AI thật cần khởi động lại để nạp danh mục mới. Log trong .local (không commit); kiểm tra cổng/tiến trình trước mở thêm vì có thể dừng giữa session.
+Log/ảnh/trace thử nằm trong .local (không commit). Chưa có hosted/SMTP/HTTPS công khai hoặc thiết bị iOS/Android thật.
 
 ## File quan trọng
 
-- [CURRICULUM.md](CURRICULUM.md), [CONTENT_REVIEW.md](CONTENT_REVIEW.md): mục tiêu bốn tuần, kỹ năng, giới hạn, nguồn và hồ sơ biên soạn.
-- src/content/foundation.ts và lessons.ts: 21 bài mới/bốn kiểm tra, giữ định nghĩa bảy bài gốc. domain/types.ts thêm trường học liệu tùy chọn; domain/planner.ts chặn quá 10 hoạt động.
-- features/lessons/LessonPlayer.tsx, components/ListenButton.tsx: nghe độc lập, lời thoại/gợi ý lưu qua reload, tự nói và tự xem bài viết. features/pages/Pages.tsx, features/today/Today.tsx và styles/curriculum.css: tuần/bộ lọc/tiến độ.
-- scripts/generate-audio.js, public/packs/foundation-v1, content/offline-pack.json: audio công khai có hash, chỉ tạo mới/đổi. offline/worker.js báo tiến độ mỗi tám file, vẫn xác minh toàn bộ trước sẵn sàng.
-- tests/curriculum.spec.ts, domain/planner.test.ts, tests/offline.spec.ts và tests/auth/offline.spec.ts; phạm vi ở [TESTING.md](TESTING.md). Không thêm dependency hoặc migration backend.
+- [ADAPTATION.md](ADAPTATION.md): cách dùng, giới hạn từng nhịp, thuật toán, metadata và giới hạn đánh giá; DEC-019 ghi quyết định.
+- src/content/prerequisites.ts: đồ thị bài trước của 32 đơn vị, tách khỏi nội dung/âm thanh.
+- src/domain/adaptation.ts và planner.ts: tín hiệu từ kết quả, bài sẵn sàng, sở thích, trần số hoạt động; schema.ts thêm metadata tùy chọn.
+- features/today/SessionChoices.tsx, SessionPage.tsx, Today.tsx và styles/adaptation.css: chọn nhịp, lý do, tiếp tục/thay phiên. Kho được dựng lại theo chủ tài khoản như trước.
+- domain/adaptation.test.ts, tests/adaptation.spec.ts, tests/auth/sync.spec.ts: thứ tự/tải/backup/merge/UI/offline/two-device; tests/progress.spec.ts và tests/auth/reminders.spec.ts sửa điều kiện chờ không ổn định của test cũ.
 
-## Kiểm tra đã đạt
+## Kiểm tra
 
-- Node 22.18.0/npm 10.9.3, Supabase Docker/CLI 2.116.0; lint/typecheck/build đạt. **114/114 unit, 74/74 khách, 50/50 Auth/API/sync/offline/nhắc/AI fixture** đạt sau sửa liên quan. Chrome desktop 1440×1000 và viewport 360×800, không thay thiết bị thật.
-- Kiểm tra mới: chọn bốn tuần, bộ lọc, bài nghe/đọc shopping, lời thoại không tính độc lập và giữ qua reload, nút nghe không nộp form; hoàn thành cả bốn kiểm tra tuần trong trang mở mới offline, phát WAV thật và giữ kết quả/câu viết/lịch ôn.
-- So toàn bộ định nghĩa bảy bài cũ với commit 7552260 không đổi; 32 ID/cấu trúc câu hợp lệ, 57 WAV đúng byte/hash/header. Lệnh audio chạy lại tạo 0 file. Kiểm tra này không chứng minh chất lượng sư phạm/phát âm.
-- Preview 4175 đã chạy thêm luồng nghe/tự viết ở hai kích thước, WAV phát thật, không lỗi runtime/tràn ngang; axe A/AA không báo vi phạm vùng quét. Đã xem ảnh Khám phá desktop/mobile; ảnh/trace thử trong .local, không commit.
-- ai:evaluate dry kiểm tra 10 mẫu đạt, không gọi provider. Preview/Auth thật xác nhận AI unavailable/503, không lượt trả phí; dữ liệu thử đã dọn. Prettier/diff, 18 Markdown/94 liên kết/24 task và quét secret build/84 file staged đạt. Bundle khách khoảng 709 kB minified/206 kB gzip, vẫn cảnh báo chưa chia route. Kết quả Git xác minh ở bàn giao cuối.
+- Lint/typecheck/build và **125/125 unit** đạt. Đã chạy toàn bộ 80 ca khách/50 ca Auth, phát hiện hai test phụ thuộc thời gian thực; sửa test đồng hồ và chờ dọn subscription, giữ nguyên code tính giờ/nhắc.
+- Sau sửa, chạy lại **16/16 ca thích ứng/tiến bộ** và **18/18 ca nhắc/đồng bộ** đạt, gồm hai ca từng lỗi. Các ca hồi quy còn lại đạt ở lượt toàn bộ; không trình bày hai lượt đầu 79/80 và 49/50 là đã đạt hết ngay lần đầu. Chi tiết [SESSION_LOG.md](SESSION_LOG.md), phạm vi [TESTING.md](TESTING.md).
+- Bộ thích ứng: thứ tự qua mọi điểm dừng danh mục, quan hệ không vòng, tín hiệu mới/có hỗ trợ, sở thích không bỏ bài trước, trần nhịp/ngân sách, gap, backup và merge. UI hai kích thước giữ draft khi “khó” offline, giới hạn 32 thẻ cũ, hủy/thay phiên và lưu lý do. Auth/DB thật giữ nhịp và lý do trên hai browser context.
+- Axe A/AA không báo vi phạm vùng quét, không tràn ngang 360px/desktop, đã xem ảnh. Test không thay thiết bị thật hoặc đo hiệu quả học. Bundle khách ~716 kB minified/208 kB gzip, còn cảnh báo chia route. Không gọi AI thật.
+- Prettier/diff, 19 Markdown/100 liên kết/25 task và quét secret build/25 file staged đạt. Preview 4175 code cuối chọn nhịp/lưu/reload đạt; smoke Auth/proxy xác nhận AI tắt và không lượt trả phí, dữ liệu thử đã dọn. Commit/remote xác minh bằng Git ở bàn giao cuối.
 
-## Giới hạn và task tiếp theo
+## Tiếp theo và giới hạn
 
-**Bắt đầu ADAPT-001**: ghép phiên theo kiến thức tiên quyết, ôn đến hạn, điểm yếu và sở thích; lựa chọn khó quá/hôm nay mệt/quay lại sau nghỉ; giới hạn tải và giải thích ngắn bài được chọn. Chi tiết [TASKS.md](TASKS.md). Không đổi câu/ID cũ hoặc quy kết band từ tiến độ.
+**DEPLOY-001**: chuẩn bị artifact/cấu hình web, môi trường khách/tài khoản/API, hướng dẫn HTTPS/cache/cập nhật/quay lui và thông tin còn thiếu cho phát hành. Tách khỏi BETA-001 để tiến hành phần độc lập; chưa có deployment thật. Xem [TASKS.md](TASKS.md).
 
-AI-001 chỉ tiếp tục đối chiếu thật khi có cấu hình máy chủ/ngân sách và người duyệt rubric. Chưa có hosted/SMTP/HTTPS, chống abuse production, Safari/iPhone/Android thật, giáo viên duyệt học liệu/audio, mic hoặc AI nói/viết đầy đủ. Offline phụ thuộc cache còn tồn tại và không đồng nghĩa sao lưu; sync không chạy khi OS đóng app, chưa benchmark nhiều tháng. Giữ các giới hạn riêng trong BACKEND/SYNC/OFFLINE/NOTIFICATIONS/AI.
+AI-001 chỉ đối chiếu thật sau cấu hình máy chủ/ngân sách và rubric người duyệt. Chưa có phản hồi AI đã kiểm chứng, mic, đánh giá đầu vào hoặc chương trình IELTS sáu tháng. Nhịp/đồ thị/threshold là quy tắc thử nghiệm cần dữ liệu người học. Lưu local chưa mã hóa; cache offline không là sao lưu, không background sync khi OS đóng app; chưa benchmark lịch sử nhiều tháng. Giữ giới hạn trong BACKEND/SYNC/OFFLINE/NOTIFICATIONS/AI.

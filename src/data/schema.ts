@@ -33,6 +33,12 @@ const planItemSchema = z.object({
   kind: z.enum(['quick', 'lesson', 'review']),
   lessonId,
   minutes: z.number().int().min(1).max(5),
+  reason: z.string().min(1).max(240).optional(),
+})
+
+const adaptationSchema = z.object({
+  rule: z.literal(1),
+  pace: z.enum(['normal', 'tired', 'hard', 'returning']),
 })
 
 const planSchema = z
@@ -41,6 +47,7 @@ const planSchema = z
     mode: z.enum(['2', '5', '15', 'full']),
     budget: z.number().int().min(2).max(180),
     createdAt: timestamp,
+    adaptation: adaptationSchema.optional(),
     items: z.array(planItemSchema).max(10),
     cursor: z.number().int().nonnegative(),
     practice: z.object({
@@ -110,6 +117,7 @@ const planHistorySchema = z
     budget: z.number().int().min(2).max(180),
     createdAt: timestamp,
     endedAt: timestamp,
+    adaptation: adaptationSchema.optional(),
     status: z.enum(['completed', 'replaced']),
     items: z
       .array(planItemSchema.extend({ completed: z.boolean() }))
@@ -247,6 +255,7 @@ export type Draft = NonNullable<StudyState['draft']>
 export type StudyPlan = NonNullable<StudyState['plan']>
 export type PlanItem = StudyPlan['items'][number]
 export type PlanMode = StudyPlan['mode']
+export type PlanPace = z.infer<typeof adaptationSchema>['pace']
 export type ActivityEntry = z.infer<typeof activityEntrySchema>
 export type ActivityTarget = Pick<ActivityEntry, 'attemptId' | 'lessonId' | 'kind' | 'planId'>
 export type PlanHistoryEntry = z.infer<typeof planHistorySchema>

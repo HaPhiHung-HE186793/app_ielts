@@ -67,8 +67,11 @@ test('switching browser tabs and reloading never count time away or duplicate ch
   page,
   context,
 }) => {
-  await page.clock.install({ time: now })
+  // Let the page load, then stop wall time so browser/CI latency is not counted
+  // in addition to the explicit runFor intervals asserted below.
+  await page.clock.install({ time: now - 60_000 })
   await page.goto('/')
+  await page.clock.pauseAt(now)
   await startQuick(page)
   await page.clock.runFor(8000)
   const first = await totalOf(page)

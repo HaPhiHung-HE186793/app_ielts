@@ -15,6 +15,7 @@ import { LessonPlayer } from '../lessons/LessonPlayer'
 import { ListenButton } from '../../components/ListenButton'
 import { ActivityMeter } from '../../components/ActivityMeter'
 import { formatDuration, measuredTime } from '../../domain/activity'
+import { paceLabels, paceDescriptions } from '../../domain/adaptation'
 
 function PlannedPractice({
   state,
@@ -224,6 +225,15 @@ export function SessionPage({ state }: { state: StudyState }) {
           trong {plan.budget} phút đã chọn.
         </p>
       </header>
+      {plan.adaptation && (
+        <aside className="plan-context">
+          <strong>{paceLabels[plan.adaptation.pace]}</strong>
+          <p>{paceDescriptions[plan.adaptation.pace]}</p>
+          <a className="text-link" href="#/today">
+            Chọn lại nhịp hoặc nghỉ ở đây
+          </a>
+        </aside>
+      )}
       <ol className="session-itinerary" aria-label="Các hoạt động của phiên">
         {plan.items.map((entry, index) => (
           <li
@@ -244,6 +254,7 @@ export function SessionPage({ state }: { state: StudyState }) {
                 · {findLesson(entry.lessonId)!.title}
               </strong>
               <small>Khoảng {entry.minutes} phút</small>
+              {entry.reason && <small className="plan-reason">{entry.reason}</small>}
             </span>
           </li>
         ))}

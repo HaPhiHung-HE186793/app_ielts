@@ -41,6 +41,8 @@ Hiện thực trong PLAN-001: form thiết lập có thể bỏ qua, sau đó ch
 
 Mở Hôm nay → chọn thời gian hoặc tiếp tục lịch → học/ôn → nhận phản hồi → xem kết quả cụ thể → lưu tiến độ → chọn nghỉ hoặc học tiếp.
 
+ADAPT-001 bổ sung nhịp bình thường/mệt/khó/quay lại và giải thích từng bài. Bài cần hỗ trợ được xét trước sở thích, bài mới theo tuần/kiến thức trước; người học vẫn chọn tự do ở Khám phá. Sau bảy ngày không có hoạt động được lưu, mời phiên nhẹ; không sửa hạn ôn hoặc tự thay phiên đang dở. Quy tắc và giới hạn đánh giá ở [ADAPTATION.md](ADAPTATION.md).
+
 ### Sau gián đoạn
 
 Chào mừng quay lại → chọn một phiên nhẹ → kiểm tra một phần kiến thức cũ → sắp xếp lại lịch → tăng dần bài mới. Không dồn toàn bộ bài nợ lên một ngày.

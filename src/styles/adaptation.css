@@ -1,0 +1,78 @@
+.pace-options {
+  border: 0;
+  padding: 0;
+  margin: 20px 0 10px;
+  min-width: 0;
+}
+.pace-options legend {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.pace-options > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.pace-options label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+}
+.pace-options label.selected {
+  background: #eaf0e3;
+  border-color: var(--green);
+}
+.pace-options input {
+  accent-color: var(--green);
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+}
+.returning-note,
+.plan-context {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #eaf0e3;
+}
+.plan-context {
+  margin-bottom: 20px;
+}
+.plan-context p {
+  margin: 8px 0;
+}
+.plan-reasons {
+  margin-top: 14px;
+}
+.plan-reasons summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 8px 0;
+}
+.plan-reasons ol {
+  padding-left: 22px;
+}
+.plan-reasons li {
+  margin: 12px 0;
+}
+.plan-reasons li span {
+  display: block;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 4px;
+}
+.session-itinerary .plan-reason {
+  margin-top: 4px;
+  line-height: 1.6;
+}
+@media (max-width: 420px) {
+  .pace-options > div {
+    grid-template-columns: 1fr;
+  }
+}

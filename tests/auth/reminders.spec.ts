@@ -299,7 +299,10 @@ test('worker displays one generic notification, rejects repeats/old revisions an
     await page.evaluate(({ key }) => localStorage.removeItem(key), { key: authKey })
     await page.reload()
     await expect(page.getByRole('heading', { name: 'Đăng nhập để lưu lịch riêng' })).toBeVisible()
-    expect(await page.evaluate(() => localStorage.getItem('test-subscription'))).toBeNull()
+    // Owner rendering and asynchronous worker/subscription cleanup finish separately.
+    await expect
+      .poll(() => page.evaluate(() => localStorage.getItem('test-subscription')))
+      .toBeNull()
   } finally {
     await cleanupAccount(a.id, a.email)
   }

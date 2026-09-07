@@ -15,7 +15,7 @@ Bảy bài cũ giữ nguyên ID, câu hỏi và đáp án. Bài cũ làm quen th
 | 3 · Thực hiện một việc | plural, places, directions, shopping, prices, schedule, requests | Số lượng, vị trí, chỉ đường, mua đồ/giá, thứ/giờ, nhờ giúp; kiểm tra lịch hẹn và nghe chỉ dẫn |
 | 4 · Ghép ý ngắn | past-be, past-actions, past-negative, future-plans, reasons, messages, small-story | Was/were, quá khứ quen thuộc/did not, dự định, because, lời nhắn/chuyện ngắn; phân biệt thời gian và lý do |
 
-Mỗi tuần kết thúc bằng `week-N-check`. Mã bài trong dữ liệu là ổn định; tên tuần và vị trí có thể hiệu chỉnh sau đánh giá sử dụng. Chưa có đánh giá đầu vào, phân loại Academic/General hoặc xếp tuần tự động theo điểm yếu; phần thích ứng thuộc ADAPT-001.
+Mỗi tuần kết thúc bằng `week-N-check`. Mã bài trong dữ liệu là ổn định; tên tuần và vị trí có thể hiệu chỉnh sau đánh giá sử dụng. Chưa có đánh giá đầu vào hoặc phân loại Academic/General. ADAPT-001 đã thêm gợi ý theo bài trước, kết quả bài/truy hồi và nhịp học; xem [ADAPTATION.md](ADAPTATION.md).
 
 ## Bốn kỹ năng trong một bài
 
@@ -30,7 +30,7 @@ Ba câu đóng/bài giữ cấu trúc đọc/hiểu → tự nhớ → tình hu�
 
 Bài cuối tuần tái sử dụng kiến thức trong ngữ cảnh khác, có gợi ý/thử lại như bài thường. Kết quả, câu tự viết và một câu ôn được lưu bằng cơ chế hiện có. Không có đếm ngược, đậu/rớt hoặc band. Câu trả lời có hỗ trợ được phân biệt trong kết quả; xem lại transcript sau khi đã trả lời đúng không làm đổi ngược kết quả trước đó.
 
-Khi thấy khó, xem lại bài cùng chủ đề, dùng lời thoại hoặc làm một phiên ngắn rồi nghỉ. Không có cơ chế tự chẩn đoán điểm yếu/sắp lại bài trong CONTENT-002. Task ADAPT-001 sẽ kết nối tín hiệu thực tế với lịch ôn và lựa chọn “khó quá/hôm nay mệt”.
+Khi thấy khó, dùng lời thoại hoặc về Hôm nay chọn “Khó quá” để thử câu nền tảng trong hai phút mà giữ bài dở. “Hôm nay mệt”/“Quay lại sau nghỉ” giảm số bài và câu ôn. ADAPT-001 gợi ý từ kết quả đã lưu, chưa chẩn đoán từng kỹ năng; không tự thay danh sách phiên đã bắt đầu.
 
 ## Dữ liệu, offline và tương thích
 

@@ -18,6 +18,7 @@ import { BookScene } from '../../components/BookScene'
 import { LessonCard } from '../../components/LessonCard'
 import { navigate } from '../../app/router'
 import { SessionChoices } from './SessionChoices'
+import { recommendLessons } from '../../domain/adaptation'
 
 export function Today({
   state,
@@ -31,20 +32,12 @@ export function Today({
   onSettings: () => void
 }) {
   const completed = new Set(state.completions.map((item) => item.lessonId))
-  const next =
-    (state.draft && findLesson(state.draft.lessonId)) ||
-    lessons.find((lesson) => !completed.has(lesson.id)) ||
-    lessons[0]
+  const recommended = recommendLessons(state, now, 'normal', 3)
+  const next = findLesson(recommended[0]?.lessonId ?? lessons[0].id)!
   const due = Object.values(state.reviews).filter((card) => card.dueAt <= now).length
   const localDate = new Date(now)
   const todayKey = `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`
-  const picks = [...lessons]
-    .sort(
-      (a, b) =>
-        Number(!!state.profile?.interests.includes(b.topic)) -
-        Number(!!state.profile?.interests.includes(a.topic)),
-    )
-    .slice(0, 3)
+  const picks = recommended.map((item) => findLesson(item.lessonId)!)
   return (
     <>
       <header className="page-heading">
@@ -125,7 +118,9 @@ export function Today({
             <div className="section-heading">
               <div>
                 <h2>Một chút tò mò, một câu mới</h2>
-                <p className="muted small">Tiếng Anh từ những điều gần gũi.</p>
+                <p className="muted small">
+                  Gợi ý theo thứ tự học; xem lý do trong phần chọn phiên.
+                </p>
               </div>
               <a className="text-link" href="#/discover">
                 Xem tất cả <ArrowUpRight size={15} />

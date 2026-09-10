@@ -1,6 +1,6 @@
 # Kiến trúc dự kiến
 
-Ngày cập nhật: 2026-09-10. **Vercel + Render + Neon** có adapter/migration và kiểm tra local theo DATA-003/DEC-023. Neon Auth/email/TLS và deployment cloud chưa được xác minh. Supabase local giữ cho regression; luồng học/PWA/offline không đổi. AI thật và worker nhắc Neon production chưa bật. Các quyết định nằm trong [DECISIONS.md](DECISIONS.md).
+Ngày cập nhật: 2026-09-11. **Vercel + Render + Neon** đã có adapter/migration. Cloud probe đạt health/readiness và Auth get-session không đăng nhập; OTP/sync/quyền hosted chưa nghiệm thu. Supabase local giữ regression. AI thật và worker nhắc Neon production chưa được nghiệm thu. Quyết định ở [DECISIONS.md](DECISIONS.md); bằng chứng mới ở [BASELINE_AUDIT.md](BASELINE_AUDIT.md).
 
 ## Hiện có trong code
 
@@ -158,13 +158,15 @@ Chỉ ghi các môi trường và lệnh thực sự đã kiểm tra. Điều ki
 
 App đặt ở root origin, route hash. Preview 4176 đọc artifact đã verify, áp header cùng nguồn với `_headers`, không phục vụ file ngoài bản kê hoặc proxy API. Đây vẫn là loopback HTTP; chưa kiểm tra deployment/CDN/HTTPS thật. Giữ origin và khả năng đọc dữ liệu khi update/rollback. Chi tiết, giới hạn account/API/SMTP, hướng dẫn Pages và checklist thiết bị ở [DEPLOYMENT.md](DEPLOYMENT.md), DEC-020.
 
-## 10. Vercel/Render/Neon — đích mới, cần DATA-003
+## 10. Vercel/Render/Neon — implementation hiện tại
 
-Người dùng sửa lựa chọn DB từ Supabase sang Neon ngày 2026-09-10. Luồng đích: browser/PWA trên Vercel → API ứng dụng trên Render → Neon PostgreSQL. Render xác thực người dùng trước mọi thao tác dữ liệu cá nhân; DATABASE_URL chỉ nằm ở máy chủ. Ưu tiên đánh giá Neon Auth (Managed Better Auth, hiện beta) để giữ email OTP, không tự viết hệ thống mật khẩu. SDK/session/JWT, gửi email và phân quyền cần được kiểm tra trong DATA-003 trước khi chốt tích hợp.
+DATA-003 đã chuyển đường production theo DEC-023: browser/PWA trên Vercel → proxy Auth/data/AI/health → Node trên Render → Neon PostgreSQL/Managed Auth REST. Start command là start:backend; Supabase còn đường start:backend:supabase cho regression legacy. Không điền URL Neon vào cấu hình Supabase cũ.
 
-**Code hiện có vẫn là DEC-021:** Vercel chỉ proxy /api/ai/status, /api/ai/feedback, /api/healthz; browser gọi Supabase Auth/RLS/RPC trực tiếp. Build vẫn yêu cầu VITE_SUPABASE_URL/publishable key; server/production.ts vẫn dùng SUPABASE_URL/secret và Supabase RPC. render.yaml chưa nhận DATABASE_URL. Không thể điền URL Neon vào các biến cũ để deploy.
+Vercel build dùng VITE_NEON_AUTH_URL và RENDER_API_URL cùng cấu hình quan sát lỗi tùy chọn đã bổ sung trong d0a34d8; bí mật SQL chỉ ở Render. Runtime dùng role giới hạn, JWT xác minh chủ và transaction SET LOCAL role/actor. StudyState/bản sao v3 cùng ID/outbox giữ nguyên; cloud cần kiểm tra owner/sync thật.
 
-DATA-003 chuyển migration/auth identity, profile/snapshot/commit/nhắc/budget và adapter API; mở rộng proxy/CSP, kiểm tra session đổi chủ/offline, giao dịch chống gửi trùng và quyền bằng hai tài khoản. Giữ StudyState v3, đọc bản sao 1/2/3 và dữ liệu cũ; không tạo auth.users/auth.uid giả để bỏ qua quyền. AI vẫn tắt/0. Chưa có worker nhắc production. Hướng dẫn thiết lập Neon và bảng phần cần sửa ở [DEPLOY_VERCEL_RENDER_NEON.md](DEPLOY_VERCEL_RENDER_NEON.md).
+CI và Sentry đã có code, nhưng chưa nghiệm thu workflow chạy trên GitHub hoặc dữ liệu telemetry thực. COM-GOV-002 chỉ ra deploy chưa chờ CI và reporter có đường gửi lỗi gốc; tiếp tục COM-OPS-002/004. Không mô tả đã bảo đảm lọc PII chỉ từ cấu hình.
+
+GET công khai ngày 2026-09-11 trả frontend/health/readiness thành công; chưa biết revision deployment, quyền runtime đầy đủ, OTP/sync hoặc worker live. Hướng dẫn tại [DEPLOY_VERCEL_RENDER_NEON.md](DEPLOY_VERCEL_RENDER_NEON.md).
 
 ## 11. Tham khảo triển khai
 

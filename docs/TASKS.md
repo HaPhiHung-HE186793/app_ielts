@@ -4,7 +4,9 @@ Cập nhật: 2026-09-11. Thực hiện theo thứ tự ưu tiên và phụ thu�
 
 ## Kế hoạch phát triển đến thương mại hóa
 
-DOC-003 `IN_PROGRESS`: lập file task tổng thể theo yêu cầu ngày 2026-09-11, từ nghiên cứu khách hàng đến dùng hằng ngày, phát hành và vận hành thương mại. Tiêu chí: đối chiếu code, giữ ID/task cũ, có trách nhiệm, ưu tiên, phụ thuộc, đầu ra, nghiệm thu, các cổng phát hành và bước tiếp theo; kiểm tra liên kết, tính nhất quán và diff. Không thay đổi trạng thái triển khai chỉ từ kế hoạch.
+DOC-003 `DONE` (tài liệu, 2026-09-11): lập [TASKS_COMMERCIAL.md](TASKS_COMMERCIAL.md) với 71 task, 17 vai trò, 6 cổng, ưu tiên/phụ thuộc/ước lượng/đầu ra/nghiệm thu, chỉ số, rủi ro, kế hoạch trước mắt và mẫu bàn giao. Đã đối chiếu code, giữ ID/task cũ; kiểm tra mã duy nhất, phụ thuộc hợp lệ/không chu kỳ, bảng Markdown, liên kết nội bộ, Unicode, định dạng file mới và diff đạt. Không đổi trạng thái cloud/AI từ kế hoạch; không chạy lại test runtime.
+
+[TASKS_COMMERCIAL.md](TASKS_COMMERCIAL.md) là nơi duy nhất cập nhật trạng thái COM. COM-GOV-001 có [charter](PRODUCT_CHARTER.md); COM-GOV-002 có [kiểm kê code/local/cloud](BASELINE_AUDIT.md). Tiếp tục DEPLOY-002 qua COM-OPS-001; task local tiếp theo COM-OPS-002. Beta nền tảng G2 không thay BETA-001 cũ có AI.
 
 ## Quy ước
 
@@ -77,16 +79,13 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 
 ## Chi tiết task tiếp theo: DEPLOY-002
 
-**DATA-003 DONE phần code/local; DEPLOY-002 IN_PROGRESS phần cloud.** Log Render mới trả NEON_DB_UNKNOWN; query người dùng gửi xác nhận thiếu schema_version/api/worker và runtime_grants chỉ có neon_superuser. Bước ngay: áp toàn bộ migration bằng owner, thu hồi membership quản trị của runtime, kiểm tra version/grants rồi redeploy. Chưa xác định lỗi driver gốc của UNKNOWN. Auth URL cũ ep-long-cell cần đối chiếu với DB ep-dawn-dream đang chọn. [Hướng dẫn](DEPLOY_VERCEL_RENDER_NEON.md). Giữ file IDE đã stage ngoài commit task.
+**DATA-003 DONE phần code/local; DEPLOY-002 IN_PROGRESS phần cloud.** Kiểm tra trực tiếp ngày 2026-09-11: frontend 200, healthz 200/ok, readyz 200/ready, Auth get-session không cookie 200/null, AI status thiếu token 401/no-store. [Bằng chứng](BASELINE_AUDIT.md). Log NEON_DB_UNKNOWN và thiếu schema ngày trước là lịch sử; không chạy lại migration chỉ từ bàn giao cũ.
 
-Phần chẩn đoán startup đã kiểm tra bằng unit, PostgreSQL local và entrypoint process với fixture; chưa đóng DEPLOY-002 hoặc kết luận đã sửa kết nối hosted. Không nới quyền hoặc tắt TLS để vượt lỗi.
-
-1. Neon production/neondb đúng project: đã nhận check_setup thiếu thiết lập, áp `001_initial.sql` trong truy vấn trống bằng owner. Sau thành công, REVOKE neon_superuser chỉ từ runtime; xác minh version=1 và grants api/worker. Nếu SQL lỗi thì xử lý lỗi, không DROP/CASCADE hoặc chạy lại mù. Không đưa chuỗi DB vào chat/Vercel. Khi SQL đúng mà vẫn UNKNOWN thì chẩn đoán kết nối riêng.
-2. Dùng Auth Base URL công khai đã có ở STATUS để kiểm tra Neon Auth; chọn email OTP, cấu hình SMTP production khi mở cho học viên. Không hỏi lại URL như chưa nhận; không đổi sang mật khẩu hoặc ghép tài khoản cũ theo email.
-3. Render: npm ci, npm run start:backend, Singapore, env Neon/AI off. Xác minh Live/healthz/readyz; lấy URL Render thực tế.
-4. Vercel Other, npm run build:vercel, hai env công khai. Sau khi có production domain, điền Render APP_ORIGINS và Neon Trusted Domains chính xác, redeploy; thử OTP thật/profile/sync hai tài khoản/hai thiết bị và offline.
-5. Ghi URL/revision/deployment/kết quả HTTPS/cookie/session/cache thật vào STATUS/SESSION_LOG. Auth URL đã có, nhưng Auth/SQL cloud/SMTP/URL public chưa được xác minh; không gọi fixture là cloud.
-6. Giữ AI tắt/0; xác minh UI báo nhắc chưa sẵn sàng khi chưa có worker. AI-001 và worker production cần bước riêng. Không đóng DEPLOY-002/BETA-001 chỉ vì build/docs hoặc form tạo project thành công.
+1. Ghi revision/deployment cloud thật; đối chiếu project/Auth và query grants chỉ đọc. Readiness không xác nhận role worker, runtime đã bỏ quyền quản trị hoặc mật khẩu từng lộ đã được đổi.
+2. Kiểm tra email OTP bằng tài khoản thử hợp lệ, cookie/session/đăng xuất và profile; không gửi OTP hoặc secret vào chat/tài liệu.
+3. Kiểm tra sync hai thiết bị/tài khoản, offline/mất acknowledgement/reload/đổi chủ và truy cập chéo. Fixture local không thay các ca cloud.
+4. Tiếp tục worker nhắc ở COM-LEARN-007; giữ AI off/0 khi chưa có provider/eval/ngân sách cụ thể.
+5. Ghi kết quả và giới hạn trong STATUS/SESSION_LOG. Không đóng DEPLOY-002 chỉ từ healthcheck; không reset database, tái tạo service hoặc nới quyền để kiểm tra.
 
 ## AI-001 đang chờ bước đối chiếu
 

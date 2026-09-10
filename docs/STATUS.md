@@ -1,43 +1,33 @@
 # Trạng thái bàn giao hiện tại
 
-Cập nhật 2026-09-10, Asia/Saigon.
+Cập nhật 2026-09-11, Asia/Saigon. HEAD kiểm kê: d0a34d8; working tree có tài liệu chưa commit và thay đổi IDE có sẵn.
 
-## Đang ở đâu
+## Đã hoàn thành lượt này
 
-**DATA-003 DONE phần code/local. DEPLOY-002 IN_PROGRESS (Frontend Vercel đã LIVE tại `https://app-ielts-two.vercel.app`, Neon Auth Trusted Domains đã cấu hình):** Tiếp tục kiểm tra kết nối Render backend + Neon PostgreSQL/Managed Auth và đồng bộ cloud thật.
+- **COM-GOV-001 DONE phần charter:** [PRODUCT_CHARTER.md](PRODUCT_CHARTER.md) chốt phạm vi G1 dùng cá nhân → beta → thương mại, trách nhiệm và giả định. Người dùng muốn đầu tư để làm tốt nhưng chưa có trần chi cụ thể; chưa có trình độ/lịch học/thiết bị, không tự điền band/ngày thi.
+- **COM-GOV-002 DONE phần kiểm kê:** [BASELINE_AUDIT.md](BASELINE_AUDIT.md) đối chiếu code, local và cloud, có khoảng trống giao cho các task tương ứng. Không đồng nghĩa đã sửa mọi khoảng trống hoặc đạt cổng phát hành.
+- DOC-003 giữ DONE: [TASKS_COMMERCIAL.md](TASKS_COMMERCIAL.md) quản lý 71 task, 17 vai trò, 6 cổng; các cổng chưa đạt. Task kỹ thuật cũ giữ ở [TASKS.md](TASKS.md).
 
-- Frontend đã triển khai thành công trên Vercel: `https://app-ielts-two.vercel.app`, giao diện tiếng Việt, tải bài học "Bắt đầu bằng một lời chào" mượt mà.
-- Neon Auth: Đã bật Auth, lưu **Trusted Domains** `https://app-ielts-two.vercel.app`.
-- Render backend (`moi-ngay-api`): Cập nhật `APP_ORIGINS=https://app-ielts-two.vercel.app`, kiểm tra `/healthz` và `/readyz`.
+## Cloud hiện tại và bước tiếp theo
 
+**DEPLOY-002 / COM-OPS-001 IN_PROGRESS.** Kiểm tra GET công khai ngày 2026-09-11 trên https://app-ielts-two.vercel.app:
 
-## Bước người dùng làm ngay
+- Frontend 200; /api/healthz 200 với status ok; /api/readyz 200 với status ready.
+- /api/auth/get-session không cookie: 200/null; /api/ai/status thiếu token: 401/unauthorized; cả hai no-store.
+- Chưa có revision deployment, OTP/profile/sync hai thiết bị/tài khoản hoặc chứng cứ quyền runtime/worker đầy đủ và credential cũ đã được đổi. Không coi GET thành công là đã nghiệm thu Auth/sync.
 
-1. Neon SQL Editor production/neondb, neondb_owner → mở truy vấn trống, chạy toàn bộ [001_initial.sql](../db/neon/001_initial.sql) từ BEGIN tới COMMIT. Role runtime đã có được giữ, không thay mật khẩu. Sau thành công, thu hồi membership neon_superuser chỉ của runtime và kiểm tra version/grants theo [hướng dẫn](DEPLOY_VERCEL_RENDER_NEON.md#5-giới-hạn-và-xử-lý-lỗi). Nếu SQL lỗi, gửi lỗi để sửa, không DROP/CASCADE hay chạy lặp mù. Mật khẩu owner từng lộ chưa có xác nhận reset.
-2. Khi schema_version=1 và runtime_grants có api/worker, không còn neon_superuser: đối chiếu DATABASE_URL Render với Connect của đúng project/branch rồi Manual Deploy → Deploy latest commit. Khi Live kiểm tra healthz/readyz. Nếu UNKNOWN còn lặp sau khi thiết lập đúng, cần chẩn đoán riêng lỗi driver/kết nối; không kết luận đã sửa từ SQL screenshot.
-3. Vercel chọn **Other**, build `npm run build:vercel`, hai env công khai; bỏ biến/integration Supabase cũ. Khi có domain, cập nhật APP_ORIGINS/Trusted Domains rồi thử OTP/sync thật.
-4. Chưa có quyền truy cập Dashboard để đổi mật khẩu hoặc env thay người dùng. Chỉ gửi URL công khai/log đã che bí mật để tiếp tục; không gửi lại mật khẩu/OTP.
+**Không chạy lại migration chỉ từ log NEON_DB_UNKNOWN/ảnh thiếu schema ngày trước.** Bước tiếp theo là ghi revision, kiểm tra grants chỉ đọc và xử lý credential cũ, rồi OTP/sync qua tài khoản thử hợp lệ. Không đưa mật khẩu/OTP vào chat/Git. Hướng dẫn ở [DEPLOY_VERCEL_RENDER_NEON.md](DEPLOY_VERCEL_RENDER_NEON.md); số đo và giới hạn ở BASELINE_AUDIT.
 
-## File quan trọng
+## Kiểm tra lượt này
 
-- [NEON_BACKEND.md](NEON_BACKEND.md): ranh giới Auth/SQL, kiểm tra và giới hạn; [DECISIONS.md](DECISIONS.md) DEC-023.
-- `server/neon/`, `db/neon/001_initial.sql`: triển khai mới, không áp SQL Supabase lên Neon.
-- `server/neon/startup-error.ts`, `startup-error.test.ts`, `db/neon/check_setup.sql`: phân loại lỗi khởi động, kiểm tra không lộ bí mật và query chẩn đoán cho người dùng.
-- `src/services/backend.ts`, `neon-auth.ts`, `neon-request.ts`, `study-sync.ts`: chọn provider, cookie/token, chủ tài khoản và sync.
-- `scripts/test-neon.js`, `server/neon/security.test.ts`, `src/services/neon-auth.test.ts`: kiểm tra migration/HTTP/browser/đổi phiên.
-- `render.yaml`, `vercel.json`, `.env.example`, `scripts/release/vercel*.js`: cấu hình triển khai đúng hướng mới.
+- Lint và typecheck PASS; unit **176/176, 19 file PASS**.
+- test:release build khách thành công; **37/38 PASS**, một ca mobile adaptation timeout tại nút tải offline. Ca đó chạy riêng cùng artifact **1/1 PASS**, không sửa assertion/nới timeout; chưa kết luận nguyên nhân hoặc gọi bộ suite sạch.
+- Trace/ảnh/context lượt lỗi giữ ở .local/baseline-2026-09-11-first-failure. Artifact khách dưới .local/releases; không deploy artifact này như bản tài khoản Neon.
+- Build main JS gzip 210,66 kB, có cảnh báo chunk >500 kB minified; chưa đo hiệu năng thiết bị thực. Không chạy lại test:neon/test:auth, không kiểm tra iPhone/Android thật trong lượt này.
+- Kiểm tra tài liệu/liên kết/Unicode/ID/phụ thuộc và diff; bằng chứng cuối ghi SESSION_LOG. Không thay code runtime, commit/push, gửi OTP/email, deploy hoặc mua/nâng dịch vụ.
 
-## Kiểm tra và môi trường
+## Công việc cụ thể tiếp theo
 
-Lượt hiện tại chỉ cập nhật hướng dẫn theo kết quả SQL thật người dùng gửi; kiểm tra liên kết/định dạng/diff trước commit, không đổi code hoặc chạy lại tests. Chưa áp migration/REVOKE trên Neon thay người dùng. Lượt b7e2f10 trước đó đạt **176 unit/19 file**, lint, typecheck, test:neon (gồm build) và ba process smoke với transport fixture. PostgreSQL thật thử thiếu bảng, thiếu grant và sai schema version; query check_setup chạy được. Không dùng credential trong ảnh, không đổi env/mật khẩu cloud. Các ca release/legacy bên dưới thuộc mốc DATA-003 trước đó.
+**COM-OPS-002 READY:** sửa workflow deploy để chờ đúng revision qua CI và báo lỗi hook thật, kiểm tra secret scan/check bắt buộc. Workflow hiện có chưa bảo đảm điều đó; code Sentry cũng cần kiểm tra payload ở COM-OPS-004, không coi đã lọc hết dữ liệu cá nhân.
 
-- Mốc DATA-003 trước: 151 unit và các kiểm tra build/release đã đạt; b7e2f10 tăng lên 176 unit với ranh giới log/chẩn đoán. Lượt hiện tại chỉ đổi tài liệu, kiểm tra định dạng/liên kết/diff trước commit.
-- `npm run test:neon` đạt PostgreSQL thật, JWT ký thật và browser Auth fixture: hai chủ/RLS/rollback/CAS/replay/đồng thời/nhắc/budget, offline/mất response/reload/đổi tài khoản/cookie HttpOnly/không lưu JWT. Không phải phép thử Neon hosted.
-- Vercel Build Output bằng URL fixture đạt; marker env bí mật không vào JS. `.vercel/output` đang chứa URL thử, **không deploy prebuilt này**; cloud phải build từ main với env thật.
-- Regression legacy account/sync: 19/20 đạt lượt đầu, một ca mobile chờ logout quá 5 giây khi chạy nặng đồng thời; ca đó chạy riêng hai lần đều đạt. Release khách **38/38 đạt** lượt chạy lại tuần tự; lượt đầu có một timeout và một lỗi con trỏ latest do build Vercel đồng thời. Không thay assertion hoặc nới timeout để chạy qua.
-- Docker Desktop đã được khởi động, các container Supabase local đang chạy. Test Neon tạo/dọn database/login thử riêng; không reset dữ liệu Supabase. Không có server test Neon còn chạy. Bản preview release 4176 chỉ chạy trong test; kiểm tra tiến trình nếu muốn dùng local tiếp.
-- Thay đổi IDE có sẵn của người dùng: `.idea/misc.xml`, `.idea/inspectionProfiles/`, `.idea/prettier.xml`, giữ nguyên ngoài commit task. Không stage `.local`, artifact, secret hoặc dữ liệu học viên.
-
-## Tiếp theo cụ thể
-
-**DEPLOY-002:** nhận kết quả áp 001_initial.sql/version=1 và grants runtime đã chỉnh, sau đó Render redeploy/readyz. Nếu vẫn UNKNOWN dù SQL đúng, xử lý lỗi kết nối riêng. Sau Render Live tiếp tục Vercel/origin/OTP/sync; đối chiếu Auth đúng project/branch. Không tạo lại service/role đã có. Migration/TLS/Auth/SMTP/proxy cloud và điện thoại thật còn chưa xác minh hoàn chỉnh.
+COM-OPS-001 tiếp tục phần cloud; COM-QA-001 lập ma trận test gồm ca offline vừa timeout. Giữ Vercel/Render/Neon và Supabase local regression, AI off/0; worker nhắc production, giáo viên duyệt, thiết bị thật, ngân sách và lịch học cá nhân vẫn cần xác minh. Các file IDE có sẵn giữ nguyên.

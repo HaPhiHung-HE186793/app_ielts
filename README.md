@@ -14,9 +14,11 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 - Hoàn thành mốc 1 local, PWA-001/002, DATA-001/002: đăng nhập, kho riêng, đồng bộ có lựa chọn, chống gửi trùng và xử lý xung đột. Đã kiểm tra hai phiên trình duyệt độc lập trên Supabase Docker local.
 - Có gói **57 file nghe + JSON học liệu**, khoảng **8,92 MB**, tải trước để mở lại và học offline; quản lý dung lượng, thử lại và xóa tải xuống riêng với tiến độ.
 - NOTIFY-001: nhắc học tự nguyện theo thiết bị, múi giờ/ngày/giờ yên lặng, dời và tắt; Web Push thật đã nhận trong Chrome thử nghiệm khi đóng các trang app. Chưa xác minh điện thoại thật hoặc màn hình OS.
-- **AI-001 đang thực hiện**: API có xác thực/hạn mức/chống gọi lặp và gợi ý tùy chọn ở câu tự viết cuối bài. AI thật mặc định tắt, chưa có khóa/ngân sách và kết quả đối chiếu; chưa đóng task. Chưa có backend hosted hoặc triển khai công khai.
+- **AI-001 đang thực hiện**: API có xác thực/hạn mức/chống gọi lặp và gợi ý tùy chọn ở câu tự viết cuối bài. AI thật mặc định tắt, chưa có khóa/ngân sách và kết quả đối chiếu; chưa đóng task. Neon production chưa bật AI.
 - Hôm nay có nhịp **bình thường/mệt/khó quá/quay lại sau nghỉ**, chọn bài theo kiến thức cần trước, kết quả còn cần hỗ trợ và sở thích. Có lý do từng bài; nhịp nhẹ giới hạn bài ôn, giữ bài dở và đồng bộ lựa chọn của phiên. Xem [cách chọn phiên](docs/ADAPTATION.md).
-- **Vercel + Render + Neon:** DATA-003 có adapter/migration và kiểm tra local. Render trả `NEON_DB_UNKNOWN`; kết quả SQL người dùng gửi cho thấy thiếu schema_version/api/worker, runtime lại có neon_superuser. **Tiếp theo DEPLOY-002:** áp [migration Neon](db/neon/001_initial.sql), chỉnh quyền runtime và kiểm tra trước khi redeploy theo [hướng dẫn](docs/DEPLOY_VERCEL_RENDER_NEON.md). Chưa xác nhận backend Live hoặc lỗi kết nối duy nhất; cần đối chiếu Auth URL cũ với project đang chọn. Supabase local giữ cho regression, AI vẫn tắt.
+- **Vercel + Render + Neon:** kiểm tra công khai ngày 2026-09-11 đạt frontend 200, healthz 200/ok và readyz 200/ready; Auth get-session không cookie trả null, AI status thiếu token trả 401. DEPLOY-002 còn cần revision/grants, OTP thật, sync hai thiết bị/tài khoản và xử lý credential cũ. Không chạy lại migration chỉ từ lỗi bàn giao cũ. [Bằng chứng kiểm kê](docs/BASELINE_AUDIT.md).
+- Cloud health/readiness thành công chưa thay nghiệm thu đăng nhập, quyền dữ liệu và đồng bộ. Xem [hướng dẫn cloud](docs/DEPLOY_VERCEL_RENDER_NEON.md).
+- **Đã bắt đầu giai đoạn thương mại (2026-09-11):** [charter bản đầu](docs/PRODUCT_CHARTER.md) và [kiểm kê kỹ thuật](docs/BASELINE_AUDIT.md) là đầu vào thực thi [71 task](docs/TASKS_COMMERCIAL.md). Tiếp tục COM-OPS-001 xác minh cloud; task local kế tiếp COM-OPS-002 sửa CI/CD. Các cổng thương mại chưa đạt.
 - Trạng thái chi tiết và bước tiếp theo luôn được cập nhật tại [docs/STATUS.md](docs/STATUS.md).
 
 ## Bắt đầu hoặc tiếp tục phát triển
@@ -24,7 +26,7 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 Đọc [AGENTS.md](AGENTS.md), sau đó đọc tài liệu theo thứ tự:
 
 1. [Trạng thái bàn giao](docs/STATUS.md): đã làm gì, đang làm gì, còn vướng gì.
-2. [Danh sách task](docs/TASKS.md): ưu tiên, phụ thuộc và tiêu chí hoàn thành.
+2. [Danh sách task](docs/TASKS.md): task kỹ thuật cũ; [task tổng thể thương mại](docs/TASKS_COMMERCIAL.md): trách nhiệm, ưu tiên, phụ thuộc, nghiệm thu và các cổng phát hành mới.
 3. [Định hướng sản phẩm](docs/PRODUCT.md): người dùng, trải nghiệm học và phạm vi.
 4. [Kiến trúc dự kiến](docs/ARCHITECTURE.md): cấu trúc ứng dụng, dữ liệu, AI và PWA.
 5. [Các quyết định](docs/DECISIONS.md): lý do chọn hướng triển khai và các giả định chưa xác nhận.
@@ -56,7 +58,7 @@ npm run preview
 
 `build` tạo `dist/`; `preview` dùng để kiểm tra bản build local, không phải máy chủ production.
 
-`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Bộ kiểm tra có 144 unit test, 80 ca trình duyệt khách và 50 ca Auth/RLS/đồng bộ/offline/nhắc học/API AI trên Supabase local; `test:release` chọn 38 ca để kiểm tra artifact phát hành. Provider AI trong test là fixture có nhãn. Kết quả thực tế ở STATUS/SESSION_LOG.
+`test:e2e` tự build, dùng Chrome đã cài và chạy preview riêng ở cổng 4173. Xem [TESTING.md](docs/TESTING.md) để chọn Chromium hoặc xem phạm vi kiểm tra. Lượt kiểm kê ngày 2026-09-11 chạy đạt 176 unit test; bộ trình duyệt đã cấu hình có 80 ca trình duyệt khách và 50 ca Auth/RLS/đồng bộ/offline/nhắc học/API AI trên Supabase local; `test:release` chọn 38 ca để kiểm tra artifact phát hành. Provider AI trong test là fixture có nhãn. Kết quả thực tế ở STATUS/SESSION_LOG.
 
 Để tạo bản khách sẵn sàng tải lên hosting:
 

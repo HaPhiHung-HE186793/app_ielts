@@ -34,7 +34,9 @@
     "ai:local": "node --experimental-strip-types --env-file-if-exists=.local/ai.env server/local.ts",
     "ai:evaluate": "node --experimental-strip-types --env-file-if-exists=.local/ai.env server/evaluate.ts",
     "test:auth": "node scripts/test-auth.js",
-    "test:neon": "node --experimental-strip-types scripts/test-neon.js"
+    "test:neon": "node --experimental-strip-types scripts/test-neon.js",
+    "health": "node scripts/check-health.js",
+    "health:strict": "node scripts/check-health.js --strict"
   },
   "dependencies": {
     "@fontsource/be-vietnam-pro": "5.3.0",

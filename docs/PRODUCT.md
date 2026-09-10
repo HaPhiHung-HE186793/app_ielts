@@ -1,6 +1,8 @@
 # Định hướng sản phẩm
 
-Ngày lập: 2026-09-06. Trạng thái: cơ sở triển khai ban đầu; tính năng dưới đây là kế hoạch, trừ khi `STATUS.md` và `TASKS.md` ghi đã hoàn thành.
+Ngày lập: 2026-09-06. Cập nhật định hướng: 2026-09-11. Tính năng dưới đây là kế hoạch, trừ khi `STATUS.md` và file task sở hữu ID ghi đã hoàn thành. Backlog mới ở [TASKS_COMMERCIAL.md](TASKS_COMMERCIAL.md), task kỹ thuật cũ ở [TASKS.md](TASKS.md).
+
+Bắt đầu triển khai theo [PRODUCT_CHARTER.md](PRODUCT_CHARTER.md): G1 ưu tiên chủ dự án học và lưu/khôi phục tin cậy; ngân sách, trình độ và lịch học chưa có dữ liệu cụ thể. [BASELINE_AUDIT.md](BASELINE_AUDIT.md) ghi kiểm tra code/local/cloud mới nhất; health/readiness công khai đã thành công, OTP/sync và thiết bị thật chưa nghiệm thu.
 
 ## 1. Vấn đề cần giải quyết
 
@@ -10,7 +12,8 @@ Mục tiêu sản phẩm: hỗ trợ tự học có định hướng từ nền 
 
 ## 2. Người dùng và giả định
 
-- Bản đầu phục vụ cá nhân chủ dự án tự học; giả định này chưa được người dùng xác nhận riêng.
+- Ngày 2026-09-11, người dùng yêu cầu phục vụ việc tự học hằng ngày, ứng dụng đời sống và tiến tới thương mại hóa. Ưu tiên chủ dự án dùng tin cậy trước, sau đó kiểm định với khách hàng và mở bán theo từng cổng.
+- Giả thuyết nghiên cứu thương mại ban đầu: B2C người Việt trưởng thành cần nền tảng/IELTS; phân khúc, giá, ngân sách, nhân sự và lịch ra mắt chưa chốt. Xem DEC-024 và COM-RES-001/002/003.
 - Giao diện ưu tiên điện thoại, sử dụng được trên máy tính, iOS và Android.
 - Onboarding đã thu thập thời gian dự kiến, mục tiêu/ngày tùy chọn, Academic/General Training/chưa quyết định, sở thích và tự nhận xét nền tảng. Đã đo thời gian hoạt động trong app theo DEC-011; điểm đầu vào và yêu cầu tối thiểu từng kỹ năng vẫn chưa có.
 - Cho phép học trước khi đã quyết định ngày thi; không ép nhập dữ liệu không biết.
@@ -89,7 +92,7 @@ Bản đầu cần một luồng học hoàn chỉnh với học liệu thật, 
 
 Sau đó bổ sung tài khoản, đồng bộ, AI, học liệu bốn tuần được kiểm duyệt và PWA offline có phạm vi rõ. Ngân sách AI cần hạn mức phía máy chủ.
 
-Để sau: thi thử đầy đủ, dashboard gia sư, nhiều học viên, thu phí, phát hành App Store/Google Play. Không nằm trong kế hoạch ban đầu: mạng xã hội, bảng xếp hạng công khai, cuộn vô hạn, “hộp quà” ngẫu nhiên nhằm kéo dài sử dụng.
+Định hướng mới đã đưa nghiên cứu khách hàng, học liệu đời sống, IELTS/AI, thanh toán, pháp lý, hỗ trợ và vận hành vào backlog thương mại theo cổng; chưa triển khai các chức năng đó chỉ từ việc lập kế hoạch. Beta nền tảng có thể chưa có AI nếu mô tả đúng phạm vi; beta AI/IELTS và mở bán có tiêu chí riêng. Dashboard gia sư/B2B và App Store/Google Play chỉ xem xét sau bằng chứng nhu cầu. Không nằm trong phạm vi: mạng xã hội, bảng xếp hạng công khai, cuộn vô hạn, “hộp quà” ngẫu nhiên nhằm kéo dài sử dụng.
 
 ## 10. Đo hiệu quả
 
@@ -104,7 +107,7 @@ PROGRESS-001 đã có tổng thời gian hoạt động đo trên thiết bị, 
 
 Chưa đặt ngưỡng thành công định lượng trước khi có dữ liệu thử nghiệm; không dùng số giả như kết quả đo thực.
 
-DATA-002 đã có đồng bộ tự nguyện và tiếp tục tiến độ giữa hai phiên trình duyệt, kiểm tra bằng backend local thật. Không tự gửi phần khách, không dùng bản đến sau để ngầm xóa bài của phía khác. Người học chọn phần giữ lại khi hai nơi cùng sửa, có đường tải cả hai bản. Gói PWA-002 đã mở rộng trong CONTENT-002 thành 32 bài/kiểm tra và 57 file nghe, có tải/kiểm tra/xóa; chưa có host cho điện thoại. Chi tiết ở [SYNC.md](SYNC.md) và [OFFLINE.md](OFFLINE.md).
+DATA-002 đã có đồng bộ tự nguyện và tiếp tục tiến độ giữa hai phiên trình duyệt, kiểm tra bằng backend local thật. Không tự gửi phần khách, không dùng bản đến sau để ngầm xóa bài của phía khác. Người học chọn phần giữ lại khi hai nơi cùng sửa, có đường tải cả hai bản. Gói PWA-002 đã mở rộng trong CONTENT-002 thành 32 bài/kiểm tra và 57 file nghe, có tải/kiểm tra/xóa; đã có domain cloud nhưng chưa nghiệm thu điện thoại thật. Chi tiết ở [SYNC.md](SYNC.md) và [OFFLINE.md](OFFLINE.md).
 
 ## 11. Nguồn tham khảo
 

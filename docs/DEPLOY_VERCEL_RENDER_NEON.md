@@ -1,12 +1,14 @@
 # Deploy Mỗi ngày: Neon → Render → Vercel
 
-Cập nhật 2026-09-10. Code đã có adapter Neon, migration, backend Node và cấu hình Vercel. Đã kiểm tra PostgreSQL local và trình duyệt với Auth REST mô phỏng; **chưa xác minh Neon Auth/email/TLS hay deployment cloud thật**. DATA-003 hoàn thành phần code/local; DEPLOY-002 đang thực hiện.
+Cập nhật 2026-09-11. Code đã có adapter Neon, migration, backend Node và cấu hình Vercel. Kiểm tra công khai đạt frontend/healthz/readyz và get-session không đăng nhập; chưa hoàn tất OTP/sync/quyền cloud hoặc thiết bị thật. DATA-003 DONE code/local; DEPLOY-002 IN_PROGRESS. Xem [bằng chứng](BASELINE_AUDIT.md).
 
-Người dùng đã có Neon `production` / `neondb`, pooling bật, AWS Singapore theo ảnh. Render service `app_ielts` qua validator nhưng startup mới trả NEON_DB_UNKNOWN. Query người dùng gửi cho thấy thiếu schema_version/api/worker; runtime_grants chỉ có neon_superuser. Bước ngay là áp migration và chỉnh quyền theo mục 5, sau đó mới redeploy. Chưa xác định lỗi driver gốc của UNKNOWN; Vercel chưa có deployment được xác minh. Không tạo lại DB/service Render. Dùng repo `HaPhiHung-HE186793/app_ielts`, branch `main` mới nhất.
+Domain hiện tại: https://app-ielts-two.vercel.app. Lỗi NEON_DB_UNKNOWN/thiếu schema trong ảnh ngày trước là lịch sử; probe 2026-09-11 đã trả ready. Bước tiếp theo: ghi revision, kiểm tra grants chỉ đọc/xử lý credential cũ rồi OTP và sync thật. Không tự tạo lại DB/service hoặc chạy lại migration khi readiness đang đạt. Dùng repo HaPhiHung-HE186793/app_ielts, branch main.
 
 ## 1. Chuẩn bị Neon
 
 ### Tạo bảng ứng dụng
+
+Phần này dành cho cài mới đã xác nhận thiếu schema; với deployment hiện trả ready, chuyển sang kiểm tra grants/Auth/sync thay vì chạy lại migration.
 
 1. Mở Neon → **SQL Editor**; chọn branch **production**, database **neondb**, role quản trị **neondb_owner**.
 2. Mở [db/neon/001_initial.sql](../db/neon/001_initial.sql), sao chép **toàn bộ nội dung** vào SQL Editor rồi bấm **Run**. File này dành riêng cho Neon, chạy một lần trong transaction, tạo schema `moi_ngay` và các role. Không chạy các file trong `supabase/migrations` trên Neon.

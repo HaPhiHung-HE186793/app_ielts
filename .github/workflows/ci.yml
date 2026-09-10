@@ -102,3 +102,30 @@ jobs:
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
         continue-on-error: true
+
+  # ─── Production health check (chỉ chạy khi push lên main) ─────────────────
+  health-check:
+    name: Production Health Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Chỉ chạy sau khi deploy hoàn tất (push lên main), không chạy với PR
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build-check]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+
+      - name: Wait for Render deploy (60s)
+        run: sleep 60
+
+      - name: Check production endpoints
+        env:
+          RENDER_API_URL: ${{ secrets.RENDER_API_URL_CI }}
+        run: node scripts/check-health.js
+        continue-on-error: true

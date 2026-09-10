@@ -6,7 +6,8 @@ Cập nhật 2026-09-10, Asia/Saigon.
 
 **DATA-003 DONE phần code/local. Tiếp theo DEPLOY-002 IN_PROGRESS: deploy Vercel frontend + Render backend + Neon PostgreSQL/Managed Auth và kiểm tra cloud thật.** Không còn cần chuyển code từ đầu hoặc lặp hướng dẫn “chưa có adapter Neon”.
 
-- Người dùng đã có Neon theo ảnh: production/default, neondb, AWS Singapore, pooling bật. Mật khẩu che; chưa nhận connection string hoặc Auth Base URL. Ảnh mới là form Render New Web Service và Vercel import repo; chưa có service Live/domain production được xác minh.
+- Neon production/default, neondb, AWS Singapore, pooling bật. Render service `app_ielts` đã được tạo: log 16:39–16:42 ngày 10/09 cho thấy build commit `18d4b56`/Node 22.18.0/npm ci thành công, startup bị chặn vì DATABASE_URL dùng `neondb_owner` thay vì `moi_ngay_runtime`. Chưa kết nối DB hoặc có service Live/domain production được xác minh.
+- Auth Base URL công khai đã thấy trong cấu hình Render: `https://ep-long-cell-aztbwvj6.neonauth.c-3.ap-southeast-1.aws.neon.tech/neondb/auth`. Chưa kiểm tra Auth/JWKS/email thật. Ảnh mới hiển thị mật khẩu owner: đã hướng dẫn reset trong Neon, không chép/lưu/gọi bằng mật khẩu đó; chưa có xác nhận đã đổi.
 - Đã có migration `db/neon/001_initial.sql`, adapter Auth REST/JWT, API profile/sync/nhắc, role/RLS/CAS và startup Render. PostgreSQL local thật và browser với Auth fixture đã kiểm tra; chưa gọi Neon Auth/SQL/email cloud.
 - `start:backend` chạy Neon; `build:vercel` dùng VITE_NEON_AUTH_URL + RENDER_API_URL và proxy Auth/data/AI/health. DATABASE_URL chỉ Render, role moi_ngay_runtime. APP_ORIGINS và Neon Trusted Domains điền sau URL Vercel.
 - Giữ 28 bài + bốn kiểm tra, 57 WAV, kho khách/tài khoản, StudyState v3 đọc 1/2/3, ID/backup/outbox. Không ghép tài khoản bằng email. Supabase local/SQL/SDK giữ cho regression và dữ liệu cũ; đường startup cũ là start:backend:supabase.
@@ -14,10 +15,10 @@ Cập nhật 2026-09-10, Asia/Saigon.
 
 ## Bước người dùng làm ngay
 
-1. [Hướng dẫn từng trường](DEPLOY_VERCEL_RENDER_NEON.md): Neon SQL Editor → chạy migration một lần → role runtime/mật khẩu → Auth Base URL.
-2. Render form: Build `npm ci`, Start `npm run start:backend`, Singapore/Free, env theo hướng dẫn. Chờ Live và thử healthz/readyz.
+1. Neon → branch production → Postgres database → Roles → reset mật khẩu `neondb_owner` vì ảnh đã hiển thị. Kiểm tra role `moi_ngay_runtime`/migration; đặt mật khẩu runtime riêng rồi Connect bằng đúng role này. Nếu chưa áp migration, dùng [hướng dẫn SQL](DEPLOY_VERCEL_RENDER_NEON.md); không đổi riêng username trong chuỗi owner.
+2. Render service hiện có → Environment → Edit → thay toàn bộ DATABASE_URL bằng connection string runtime pooled/TLS → Save and deploy. Build/start đã đúng; chưa cần sửa code. Chờ Live và thử healthz/readyz.
 3. Vercel chọn **Other**, build `npm run build:vercel`, hai env công khai; bỏ biến/integration Supabase cũ. Khi có domain, cập nhật APP_ORIGINS/Trusted Domains rồi thử OTP/sync thật.
-4. Chưa có quyền truy cập Dashboard hoặc secret trong workspace để tự điền cloud. Chỉ cần URL công khai để tiếp tục kiểm tra; không yêu cầu gửi mật khẩu/OTP vào chat.
+4. Chưa có quyền truy cập Dashboard để đổi mật khẩu hoặc env thay người dùng. Chỉ gửi URL công khai/log đã che bí mật để tiếp tục; không gửi lại mật khẩu/OTP.
 
 ## File quan trọng
 
@@ -29,6 +30,8 @@ Cập nhật 2026-09-10, Asia/Saigon.
 
 ## Kiểm tra và môi trường
 
+Lượt xử lý log Render này chỉ đối chiếu validator/code và cập nhật tài liệu; không chạy lại test code, không dùng thông tin xác thực trong ảnh, không đổi env/mật khẩu cloud. Các kết quả local dưới đây thuộc mốc DATA-003 trước đó.
+
 - `npm test`: 151 ca/18 file đạt; lint, typecheck, build/verify release, kiểm tra định dạng/liên kết tài liệu và diff đạt.
 - `npm run test:neon` đạt PostgreSQL thật, JWT ký thật và browser Auth fixture: hai chủ/RLS/rollback/CAS/replay/đồng thời/nhắc/budget, offline/mất response/reload/đổi tài khoản/cookie HttpOnly/không lưu JWT. Không phải phép thử Neon hosted.
 - Vercel Build Output bằng URL fixture đạt; marker env bí mật không vào JS. `.vercel/output` đang chứa URL thử, **không deploy prebuilt này**; cloud phải build từ main với env thật.
@@ -38,4 +41,4 @@ Cập nhật 2026-09-10, Asia/Saigon.
 
 ## Tiếp theo cụ thể
 
-**DEPLOY-002:** người dùng chạy SQL/Bật Auth trên Neon rồi điền Render/Vercel theo hướng dẫn; xác minh migration/TLS/OTP/session/domain/origin/sync bằng URL thật, ghi revision và kết quả. Auth REST beta, SMTP, proxy cloud, Free cold start, Safari/iPhone/Android còn chưa kiểm tra. Không khẳng định app đã online hoặc gửi OTP thật trong session này.
+**DEPLOY-002:** sửa DATABASE_URL Render sang runtime role, xác nhận mật khẩu owner đã đổi, redeploy và kiểm tra readyz. Sau khi Render Live mới tiếp tục Vercel/origin/OTP/sync và ghi URL/revision. Không cần yêu cầu tạo lại service hoặc hỏi lại Auth Base URL đã có. Migration/TLS/Auth/SMTP/proxy cloud và điện thoại thật còn chưa kiểm tra.

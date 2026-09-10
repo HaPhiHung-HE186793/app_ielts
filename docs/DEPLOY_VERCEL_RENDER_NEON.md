@@ -2,7 +2,7 @@
 
 Cập nhật 2026-09-10. Code đã có adapter Neon, migration, backend Node và cấu hình Vercel. Đã kiểm tra PostgreSQL local và trình duyệt với Auth REST mô phỏng; **chưa xác minh Neon Auth/email/TLS hay deployment cloud thật**. DATA-003 hoàn thành phần code/local; DEPLOY-002 đang thực hiện.
 
-Người dùng đã có Neon `production` / `neondb`, pooling bật, AWS Singapore theo ảnh. Render đang ở form New Web Service, Vercel đang ở form import GitHub. Chưa có URL dịch vụ đã chạy. Không tạo lại DB. Dùng repo `HaPhiHung-HE186793/app_ielts`, branch `main` mới nhất.
+Người dùng đã có Neon `production` / `neondb`, pooling bật, AWS Singapore theo ảnh. Render service `app_ielts` đã build thành công commit `18d4b56`, nhưng startup dừng do DATABASE_URL dùng role owner; xem mục 5. Vercel chưa có deployment được xác minh. Không tạo lại DB/service Render. Dùng repo `HaPhiHung-HE186793/app_ielts`, branch `main` mới nhất.
 
 ## 1. Chuẩn bị Neon
 
@@ -113,7 +113,9 @@ Ghi URL, commit/revision và kết quả thực tế vào STATUS/SESSION_LOG khi
 
 ## 5. Giới hạn và xử lý lỗi
 
-- `DATABASE_URL...role moi_ngay_runtime`: chọn lại role runtime trong Connect; không dùng chuỗi owner ở ảnh cũ.
+- `DATABASE_URL...role moi_ngay_runtime`: log này là lỗi kiểm tra cấu hình trước khi kết nối PostgreSQL, không phải lỗi mật khẩu hay schema đã được kiểm tra. Ảnh Render ngày 10/09 dùng `neondb_owner`; sửa bằng Neon Connect → Role `moi_ngay_runtime` → copy **toàn bộ chuỗi mới**, gồm mật khẩu của runtime → Render Environment → Edit → DATABASE_URL → **Save and deploy**. Không chỉ sửa tên role trong chuỗi owner vì mỗi role có mật khẩu riêng. Không cần đổi Build/Start Command đang đúng. [Lưu env và redeploy Render](https://render.com/docs/configure-environment-variables).
+- Nếu chưa thấy runtime role, kiểm tra bằng SQL chỉ đọc: `SELECT to_regclass('moi_ngay.schema_version') AS schema_table, EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'moi_ngay_runtime') AS runtime_role_exists;`. Nếu chưa tạo schema/role, áp migration ở mục 1; nếu đã có schema thì không chạy lại migration mù, đối chiếu kết quả trước. Role tạo từ migration cần đặt/reset mật khẩu rồi mới dùng Connect.
+- Nếu ảnh/log đã hiển thị mật khẩu, đổi mật khẩu đúng role đó: Neon → branch → Postgres database → Roles → menu role → Reset password. Đổi kết nối ở dịch vụ khác đang dùng role đó nếu có. Không gửi lại connection string hoặc mật khẩu để kiểm tra; chỉ gửi log đã che và kết quả query không có bí mật. [Reset mật khẩu Neon](https://neon.com/docs/manage/roles#reset-a-password).
 - Schema/DB chưa sẵn sàng: kiểm tra `SELECT version FROM moi_ngay.schema_version` đúng branch/database. Không reset dữ liệu.
 - OTP báo 403: kiểm tra `APP_ORIGINS` và Neon Trusted Domains có đúng production origin không. OTP không tới: kiểm tra spam/hạn mức và SMTP Neon; không cần sửa DATABASE_URL ở frontend.
 - Vercel báo thiếu env: điền hai biến ở bước 3 rồi redeploy. Đổi biến VITE cần build lại.

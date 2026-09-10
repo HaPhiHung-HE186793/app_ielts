@@ -73,13 +73,13 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 
 ## Chi tiết task tiếp theo: DEPLOY-002
 
-**DATA-003 DONE phần code/local; DEPLOY-002 IN_PROGRESS phần cloud.** Người dùng đã mở form New Web Service Render (Start Command trống) và import Vercel (preset Vite cũ). [Hướng dẫn từng trường](DEPLOY_VERCEL_RENDER_NEON.md) đã khớp code. Giữ thay đổi IDE sẵn có của người dùng ngoài commit task.
+**DATA-003 DONE phần code/local; DEPLOY-002 IN_PROGRESS phần cloud.** Render `app_ielts` đã build commit 18d4b56 thành công, startup dừng do DATABASE_URL dùng neondb_owner. Bước ngay: reset mật khẩu owner đã hiển thị trong ảnh, lấy chuỗi runtime role đúng rồi sửa env/redeploy service hiện có; không sửa validator để dùng owner. Auth Base URL công khai đã có trong STATUS, chưa kiểm tra Auth live. [Hướng dẫn](DEPLOY_VERCEL_RENDER_NEON.md) đã có mục xử lý lỗi này. Giữ thay đổi IDE sẵn có của người dùng ngoài commit task.
 
 1. Neon production/neondb: áp `db/neon/001_initial.sql` bằng owner, kiểm tra version 1; đặt/reset mật khẩu role SQL moi_ngay_runtime và lấy Connect pooled/TLS. Không xóa DB cũ, không đưa chuỗi DB vào chat/Vercel.
-2. Bật Neon Auth, lấy Auth Base URL công khai; chọn email OTP, cấu hình SMTP production khi mở cho học viên. Không đổi sang mật khẩu hoặc ghép tài khoản cũ theo email.
+2. Dùng Auth Base URL công khai đã có ở STATUS để kiểm tra Neon Auth; chọn email OTP, cấu hình SMTP production khi mở cho học viên. Không hỏi lại URL như chưa nhận; không đổi sang mật khẩu hoặc ghép tài khoản cũ theo email.
 3. Render: npm ci, npm run start:backend, Singapore, env Neon/AI off. Xác minh Live/healthz/readyz; lấy URL Render thực tế.
 4. Vercel Other, npm run build:vercel, hai env công khai. Sau khi có production domain, điền Render APP_ORIGINS và Neon Trusted Domains chính xác, redeploy; thử OTP thật/profile/sync hai tài khoản/hai thiết bị và offline.
-5. Ghi URL/revision/deployment/kết quả HTTPS/cookie/session/cache thật vào STATUS/SESSION_LOG. Chưa có Auth URL/SQL cloud/SMTP/URL public được xác minh; không gọi fixture là cloud.
+5. Ghi URL/revision/deployment/kết quả HTTPS/cookie/session/cache thật vào STATUS/SESSION_LOG. Auth URL đã có, nhưng Auth/SQL cloud/SMTP/URL public chưa được xác minh; không gọi fixture là cloud.
 6. Giữ AI tắt/0; xác minh UI báo nhắc chưa sẵn sàng khi chưa có worker. AI-001 và worker production cần bước riêng. Không đóng DEPLOY-002/BETA-001 chỉ vì build/docs hoặc form tạo project thành công.
 
 ## AI-001 đang chờ bước đối chiếu

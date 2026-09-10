@@ -1,5 +1,7 @@
 # Từ đầu: Supabase → Render → Vercel
 
+> Hướng cũ, được thay ngày 2026-09-10: người dùng sửa DB thành **Neon**. Bắt đầu tại [hướng dẫn Neon](DEPLOY_VERCEL_RENDER_NEON.md). Nội dung dưới đây chỉ mô tả cấu hình Supabase đã có; không chạy các migration/lệnh này trên Neon và không tạo Supabase hosted theo hướng này.
+
 Cập nhật 2026-09-08, theo lựa chọn của chủ dự án. Người dùng xác nhận **chưa tạo project** trên ba dịch vụ. Repository đã có cấu hình để bắt đầu; chưa có URL public/SMTP hoặc kết quả kiểm tra cloud thật.
 
 ## 1. Ba dịch vụ làm việc gì?

@@ -1,6 +1,6 @@
 # Danh sách task phát triển
 
-Cập nhật: 2026-09-08. Thực hiện theo thứ tự ưu tiên và phụ thuộc, không coi các tính năng dự kiến là đã có. Trạng thái tổng quan ở [STATUS.md](STATUS.md).
+Cập nhật: 2026-09-10. Thực hiện theo thứ tự ưu tiên và phụ thuộc, không coi các tính năng dự kiến là đã có. Trạng thái tổng quan ở [STATUS.md](STATUS.md).
 
 ## Quy ước
 
@@ -17,6 +17,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | ID | Trạng thái | Phụ thuộc | Kết quả và tiêu chí hoàn thành |
 | --- | --- | --- | --- |
 | DOC-001 | DONE | Không | Có README, AGENTS, PRODUCT, ARCHITECTURE, DECISIONS, TASKS, STATUS, SESSION_LOG và gitignore; liên kết nội bộ hợp lệ, trạng thái nhất quán, task tiếp theo rõ ràng. Kết quả commit/push được xác minh bằng Git và báo trong bàn giao. |
+| DOC-002 | DONE | DEPLOY-001 | Đã sửa hướng triển khai thành Vercel/Render/Neon theo đính chính của người dùng; có hướng dẫn tạo Neon từ đầu, đối chiếu phụ thuộc Supabase thật và task DATA-003 với tiêu chí kiểm tra. Đồng bộ tài liệu bàn giao, đánh dấu hướng Supabase cũ; kiểm tra liên kết/task/diff, chưa chuyển code hoặc chạy cloud. |
 
 ## Mốc 1 — Một phiên học hoàn chỉnh trên máy local
 
@@ -42,6 +43,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | PWA-001 | DONE | APP-002, LEARN-002 | Manifest/icon/standalone, hướng dẫn và prompt tự nguyện; Chrome đọc manifest/icon và không báo lỗi installability trong hồ sơ thử riêng. Luồng prompt/standalone có kiểm tra điều khiển; chưa cài/khởi chạy trên iPhone/Android hoặc cửa sổ app hệ điều hành. Phạm vi và bước xác minh ở INSTALLATION/TESTING. |
 | PWA-002 | DONE | PWA-001, DATA-002 | Gói học liệu được tạo từ nội dung dự án (ban đầu bảy bài/bảy WAV, đã mở rộng ở CONTENT-002); worker/manifest có hash, tải/dung lượng/xóa/lỗi/quota, mở mới offline và chờ sync. Kiểm tra cập nhật giữ draft/outbox, file thiếu/thử lại, range audio và cache không chứa dữ liệu tài khoản. Hướng dẫn/quyền/giới hạn thiết bị ở OFFLINE. |
 | NOTIFY-001 | DONE | PWA-001, DATA-001, PLAN-001 | Nhắc học tự nguyện, múi giờ và giờ yên lặng, tắt/dời lịch được. Xin quyền từ thao tác người dùng, xử lý từ chối; xác minh nền tảng hỗ trợ, không phụ thuộc thông báo để vào bài. |
+| DATA-003 | READY | DATA-002, NOTIFY-001, DEPLOY-001 | Chuyển backend Supabase sang Neon theo DEC-022: Auth/identity, migration PostgreSQL/quyền theo chủ, profile/sync/nhắc/budget qua Render, cấu hình Vercel/proxy và env máy chủ. Giữ StudyState/bản sao/ID/outbox và dữ liệu cũ; không gán tài khoản theo email. Kiểm tra PostgreSQL thật với hai tài khoản, gửi lặp/đồng thời/mất mạng/đổi chủ, token và hạn mức; không lộ DATABASE_URL. Cập nhật hướng dẫn lệnh/env đã chạy; phân biệt local với Neon hosted còn chờ. |
 
 Điều kiện đạt mốc 2: dùng cùng tài khoản để tiếp tục trên hai thiết bị và học phần đã tải khi mất mạng, với giới hạn được hiển thị rõ.
 
@@ -55,7 +57,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | CONTENT-002 | DONE | CONTENT-001, LEARN-001 | Có 28 bài + bốn kiểm tra theo mục tiêu tăng dần, đoạn đọc/nghe, tự nói/viết và tiêu chí tự xem lại; gói 57 WAV offline. Giữ bảy bài cũ và dữ liệu v3; kiểm tra cả bốn bài tuần qua UI offline, hint/reload/lưu/ôn. Hồ sơ nguồn/rà soát nội bộ ở CURRICULUM/CONTENT_REVIEW; học liệu thử nghiệm, chưa có giáo viên độc lập hoặc hiệu chỉnh độ khó bằng người học thật. |
 | ADAPT-001 | DONE | PLAN-001, REVIEW-001, PROGRESS-001, CONTENT-002 | Gợi ý theo bài trước/tuần, tín hiệu bài và truy hồi, ôn đến hạn và sở thích trong nhóm sẵn sàng; nhịp mệt/khó/quay lại có giới hạn, lý do lưu cùng phiên. Giữ draft, schema v3, lịch ôn và danh sách đã bắt đầu; kiểm tra thứ tự/giảm tải/backup/offline/sync. Chưa chẩn đoán riêng bốn kỹ năng hoặc hiệu chỉnh quy tắc trên người học; chi tiết ADAPTATION. |
 | DEPLOY-001 | DONE | PWA-002, ADAPT-001 | Chuẩn bị artifact/cấu hình web để triển khai HTTPS: tách cấu hình khách/tài khoản/API, hướng dẫn biến môi trường, cache/cập nhật và quay lui; kiểm tra build không chứa khóa, luồng học từ artifact và phương án dùng trên điện thoại. Ghi rõ hosting/SMTP/dịch vụ nào chưa cấu hình; không coi build local là đã phát hành hoặc cần chờ AI để chuẩn bị phần độc lập. |
-| DEPLOY-002 | IN_PROGRESS | DEPLOY-001 | Theo lựa chọn người dùng: Vercel frontend, Render backend, Supabase hosted cho Auth/DB. Chuẩn bị cấu hình/entrypoint và hướng dẫn từng bước, kiểm tra local; tiếp tục ghi URL/revision/deployment và kiểm tra HTTPS/OTP/sync/worker thật khi có project. Không coi hướng dẫn/build là đã public; AI thật cần ngân sách/đối chiếu riêng. |
+| DEPLOY-002 | IN_PROGRESS | DEPLOY-001, DATA-003 | Hướng mới Vercel frontend, Render backend, Neon PostgreSQL (DEC-022). Sau chuyển code DATA-003, cấu hình project/migration/Auth/env và ghi URL/revision/deployment, kiểm tra HTTPS/OTP/sync/worker trên host thật. Phần chuẩn bị Supabase cũ không là bằng chứng chạy Neon; hướng dẫn/build không là đã public. AI thật cần ngân sách/đối chiếu riêng. |
 | BETA-001 | TODO | DEPLOY-002, DATA-002, PWA-002, AI-002, AI-003, CONTENT-002, ADAPT-001, NOTIFY-001 | Chuẩn bị bản triển khai, cấu hình, hướng dẫn dùng/khôi phục/xóa dữ liệu và kiểm tra luồng chính trên web/iOS/Android. Thử nghiệm học theo lịch, ghi phản hồi và hạn chế. Việc phát hành thực tế chỉ thực hiện trong phạm vi đã được cho phép. |
 
 Điều kiện đạt mốc 3: người học có thể mở app hằng ngày, dùng học liệu bốn tuần và nhận phản hồi AI đã được kiểm tra trong phạm vi công bố. Không coi beta này là đã hoàn thành chương trình luyện IELTS sáu tháng.
@@ -69,15 +71,16 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | COACH-001 | TODO | BETA-001 | Nếu người dùng cần: dashboard gia sư, giao bài và nhận xét với quyền truy cập có lựa chọn; kiểm tra học viên khác không xem chéo dữ liệu. |
 | MOBILE-001 | TODO | BETA-001 | Nếu cần cửa hàng ứng dụng: đánh giá Capacitor, build/ký và kiểm thử native, chuẩn bị thông tin phát hành. Tài khoản, thiết bị và quyền phát hành phải có trước khi gửi lên cửa hàng. |
 
-## Chi tiết task tiếp theo: DEPLOY-002
+## Chi tiết task tiếp theo: DATA-003, sau đó DEPLOY-002
 
-**IN_PROGRESS — đã có cấu hình/hướng dẫn Vercel frontend + Render backend + Supabase Auth/DB. Người dùng xác nhận chưa tạo project và muốn hướng dẫn từ đầu.** Xem [DEPLOY_VERCEL_RENDER_SUPABASE.md](DEPLOY_VERCEL_RENDER_SUPABASE.md), DEC-021. Không dựng lại phần chuẩn bị; chưa đóng task vì chưa có deployment thật.
+**DATA-003 READY — người dùng sửa DB thành Neon ngày 2026-09-10.** Xem [hướng dẫn Neon](DEPLOY_VERCEL_RENDER_NEON.md) và DEC-022. Code thực tế vẫn dùng Supabase; DOC-002 chỉ cập nhật hướng dẫn và xác định phần cần chuyển. Đánh dấu DATA-003 IN_PROGRESS trước khi viết code.
 
-1. Hướng dẫn người dùng tạo project Supabase; lấy tên/ref/URL công khai, giữ key/password ngoài chat/Git. Link đúng project mới, dry-run rồi áp tám migration, cấu hình OTP template/SMTP.
-2. Render Web Service cùng repo/main: npm ci, npm run start:backend, healthz và env theo bảng hướng dẫn. Giữ AI false/ngân sách 0. Lưu URL thật, không trỏ về Docker/local.
-3. Vercel import repo, Other, npm run build:vercel, không override Output Directory, ba env public. Khi có URL production, cập nhật Render APP_ORIGINS và Supabase Site URL. Không lấy URL preview làm origin học cố định.
-4. Kiểm tra health trực tiếp/proxy, HTTPS/header/404/OTP/sync hai tài khoản, WAV/offline/worker và backup trên URL thật. Ghi thiết bị nào đã thử; không coi viewport mobile là iPhone/Android thật. Giữ thông tin project/revision/deployment trong STATUS.
-5. Cập nhật docs và commit/push theo ủy quyền. BETA-001 còn phụ thuộc AI/thiết bị/người học thật; Render mới chỉ có API, chưa worker nhắc production. Không tự bật trả phí vì đã deploy backend.
+1. Kiểm tra và chốt adapter Auth/identity: ưu tiên Neon Auth giữ email OTP, xác thực request tại Render, xử lý khôi phục/đổi chủ/offline. Đối chiếu SDK hiện hành/React/Node trước khi thêm dependency và lockfile. Không tự thay phương thức đăng nhập hoặc ghép tài khoản theo email.
+2. Chuyển schema/RPC sang PostgreSQL có quyền theo chủ, role ứng dụng tách quản trị. Giữ khóa hàng, revision/receipt/idempotency, validation trạng thái, nhắc học và budget AI. Viết migration riêng; không áp nguyên SQL Supabase lên Neon, không reset DB cũ.
+3. Chuyển profile/sync/nhắc/API AI sang adapter Render; cập nhật env/config/startup/build Vercel/proxy/CSP. DATABASE_URL chỉ trên máy chủ. Giữ schema dữ liệu, backup, draft/outbox và bản khách; chứng minh đường chuyển dữ liệu cũ không ghi đè.
+4. Chạy lint/typecheck/build/test phù hợp và kiểm tra Auth/PostgreSQL thật: hai chủ, gửi lặp/đồng thời, mất response/reload, đổi chủ, token lỗi, AI tắt/hạn mức, cache không chứa dữ liệu riêng. Ghi rõ phần cần Neon hosted, email và thiết bị thật; không gọi fixture là cloud.
+5. Người dùng có thể tạo Neon/kiểm tra SELECT theo hướng dẫn trong khi phần code được chuyển. Khi DATA-003 hoàn tất, tiếp tục DEPLOY-002: migration đúng branch, Render rồi Vercel, env/origin/Auth và kiểm tra URL HTTPS thật. Các lệnh deployment cũ chưa dùng được với Neon.
+6. Cập nhật STATUS/TASKS/SESSION_LOG/README và hướng dẫn lệnh/env theo implementation, commit/push trong phạm vi đã cho phép. Không đóng DEPLOY-002 hoặc BETA-001 khi chỉ có build/docs; không tự bật AI trả phí.
 
 ## AI-001 đang chờ bước đối chiếu
 

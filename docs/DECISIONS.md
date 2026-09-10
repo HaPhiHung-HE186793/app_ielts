@@ -175,11 +175,22 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 
 ## DEC-021 — Vercel frontend, Render backend, Supabase hosted
 
+- Trạng thái từ 2026-09-10: lựa chọn DB được thay bằng Neon theo DEC-022; cấu hình/code Supabase đã viết vẫn là hiện trạng, không là đích triển khai mới.
 - Ngày 2026-09-07, người dùng chọn rõ ba dịch vụ và xác nhận chưa tạo project; yêu cầu hướng dẫn từ đầu. Lựa chọn này thay hướng Pages mặc định của DEC-020. DEPLOY-002 IN_PROGRESS phần cấu hình/hướng dẫn, chưa có deployment thật hoặc bật AI trả phí.
 - Giữ browser → Supabase Auth/RLS/RPC cho tài khoản/sync; Vercel chỉ proxy các route AI/health đã định nghĩa sang Render. Dùng Vercel Build Output API v3 để sinh CSP/header/cache theo đúng URL public lúc build, tránh sửa URL cứng trong source. Framework Other, không override dist; chỉ ba env public được chọn, bỏ qua .env/biến khác. Bản release:build độc lập vẫn guest/account với AI tắt như cũ.
 - Render dùng server/production.ts, PORT/0.0.0.0/healthz, URL hosted và secret key, origins chính xác và ngân sách riêng tồn tại trong DB. APP_ORIGINS có thể trống khi boot đầu và được điền sau khi có URL Vercel. Blueprint không ghi đè origin đã nhập khi sync tiếp. Khởi động kiểm tra RPC; health chỉ báo HTTP liveness, không hứa DB luôn sẵn sàng. Chưa triển khai worker nhắc hoặc AI đã đối chiếu.
 - Giới hạn Node nhánh 22 trong package/lockfile để Vercel không tự chọn nhánh mới ngoài bản đã kiểm tra; Render NODE_VERSION 22.18.0 theo môi trường thử. Không đổi dependency version. Mã nguồn Vercel không có Git checkout có thể lấy SHA từ System Environment Variables, dirty để null, không tự tuyên bố checkout sạch.
 - Trình tự vận hành Supabase (tám migration + OTP/SMTP) → Render → Vercel → quay lại APP_ORIGINS/Site URL. Khóa riêng chỉ nhập Dashboard, không đưa chat/Git/browser. Ghi rõ SMTP mặc định giới hạn người nhận, Render Free có ngủ và chưa có thử điện thoại/cloud; hướng dẫn chi tiết tại DEPLOY_VERCEL_RENDER_SUPABASE.
+
+## DEC-022 — Sửa DB thành Neon, giữ Vercel và Render
+
+- Ngày 2026-09-10, người dùng đính chính “nhầm tôi dùng db neon” trong lúc yêu cầu hướng dẫn deploy từ đầu. Vercel frontend + Render backend được giữ; Neon PostgreSQL thay lựa chọn Supabase DB của DEC-021. Chưa nhận tên/URL project được tạo, chưa triển khai cloud.
+- DOC-002 cập nhật hướng dẫn và bàn giao; DATA-003 chuyển implementation trước khi hoàn tất DEPLOY-002. Code còn gọi Supabase Auth/PostgREST/RPC, các migration phụ thuộc auth.users/auth.uid và role Supabase. Không thể chuyển bằng đổi connection string; không áp nguyên migration cũ vào Neon.
+- Giả định triển khai để tiến hành phần độc lập: hướng đến ba nền tảng đã chọn, không yêu cầu tạo Supabase hosted riêng cho Auth. Ưu tiên đánh giá Neon Auth (Managed Better Auth, beta tại thời điểm tra cứu) để giữ email OTP; đây là lựa chọn kỹ thuật đề xuất, không phải yêu cầu Auth đã được người dùng xác nhận hay chức năng hoàn thành. Chốt SDK/session/JWT/email sau kiểm tra tương thích trong DATA-003; không tự đổi sang mật khẩu hoặc viết Auth từ đầu.
+- Luồng dữ liệu đích: browser → Vercel → Render → Neon. Render xác thực chủ trước truy cập DB; kết nối ứng dụng quyền giới hạn, migration có quyền riêng, không lấy ID chủ từ payload làm căn cứ cấp quyền. Bảo toàn giao dịch CAS/receipt/outbox, hạn mức AI và kiểm tra chéo hai tài khoản. Không đưa chuỗi PostgreSQL vào VITE, không dựng auth.uid giả hoặc tắt quyền để migration chạy.
+- Giữ kho local, schema StudyState v3/đọc 1/2/3, ID nội dung, backup và dữ liệu Supabase cũ trong lúc chuyển. ID Auth có thể khác; không tự ghép dữ liệu theo email hoặc nhập khách. Chưa xác minh có dữ liệu cloud cũ, không mặc định được phép xóa/reset.
+- Hướng dẫn mới tại [DEPLOY_VERCEL_RENDER_NEON.md](DEPLOY_VERCEL_RENDER_NEON.md). Có thể tạo project Neon/kiểm tra SELECT trước khi sửa app. render.yaml/start:backend/build:vercel/.env.example vẫn là cấu hình Supabase; chưa hướng dẫn nhập env mới như thể code đã đọc được. Bản release khách độc lập không đổi. Giữ AI tắt/ngân sách 0, worker nhắc production là phần chưa có.
+- Nguồn đã đối chiếu: [Neon connection](https://neon.com/docs/connect/connect-from-any-app), [Neon Auth](https://neon.com/docs/auth/overview), [React SDK](https://neon.com/docs/auth/quick-start/react), [Email OTP](https://neon.com/docs/auth/guides/plugins/email-otp). Kiểm tra lại phiên bản/thực tế dịch vụ lúc viết adapter; không áp hướng dẫn Stack Auth cũ như bản Managed Better Auth hiện tại.
 
 ## Các giả định/chọn lựa còn mở
 
@@ -189,7 +200,7 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 | OPEN-002 | Academic hay General Training | Không tự điền loại thi; nền tảng dùng chung | Onboarding và trước xây học liệu luyện thi |
 | OPEN-003 | Đầu vào, thời gian, ngày thi, điểm tối thiểu từng kỹ năng | Đã có form thời gian/ngày mục tiêu và tự nhận xét; chưa có đánh giá đầu vào hoặc yêu cầu band từng kỹ năng | Trước kế hoạch luyện thi cá nhân |
 | OPEN-004 | Nhà cung cấp và ngân sách AI | Chưa chọn, không giả định có API key | AI-001 |
-| OPEN-005 | Project hosting, Supabase, tên miền | Đã chọn Vercel/Render/Supabase; người dùng chưa tạo project. Có cấu hình và hướng dẫn từ đầu; chưa có URL/SMTP/cloud thật | DEPLOY-002, ghi tên/URL công khai khi người dùng tạo xong |
+| OPEN-005 | Project hosting, Neon, tên miền và Auth | Đã chọn Vercel/Render/Neon; chưa nhận project/URL. Code vẫn Supabase; ưu tiên đánh giá Neon Auth giữ OTP, chưa tích hợp | DATA-003 rồi DEPLOY-002; ghi tên/URL công khai khi tạo xong, secret giữ riêng |
 | OPEN-006 | Đánh giá lại thuật toán lịch ôn | Đã có lịch khởi đầu DEC-009; cần hiệu chỉnh theo dữ liệu | Sau thử nghiệm sử dụng và trước mở rộng |
 | OPEN-007 | Thời gian lưu audio và bài cá nhân trên cloud | Chưa chốt, chưa thu thập dữ liệu thật | Trước upload dữ liệu thật và AI-002 |
 | OPEN-008 | Người kiểm duyệt/giáo viên đối chiếu bài | Chưa bố trí | Trước phê duyệt học liệu beta và đánh giá AI |

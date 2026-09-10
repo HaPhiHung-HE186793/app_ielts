@@ -1,6 +1,6 @@
 # Kiến trúc dự kiến
 
-Ngày cập nhật: 2026-09-07. Frontend, luồng học local, PWA/offline, Supabase Auth/RLS, đồng bộ và nhắc học Web Push đã triển khai/kiểm tra local. Nền tảng API/giao diện AI đã có, chưa gọi/đối chiếu provider thật; cloud hosted chưa triển khai. Các quyết định nằm trong [DECISIONS.md](DECISIONS.md).
+Ngày cập nhật: 2026-09-10. **Đích triển khai mới là Vercel + Render + Neon** theo DEC-022; DATA-003 chưa chuyển code. Frontend, luồng học local, PWA/offline, Supabase Auth/RLS, đồng bộ và nhắc học Web Push đã triển khai/kiểm tra local. Nền tảng API/giao diện AI đã có, chưa gọi/đối chiếu provider thật; cloud hosted chưa triển khai. Phần “Hiện có trong code” mô tả hiện trạng, không phải xác nhận đã dùng Neon. Các quyết định nằm trong [DECISIONS.md](DECISIONS.md).
 
 ## Hiện có trong code
 
@@ -36,14 +36,16 @@ Các lệnh và phạm vi kiểm tra nằm trong [TESTING.md](TESTING.md). Đọ
 | Giao diện | React + TypeScript + Vite | Xây web app tương tác, ưu tiên màn hình điện thoại |
 | Điều hướng | Các trang Hôm nay, Khám phá, Luyện tập, Ôn lại, Tiến bộ | Cho phép mở trực tiếp và tiếp tục bài học |
 | Dữ liệu local | IndexedDB khi cần lưu bài, lượt làm và tài nguyên offline | Giữ tiến độ giữa các lần mở; không được xem là bản sao lưu đám mây |
-| Tài khoản/backend | Supabase Auth, PostgreSQL, Storage | Đồng bộ tiến độ và quản lý dữ liệu riêng của người học |
+| Tài khoản/backend | Đích mới: Render + Neon PostgreSQL; ưu tiên đánh giá Neon Auth trong DATA-003 | Chuyển từ Supabase hiện có, giữ đăng nhập và quyền sở hữu tiến độ |
 | AI | Dịch vụ phía máy chủ, provider chọn sau thử nghiệm | Quản lý khóa bí mật, ngân sách, phản hồi và audio |
 | Cài lên màn hình chính | Manifest/icons/standalone và service worker | Mở app với gói bốn tuần đã tải; cần kiểm tra thiết bị thật trước phát hành |
 | App Store/Google Play | Capacitor ở giai đoạn sau | Tái sử dụng ứng dụng web, bổ sung tích hợp và quy trình phát hành riêng |
 
-Phiên bản đã chọn nằm trong `package.json` và lockfile: React 19, Vite 8, TypeScript 5.9; CSS trực tiếp và Lucide, không có bộ UI bên ngoài. Điều hướng hash và lịch ôn khởi đầu đã triển khai. Nhà cung cấp AI và nơi deploy chưa chốt. Dùng npm cùng lockfile.
+Phiên bản đã chọn nằm trong `package.json` và lockfile: React 19, Vite 8, TypeScript 5.9; CSS trực tiếp và Lucide, không có bộ UI bên ngoài. Điều hướng hash và lịch ôn khởi đầu đã triển khai. Nhà cung cấp AI chưa chốt; nơi deploy đã chọn Vercel/Render/Neon, chưa có project được xác minh. Dùng npm cùng lockfile.
 
 ## 2. Phân chia trách nhiệm
+
+Luồng code đang chạy local (Supabase); luồng đích Neon được tách rõ ở mục 10.
 
 ```text
 Trình duyệt / PWA
@@ -153,16 +155,20 @@ Chỉ ghi các môi trường và lệnh thực sự đã kiểm tra. Điều ki
 
 App đặt ở root origin, route hash. Preview 4176 đọc artifact đã verify, áp header cùng nguồn với `_headers`, không phục vụ file ngoài bản kê hoặc proxy API. Đây vẫn là loopback HTTP; chưa kiểm tra deployment/CDN/HTTPS thật. Giữ origin và khả năng đọc dữ liệu khi update/rollback. Chi tiết, giới hạn account/API/SMTP, hướng dẫn Pages và checklist thiết bị ở [DEPLOYMENT.md](DEPLOYMENT.md), DEC-020.
 
-## 10. Vercel/Render/Supabase (DEPLOY-002 đang triển khai)
+## 10. Vercel/Render/Neon — đích mới, cần DATA-003
 
-Theo lựa chọn người dùng, Vercel phục vụ static PWA và proxy /api/ai/status, /api/ai/feedback, /api/healthz sang Render. Browser vẫn dùng Supabase Auth/RLS/RPC trực tiếp cho tài khoản/sync. scripts/release/vercel.js tái dùng createRelease để tạo Build Output API v3, header/CSP theo URL và chỉ copy file public; không publish _headers/metadata. Framework Other, không Output Directory override. Khóa máy chủ không đi qua cấu hình browser.
+Người dùng sửa lựa chọn DB từ Supabase sang Neon ngày 2026-09-10. Luồng đích: browser/PWA trên Vercel → API ứng dụng trên Render → Neon PostgreSQL. Render xác thực người dùng trước mọi thao tác dữ liệu cá nhân; DATABASE_URL chỉ nằm ở máy chủ. Ưu tiên đánh giá Neon Auth (Managed Better Auth, hiện beta) để giữ email OTP, không tự viết hệ thống mật khẩu. SDK/session/JWT, gửi email và phân quyền cần được kiểm tra trong DATA-003 trước khi chốt tích hợp.
 
-Render dùng server/production.ts + deployment-config.ts: env hosted/secret, origins HTTPS chính xác, PORT/0.0.0.0, healthz và cấu hình/purge budget DB. AI mặc định tắt/0, không đổi khoản đã chi khi restart. Mới chuẩn bị entrypoint và kiểm tra local; chưa vận hành cloud hoặc worker nhắc. Node thống nhất nhánh 22. Chi tiết vận hành ở [DEPLOY_VERCEL_RENDER_SUPABASE.md](DEPLOY_VERCEL_RENDER_SUPABASE.md), DEC-021.
+**Code hiện có vẫn là DEC-021:** Vercel chỉ proxy /api/ai/status, /api/ai/feedback, /api/healthz; browser gọi Supabase Auth/RLS/RPC trực tiếp. Build vẫn yêu cầu VITE_SUPABASE_URL/publishable key; server/production.ts vẫn dùng SUPABASE_URL/secret và Supabase RPC. render.yaml chưa nhận DATABASE_URL. Không thể điền URL Neon vào các biến cũ để deploy.
+
+DATA-003 chuyển migration/auth identity, profile/snapshot/commit/nhắc/budget và adapter API; mở rộng proxy/CSP, kiểm tra session đổi chủ/offline, giao dịch chống gửi trùng và quyền bằng hai tài khoản. Giữ StudyState v3, đọc bản sao 1/2/3 và dữ liệu cũ; không tạo auth.users/auth.uid giả để bỏ qua quyền. AI vẫn tắt/0. Chưa có worker nhắc production. Hướng dẫn thiết lập Neon và bảng phần cần sửa ở [DEPLOY_VERCEL_RENDER_NEON.md](DEPLOY_VERCEL_RENDER_NEON.md).
 
 ## 11. Tham khảo triển khai
 
 - [Vite](https://vite.dev/guide/)
 - [Supabase](https://supabase.com/docs)
+- [Neon PostgreSQL](https://neon.com/docs/connect/connect-from-any-app)
+- [Neon Auth](https://neon.com/docs/auth/overview)
 - [PWA installation](https://web.dev/learn/pwa/installation?hl=en)
 - [WebKit: Web Push cho Home Screen web apps](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/)
 - [Capacitor](https://capacitorjs.com/docs)

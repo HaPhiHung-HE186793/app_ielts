@@ -14,9 +14,9 @@ Mục tiêu học tập tham khảo là IELTS 6.5 trong sáu tháng. Đây là m
 - Hoàn thành mốc 1 local, PWA-001/002, DATA-001/002: đăng nhập, kho riêng, đồng bộ có lựa chọn, chống gửi trùng và xử lý xung đột. Đã kiểm tra hai phiên trình duyệt độc lập trên Supabase Docker local.
 - Có gói **57 file nghe + JSON học liệu**, khoảng **8,92 MB**, tải trước để mở lại và học offline; quản lý dung lượng, thử lại và xóa tải xuống riêng với tiến độ.
 - NOTIFY-001: nhắc học tự nguyện theo thiết bị, múi giờ/ngày/giờ yên lặng, dời và tắt; Web Push thật đã nhận trong Chrome thử nghiệm khi đóng các trang app. Chưa xác minh điện thoại thật hoặc màn hình OS.
-- **AI-001 đang thực hiện**: API có xác thực/hạn mức/chống gọi lặp và gợi ý tùy chọn ở câu tự viết cuối bài. AI thật mặc định tắt, chưa có khóa/ngân sách và kết quả đối chiếu; chưa đóng task. Chưa có Supabase hosted hoặc triển khai công khai.
+- **AI-001 đang thực hiện**: API có xác thực/hạn mức/chống gọi lặp và gợi ý tùy chọn ở câu tự viết cuối bài. AI thật mặc định tắt, chưa có khóa/ngân sách và kết quả đối chiếu; chưa đóng task. Chưa có backend hosted hoặc triển khai công khai.
 - Hôm nay có nhịp **bình thường/mệt/khó quá/quay lại sau nghỉ**, chọn bài theo kiến thức cần trước, kết quả còn cần hỗ trợ và sở thích. Có lý do từng bài; nhịp nhẹ giới hạn bài ôn, giữ bài dở và đồng bộ lựa chọn của phiên. Xem [cách chọn phiên](docs/ADAPTATION.md).
-- **DEPLOY-002 đang triển khai theo lựa chọn Vercel + Render + Supabase.** Đã có cấu hình build/frontend/proxy, entrypoint backend và [hướng dẫn từ đầu](docs/DEPLOY_VERCEL_RENDER_SUPABASE.md). Người dùng chưa tạo project; chưa có URL public, hosted/SMTP hoặc kiểm tra cloud thật. Bản đóng gói độc lập DEPLOY-001 vẫn dùng được.
+- **Hướng deploy đã đổi thành Vercel + Render + Neon ngày 2026-09-10.** Có [hướng dẫn tạo Neon từ đầu và kế hoạch chuyển đổi](docs/DEPLOY_VERCEL_RENDER_NEON.md). Code/build hiện vẫn phụ thuộc Supabase; **DATA-003 là task tiếp theo** để chuyển Auth/DB/API, rồi hoàn tất DEPLOY-002 trên host thật. Chưa có thông tin project được tạo hoặc URL public. Bản khách độc lập DEPLOY-001 vẫn dùng được.
 - Trạng thái chi tiết và bước tiếp theo luôn được cập nhật tại [docs/STATUS.md](docs/STATUS.md).
 
 ## Bắt đầu hoặc tiếp tục phát triển

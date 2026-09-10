@@ -28,7 +28,7 @@ Nếu thiếu thông tin không cản trở công việc, ghi giả định tron
 
 ## Ràng buộc kỹ thuật
 
-- Hướng mặc định: React + TypeScript + Vite, PWA; Supabase cho dữ liệu/tài khoản khi đến giai đoạn backend.
+- Hướng hiện tại theo người dùng (2026-09-10): React + TypeScript + Vite, PWA; Vercel frontend, Render backend, Neon PostgreSQL. Code Auth/DB còn dùng Supabase; chuyển theo DATA-003 và DEC-022, không coi đổi tài liệu/env là đã chuyển backend.
 - Chọn phiên bản thư viện lúc thực hiện task, kiểm tra tương thích và commit lockfile. Không suy đoán rằng công cụ đã được cài.
 - API key bí mật và khóa dịch vụ chỉ ở máy chủ. Biến `VITE_*` nằm trong mã phía trình duyệt và không được dùng để giữ bí mật.
 - Không commit `.env`, token, bản ghi âm cá nhân hoặc dữ liệu học viên thực. `.env.example` chỉ chứa placeholder và cấu hình công khai phù hợp.

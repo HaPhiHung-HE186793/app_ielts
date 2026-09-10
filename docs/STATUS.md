@@ -4,16 +4,12 @@ Cập nhật 2026-09-10, Asia/Saigon.
 
 ## Đang ở đâu
 
-**DATA-003 DONE phần code/local. Tiếp theo DEPLOY-002 IN_PROGRESS: deploy Vercel frontend + Render backend + Neon PostgreSQL/Managed Auth và kiểm tra cloud thật.** Không còn cần chuyển code từ đầu hoặc lặp hướng dẫn “chưa có adapter Neon”.
+**DATA-003 DONE phần code/local. DEPLOY-002 IN_PROGRESS (Frontend Vercel đã LIVE tại `https://app-ielts-two.vercel.app`, Neon Auth Trusted Domains đã cấu hình):** Tiếp tục kiểm tra kết nối Render backend + Neon PostgreSQL/Managed Auth và đồng bộ cloud thật.
 
-- Neon production/neondb, project đang hiển thị `moi_ngay_runtime`, endpoint Connect gần nhất ep-dawn-dream. Log Render mới đã dùng formatter từ b7e2f10 nhưng trả **NEON_DB_UNKNOWN**, chưa Live. Kết quả SQL người dùng gửi: schema_table trống, runtime_can_login=t, app_roles={moi_ngay_runtime}, runtime_grants={neon_superuser}. Thiết lập ứng dụng còn thiếu và runtime có quyền quản trị thừa; chưa khẳng định đây là nguyên nhân duy nhất của UNKNOWN hoặc Render đã trỏ đúng endpoint này.
-- Auth Base URL công khai đã thấy trong cấu hình Render: `https://ep-long-cell-aztbwvj6.neonauth.c-3.ap-southeast-1.aws.neon.tech/neondb/auth`. Chưa kiểm tra Auth/JWKS/email thật. Ảnh Environment trước đó hiển thị mật khẩu owner: đã hướng dẫn reset trong Neon, không chép/lưu/gọi bằng mật khẩu đó; chưa có xác nhận đã đổi.
-- Endpoint ep-dawn-dream khác ep-long-cell trong Auth URL đã nhận trước đó; cần đối chiếu project/branch trước khi thử đăng nhập. Đã nhận kết quả check_setup qua ảnh, không còn chờ query ban đầu. Editor đang có bốn kết quả gồm CREATE/INSERT dữ liệu mẫu; cần mở truy vấn trống để chạy riêng toàn bộ migration. Chưa có kết quả chạy 001_initial.sql thành công trên cloud.
-- Đã sửa startup để log mã `NEON_DB_*` và hướng xử lý cố định theo SQLSTATE/Node errors, không chép message/detail/stack/credential gốc. Có `db/neon/check_setup.sql` chỉ đọc, trả một dòng catalog role/schema/grants. Không nới quyền, đổi kết nối hay tắt TLS; đây là cải thiện chẩn đoán, chưa phải kết nối cloud đã được sửa.
-- Đã có migration `db/neon/001_initial.sql`, adapter Auth REST/JWT, API profile/sync/nhắc, role/RLS/CAS và startup Render. PostgreSQL local thật và browser với Auth fixture đã kiểm tra; chưa gọi Neon Auth/SQL/email cloud.
-- `start:backend` chạy Neon; `build:vercel` dùng VITE_NEON_AUTH_URL + RENDER_API_URL và proxy Auth/data/AI/health. DATABASE_URL chỉ Render, role moi_ngay_runtime. APP_ORIGINS và Neon Trusted Domains điền sau URL Vercel.
-- Giữ 28 bài + bốn kiểm tra, 57 WAV, kho khách/tài khoản, StudyState v3 đọc 1/2/3, ID/backup/outbox. Không ghép tài khoản bằng email. Supabase local/SQL/SDK giữ cho regression và dữ liệu cũ; đường startup cũ là start:backend:supabase.
-- AI-001 vẫn IN_PROGRESS, Neon luôn AI tắt/ngân sách 0. Port SQL nhắc/budget không đồng nghĩa đã có worker/provider production. Chưa có beta hoàn chỉnh, điện thoại thật hoặc học liệu giáo viên duyệt.
+- Frontend đã triển khai thành công trên Vercel: `https://app-ielts-two.vercel.app`, giao diện tiếng Việt, tải bài học "Bắt đầu bằng một lời chào" mượt mà.
+- Neon Auth: Đã bật Auth, lưu **Trusted Domains** `https://app-ielts-two.vercel.app`.
+- Render backend (`moi-ngay-api`): Cập nhật `APP_ORIGINS=https://app-ielts-two.vercel.app`, kiểm tra `/healthz` và `/readyz`.
+
 
 ## Bước người dùng làm ngay
 

@@ -48,12 +48,12 @@ export function isolatedViteConfig(config) {
       'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(config.publishableKey),
       'import.meta.env.VITE_NEON_AUTH_URL': JSON.stringify(config.authUrl ?? ''),
       'import.meta.env.VITE_AI_ENABLED': JSON.stringify('false'),
+      'import.meta.env.VITE_SENTRY_DSN': JSON.stringify(config.sentryDsn ?? ''),
     },
   }
 }
 
 export function headerRules(config) {
-  const connect = ["'self'", config.supabaseUrl].filter(Boolean).join(' ')
   return [
     [
       '/*',
@@ -61,7 +61,19 @@ export function headerRules(config) {
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Content-Security-Policy': `default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' blob:; connect-src ${connect}; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'`,
+        'Content-Security-Policy': [
+          "default-src 'self'",
+          "script-src 'self'",
+          "style-src 'self' 'unsafe-inline'",
+          "img-src 'self' data:",
+          "media-src 'self' blob:",
+          // sentryIngestUrl là URL cụ thể (không phải wildcard), chỉ có khi DSN được cấu hình
+          `connect-src 'self'${config.supabaseUrl ? ' ' + config.supabaseUrl : ''}${config.sentryIngestUrl ? ' ' + config.sentryIngestUrl : ''}`,
+          "object-src 'none'",
+          "base-uri 'none'",
+          "frame-ancestors 'none'",
+          "form-action 'self'",
+        ].join('; '),
       },
     ],
     ...[

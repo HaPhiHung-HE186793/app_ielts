@@ -8,7 +8,7 @@ import { isolatedViteConfig, releaseConfig, renderHeaders } from './config.js'
 import { inventory, verifyRelease } from './artifact.js'
 import { releaseSource } from './source.js'
 
-export async function createRelease(input, { aiProxy = false } = {}) {
+export async function createRelease(input, { aiProxy = false, sentryDsn = '' } = {}) {
   process.env.NODE_ENV = 'production'
   const config = releaseConfig(input)
   if (aiProxy && config.mode === 'guest') throw new Error('API gia sư cần chế độ tài khoản.')
@@ -19,7 +19,7 @@ export async function createRelease(input, { aiProxy = false } = {}) {
     resolve(root, `${new Date().toISOString().replaceAll(/[:.]/g, '-')}-${revision.slice(0, 8)}-`),
   )
   const site = resolve(directory, 'site')
-  const vite = isolatedViteConfig(config)
+  const vite = isolatedViteConfig({ ...config, sentryDsn })
   if (aiProxy) vite.define['import.meta.env.VITE_AI_ENABLED'] = JSON.stringify('true')
   await build({
     ...vite,

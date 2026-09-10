@@ -468,3 +468,12 @@ Người dùng yêu cầu tiếp tục. Đọc bàn giao và code tại `1dffddb
 - Đối chiếu Neon roles qua tài liệu Markdown chính thức và PostgreSQL REVOKE. Role tạo qua Console/API/CLI được membership quản trị; app cần quyền riêng. Chưa thực thi REVOKE trên Neon thật; nếu thiếu quyền/phụ thuộc thì lấy lỗi để xử lý, không dùng CASCADE hay owner cho Render.
 - Chỉ cập nhật hướng dẫn/README/STATUS/TASKS/DECISIONS, kiểm tra liên kết/định dạng/diff trước commit; không sửa runtime/migration hoặc chạy lại tests. Kết quả 176 unit/PG/browser thuộc b7e2f10 trước đó. Không truy cập cloud bằng credential trong ảnh, không sửa env hoặc dùng dữ liệu cá nhân. Giữ các file IDE ngoài commit, commit/push theo ủy quyền và xác minh remote.
 - DEPLOY-002 vẫn IN_PROGRESS: chờ kết quả chạy migration và kiểm tra grants/version, sau đó log Render/readyz. Nếu SQL đúng vẫn UNKNOWN, xử lý kết nối riêng. Auth URL khác endpoint, Vercel/origins/OTP/sync và thiết bị thật còn chưa xác minh.
+
+## 2026-09-10 — DEPLOY-002: Lập kế hoạch và xác minh local cho triển khai Cloud (Neon DB + Render Backend + Vercel Frontend)
+
+- Người dùng yêu cầu hướng dẫn và thực hiện triển khai hạ tầng Cloud (Neon DB, Render backend, Vercel frontend).
+- Đã lập Kế hoạch triển khai chi tiết (`implementation_plan.md`) bao gồm sơ đồ các bước thiết lập Neon DB/Auth, Render Web Service (`moi-ngay-api`), Vercel Output API v3 (`npm run build:vercel`), cấu hình biến môi trường và khớp domain CORS/Trusted Domains. Kế hoạch đã được người dùng duyệt.
+- Đã chạy kiểm tra local: `npm run typecheck` đạt 0 lỗi; `npm run test` đạt 176/176 unit tests; `npm run build:vercel` thành công với các biến môi trường giả lập.
+- Tạo tài liệu kết quả xác minh (`walkthrough.md`) tổng hợp kết quả kiểm tra và hướng dẫn chi tiết từng bước trên các Cloud Console.
+- DEPLOY-002 tiếp tục IN_PROGRESS: Chờ người dùng hoàn tất cấu hình trên các Console (Neon, Render, Vercel), chạy migration `001_initial.sql`, thu hồi quyền admin của runtime, redeploy backend và kiểm tra healthz/readyz/đồng bộ thực tế trên domain công khai.
+

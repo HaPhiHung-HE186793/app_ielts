@@ -1,6 +1,10 @@
 # Danh sách task phát triển
 
-Cập nhật: 2026-09-10. Thực hiện theo thứ tự ưu tiên và phụ thuộc, không coi các tính năng dự kiến là đã có. Trạng thái tổng quan ở [STATUS.md](STATUS.md).
+Cập nhật: 2026-09-11. Thực hiện theo thứ tự ưu tiên và phụ thuộc, không coi các tính năng dự kiến là đã có. Trạng thái tổng quan ở [STATUS.md](STATUS.md).
+
+## Kế hoạch phát triển đến thương mại hóa
+
+DOC-003 `IN_PROGRESS`: lập file task tổng thể theo yêu cầu ngày 2026-09-11, từ nghiên cứu khách hàng đến dùng hằng ngày, phát hành và vận hành thương mại. Tiêu chí: đối chiếu code, giữ ID/task cũ, có trách nhiệm, ưu tiên, phụ thuộc, đầu ra, nghiệm thu, các cổng phát hành và bước tiếp theo; kiểm tra liên kết, tính nhất quán và diff. Không thay đổi trạng thái triển khai chỉ từ kế hoạch.
 
 ## Quy ước
 

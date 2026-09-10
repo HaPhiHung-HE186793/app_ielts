@@ -200,7 +200,7 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 | OPEN-002 | Academic hay General Training | Không tự điền loại thi; nền tảng dùng chung | Onboarding và trước xây học liệu luyện thi |
 | OPEN-003 | Đầu vào, thời gian, ngày thi, điểm tối thiểu từng kỹ năng | Đã có form thời gian/ngày mục tiêu và tự nhận xét; chưa có đánh giá đầu vào hoặc yêu cầu band từng kỹ năng | Trước kế hoạch luyện thi cá nhân |
 | OPEN-004 | Nhà cung cấp và ngân sách AI | Chưa chọn, không giả định có API key | AI-001 |
-| OPEN-005 | Project hosting, Neon, tên miền và Auth | Đã chọn Vercel/Render/Neon; chưa nhận project/URL. Code vẫn Supabase; ưu tiên đánh giá Neon Auth giữ OTP, chưa tích hợp | DATA-003 rồi DEPLOY-002; ghi tên/URL công khai khi tạo xong, secret giữ riêng |
+| OPEN-005 | Project hosting, Neon, tên miền và Auth | Neon đã tạo theo ảnh: production/neondb, Singapore, pooling bật; chưa có tên/ID project/Auth URL, Render/Vercel chưa tạo. Code vẫn Supabase; ưu tiên đánh giá Neon Auth giữ OTP, chưa tích hợp | DATA-003 rồi DEPLOY-002; ghi URL ứng dụng/cấu hình công khai khi có, secret giữ riêng |
 | OPEN-006 | Đánh giá lại thuật toán lịch ôn | Đã có lịch khởi đầu DEC-009; cần hiệu chỉnh theo dữ liệu | Sau thử nghiệm sử dụng và trước mở rộng |
 | OPEN-007 | Thời gian lưu audio và bài cá nhân trên cloud | Chưa chốt, chưa thu thập dữ liệu thật | Trước upload dữ liệu thật và AI-002 |
 | OPEN-008 | Người kiểm duyệt/giáo viên đối chiếu bài | Chưa bố trí | Trước phê duyệt học liệu beta và đánh giá AI |

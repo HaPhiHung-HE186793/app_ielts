@@ -418,3 +418,11 @@ Người dùng yêu cầu tiếp tục. Đọc bàn giao và code tại `1dffddb
 - Ghi DEC-022, cập nhật AGENTS/README/ARCHITECTURE/DEPLOYMENT/BACKEND; hướng Supabase cũ có thông báo thay thế. DATA-003 READY đứng trước hoàn tất DEPLOY-002; giữ các task Supabase đã DONE theo đúng phạm vi local lịch sử. STATUS thay ảnh chụp hiện tại, không xóa lịch sử session trước.
 - Kiểm tra tài liệu/liên kết/task/Unicode và diff đạt. Không đổi runtime/dependency nên không chạy lại unit/E2E/build; không mô tả các test Supabase cũ thành test Neon. Không tạo tài khoản/project, gửi email, in connection string hoặc sửa dữ liệu/server đang chạy.
 - DOC-002 DONE phần hướng dẫn/bàn giao, DEPLOY-002 vẫn IN_PROGRESS. Bước người dùng làm ngay: tạo Neon và gửi tên project/region công khai; bước code tiếp theo DATA-003 bắt đầu từ Auth/identity và migration PostgreSQL, giữ schema/backup/outbox/quyền. Commit/push tài liệu main theo ủy quyền, xác minh remote trong kết quả bàn giao.
+
+## 2026-09-10 — DEPLOY-002: người dùng đã tạo Neon, hỏi bước hosting tiếp theo
+
+- Người dùng gửi ảnh Connect Neon: production/default, neondb, neondb_owner, Primary Active, pooling bật, AWS ap-southeast-1 qua hostname. Mật khẩu được che; không lưu ảnh/connection string hoặc suy đoán PostgreSQL version/tên project. Người dùng xác nhận chưa tạo Render/Vercel.
+- Đối chiếu code: production validator/Blueprint vẫn yêu cầu Supabase URL/secret, build Vercel vẫn yêu cầu publishable key Supabase. Hướng dẫn chuẩn bị tài khoản GitHub/Render/Vercel và form repo, dừng trước nút tạo service/deploy vì code chưa chạy Neon. Không đưa lệnh/env tương lai như cấu hình đã hoạt động.
+- Bổ sung mục 5a hướng dẫn: thông tin Render cố định, Vercel import repo, Neon Auth Base URL công khai theo hướng Auth đề xuất. Xác minh bước UI bằng tài liệu chính thức Render/Vercel/Neon; không gửi email hoặc tạo dịch vụ thay người dùng.
+- Cập nhật README/STATUS/TASKS để session sau không yêu cầu tạo Neon lại. DATA-003 vẫn READY vì đây là lượt hướng dẫn, chưa viết migration/adapter hoặc đổi runtime. DEPLOY-002 IN_PROGRESS, chưa có service/URL ứng dụng thật; kết nối DB/OTP/hosted chưa kiểm tra.
+- Kiểm tra tài liệu/liên kết/task và diff trước commit/push theo ủy quyền. Không chạy lại test code vì chỉ đổi tài liệu; không ghi ảnh Active là bằng chứng app đã kết nối. Bước code tiếp theo DATA-003; việc chuẩn bị tài khoản có thể làm độc lập.

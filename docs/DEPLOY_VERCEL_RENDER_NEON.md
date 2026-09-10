@@ -1,6 +1,6 @@
 # Từ đầu: Neon → Render → Vercel
 
-Cập nhật 2026-09-10. Người dùng sửa lựa chọn DB thành **Neon**, giữ Render backend và Vercel frontend. Chưa nhận thông tin project được tạo. **Có thể tạo Neon theo mục 2–3 ngay; code hiện tại chưa kết nối Neon.** DATA-003 cần hoàn tất trước các bước deploy ứng dụng có tài khoản. Hướng Supabase cũ được thay bởi DEC-022.
+Cập nhật 2026-09-10. Người dùng đã tạo **Neon**: ảnh Connect cho thấy branch `production`, database `neondb`, AWS Singapore, pooling bật và mật khẩu được che; chưa tạo Render/Vercel. **Bước tiếp theo phía người dùng ở mục 5a; code hiện tại chưa kết nối Neon.** DATA-003 cần hoàn tất trước các bước deploy ứng dụng có tài khoản. Mục 2 giữ để tham khảo, không cần tạo lại DB. Hướng Supabase cũ được thay bởi DEC-022.
 
 ## 1. Ba dịch vụ và phần đăng nhập
 
@@ -74,8 +74,30 @@ Khi triển khai Neon Auth, vào **Auth → Enable Auth**, lấy Auth Base URL t
 5. Kiểm tra đăng nhập OTP, hồ sơ, sync giữa hai phiên, từ chối xem dữ liệu tài khoản khác, offline rồi nối lại, tải WAV và cập nhật worker. Thử cài/mở trên iPhone/Android thật; ghi phần chưa thử. Health 200 không thay thế các kiểm tra này.
 6. Ghi URL, region/branch, revision đã deploy và kết quả vào [STATUS.md](STATUS.md). Chỉ đóng DEPLOY-002 sau kiểm tra phạm vi thực tế. Giới hạn worker nhắc, AI và dữ liệu vẫn theo task riêng.
 
+## 5a. Đã có Neon, chưa có Render/Vercel: làm gì ngay?
+
+Ảnh Connect xác nhận tài nguyên Neon đã được tạo; chưa xác nhận schema ứng dụng, Auth, PostgreSQL version hoặc kết nối từ Render. Giữ `production`/`neondb`; chưa cần tạo database khác hoặc reset mật khẩu. Role owner hiện có dành cho quản trị; quyền chạy app sẽ được cấu hình trong DATA-003.
+
+**Render:** mở [Dashboard](https://dashboard.render.com), đăng ký/đăng nhập bằng GitHub. Chọn **New → Web Service → Git Provider**, cấp quyền cho repository `HaPhiHung-HE186793/app_ielts`, rồi chọn repo. Ở form cấu hình có thể điền các thông tin cố định sau. [Hướng dẫn chính thức](https://render.com/docs/web-services).
+
+| Trường | Giá trị dự kiến |
+| --- | --- |
+| Name | `moi-ngay-api` |
+| Branch | `main` |
+| Region | `Singapore` |
+| Language/Runtime | `Node` |
+| Root Directory | Để trống, dùng gốc repo |
+
+Dừng trước **Create Web Service**: nút này bắt đầu build/deploy ngay. Chưa nhập lệnh/env của bản Supabase, chưa thêm DATABASE_URL vào một backend không đọc nó. Chưa có service hoặc URL backend chỉ vì đã mở form; các thông tin trên có thể phải điền lại khi quay lại sau DATA-003.
+
+**Vercel:** mở [Vercel](https://vercel.com), đăng ký/đăng nhập bằng GitHub, mở **Add New → Project** và chọn/import cùng repository. Có thể đến form cấu hình, nhưng dừng trước **Deploy**; `build:vercel` trong repo hiện còn yêu cầu biến Supabase. Chưa đưa chuỗi PostgreSQL vào Vercel. Nguồn: [Nhập repository trên Vercel](https://vercel.com/academy/production-monorepos/deploy-all-apps) (chỉ tham khảo thao tác import, không dùng cấu hình Next.js/monorepo của ví dụ).
+
+**Chuẩn bị đăng nhập trên Neon theo hướng đề xuất:** đóng hộp Connect, mở **Auth → Enable Auth → Configuration**, lấy **Auth Base URL** công khai. Đây là URL HTTP(S) cho đăng nhập, khác connection string `postgresql://` chứa mật khẩu. Có thể gửi Auth Base URL để cấu hình adapter; không gửi chuỗi DB, mã OTP hoặc mật khẩu. Neon Auth hiện beta; code chưa được tích hợp. [Quickstart React](https://neon.com/docs/auth/quick-start/react).
+
+Phần cần làm trong repository tiếp theo vẫn là DATA-003: chuyển Auth/DB/API và cấu hình build, kiểm tra rồi push bản chạy được với Neon. Sau đó mới áp migration Neon, tạo Render service với env đã kiểm tra, lấy URL backend và deploy Vercel. Việc đăng ký/kết nối GitHub ở trên không chứng minh ứng dụng đã online.
+
 ## 6. Điểm dừng hiện tại để tiếp tục đúng hướng
 
-- Hướng dịch vụ và hướng dẫn tạo Neon đã được ghi lại; chưa có DB/project cloud được xác minh, chưa có code Neon hoặc URL app public.
-- Người dùng có thể làm mục 2–3, rồi cung cấp **tên project và region**; giữ connection string riêng để cấu hình máy chủ khi cần.
+- Đã có Neon theo ảnh Connect của người dùng; chưa xác minh kết nối SQL từ app, schema hoặc Auth. Chưa có code Neon hoặc URL app public; Render/Vercel chưa tạo.
+- Người dùng làm mục 5a để chuẩn bị tài khoản/kết nối repo và Auth Base URL; giữ connection string riêng để cấu hình máy chủ khi cần. Không yêu cầu tạo Neon lại hoặc bấm deploy code còn phụ thuộc Supabase.
 - Công việc code tiếp theo là **DATA-003**, bắt đầu bằng adapter Auth/identity và migration PostgreSQL. Không tiếp tục tạo Supabase hosted theo tài liệu cũ; bản local Supabase vẫn dùng để tham chiếu kiểm tra trong lúc chuyển.

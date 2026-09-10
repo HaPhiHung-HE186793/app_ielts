@@ -6,14 +6,14 @@ Cập nhật: 2026-09-10, múi giờ Asia/Saigon.
 
 **Người dùng sửa DB thành Neon; hướng hiện tại là Vercel frontend + Render backend + Neon PostgreSQL.** DOC-002 DONE phần hướng dẫn/bàn giao. **DATA-003 READY là task code tiếp theo**; DEPLOY-002 vẫn IN_PROGRESS và phụ thuộc chuyển backend trước khi kiểm tra cloud.
 
-- Đã có [hướng dẫn tạo Neon từ đầu](DEPLOY_VERCEL_RENDER_NEON.md), bảng phần code cần chuyển và trình tự deploy tiếp theo. Người dùng trước đó nói chưa tạo project; chưa nhận thông tin tạo mới/URL sau đính chính.
+- Người dùng đã tạo Neon và gửi ảnh Connect: branch production (Default), database neondb, role neondb_owner, compute Primary Active, pooling bật; hostname cho thấy AWS ap-southeast-1 (Singapore). Mật khẩu trong ảnh được che. Chưa có tên/ID project hoặc Auth Base URL, chưa kiểm tra kết nối từ app/SQL. Render và Vercel chưa tạo theo xác nhận mới.
 - **Code hiện tại vẫn dùng Supabase** cho Auth email OTP, profile/sync/RLS/RPC, nhắc và budget. render.yaml/start:backend/build:vercel/.env.example vẫn yêu cầu Supabase; điền URL Neon vào biến cũ không dùng được. Chưa cài driver/SDK Neon, chưa có migration hoặc phiên đăng nhập Neon đã kiểm tra.
 - DEC-022 ghi hướng đích dữ liệu browser → Vercel → Render → Neon; ưu tiên đánh giá Neon Auth (Managed Better Auth, beta) để giữ OTP. Đây là đề xuất chưa tích hợp, cần kiểm tra SDK/session/token/email/quyền trong DATA-003.
 - Giữ bản học hiện có: 28 bài + bốn kiểm tra, 57 WAV, phiên thích ứng, bài dở/lịch ôn/bản sao/sync; StudyState v3 đọc 1/2/3. AI-001 IN_PROGRESS, AI mặc định tắt/ngân sách 0. Chưa có bản beta đầy đủ.
 
 ## Dùng hoặc chuẩn bị triển khai
 
-1. Người dùng có thể tạo Neon theo mục 2–3 của hướng dẫn mới: project moi-ngay (gợi ý), PostgreSQL 17, AWS Singapore, lấy thông tin Connect và kiểm tra SELECT trong SQL Editor. Ghi tên/region/branch/database công khai; connection string/password giữ riêng. Chưa chạy các thao tác này trong session.
+1. Neon đã được tạo theo ảnh; không yêu cầu tạo lại hoặc mặc định tên project là moi-ngay. PostgreSQL version chưa thấy trong ảnh. Người dùng có thể kiểm tra SELECT ở mục 3 và chuẩn bị tài khoản/kết nối repo Render/Vercel theo mục 5a của [hướng dẫn](DEPLOY_VERCEL_RENDER_NEON.md). Chưa bấm Create Web Service/Deploy với code Supabase hiện tại. Connection string/password giữ riêng.
 2. Không áp tám migration Supabase nguyên trạng lên Neon. Không tiếp tục hướng Supabase hosted của DEC-021; [tài liệu cũ](DEPLOY_VERCEL_RENDER_SUPABASE.md) được đánh dấu đã thay thế. BACKEND/SYNC/AI/NOTIFICATIONS vẫn mô tả code Supabase local để tham chiếu.
 3. Bản khách local vẫn dùng npm run release:build, npm run release:verify, npm run release:preview, địa chỉ http://127.0.0.1:4176/#/today. Auth local vẫn theo [BACKEND.md](BACKEND.md). Session này không khởi động/dừng server; các PID hoặc trạng thái DB từ session trước cần kiểm tra lại nếu dùng.
 4. Chưa có URL app public, DB Neon được kết nối, migration hosted, email production hoặc kiểm tra Render/Vercel/iPhone/Android thật. Cấu hình Vercel sinh trong .vercel/output từ kiểm tra trước chứa URL thử; không deploy bản prebuilt đó. Build lại bằng cấu hình thật sau DATA-003.

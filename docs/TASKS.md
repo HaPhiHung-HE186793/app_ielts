@@ -79,7 +79,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 2. Chuyển schema/RPC sang PostgreSQL có quyền theo chủ, role ứng dụng tách quản trị. Giữ khóa hàng, revision/receipt/idempotency, validation trạng thái, nhắc học và budget AI. Viết migration riêng; không áp nguyên SQL Supabase lên Neon, không reset DB cũ.
 3. Chuyển profile/sync/nhắc/API AI sang adapter Render; cập nhật env/config/startup/build Vercel/proxy/CSP. DATABASE_URL chỉ trên máy chủ. Giữ schema dữ liệu, backup, draft/outbox và bản khách; chứng minh đường chuyển dữ liệu cũ không ghi đè.
 4. Chạy lint/typecheck/build/test phù hợp và kiểm tra Auth/PostgreSQL thật: hai chủ, gửi lặp/đồng thời, mất response/reload, đổi chủ, token lỗi, AI tắt/hạn mức, cache không chứa dữ liệu riêng. Ghi rõ phần cần Neon hosted, email và thiết bị thật; không gọi fixture là cloud.
-5. Người dùng có thể tạo Neon/kiểm tra SELECT theo hướng dẫn trong khi phần code được chuyển. Khi DATA-003 hoàn tất, tiếp tục DEPLOY-002: migration đúng branch, Render rồi Vercel, env/origin/Auth và kiểm tra URL HTTPS thật. Các lệnh deployment cũ chưa dùng được với Neon.
+5. Người dùng đã tạo Neon: ảnh Connect xác nhận branch production, database neondb, AWS Singapore và pooling bật; chưa kiểm tra kết nối app hoặc Auth. Render/Vercel chưa tạo. Hướng dẫn chuẩn bị tài khoản/repo ở mục 5a tài liệu Neon. Khi DATA-003 hoàn tất, tiếp tục DEPLOY-002: migration đúng branch, Render rồi Vercel, env/origin/Auth và kiểm tra URL HTTPS thật. Các lệnh deployment cũ chưa dùng được với Neon.
 6. Cập nhật STATUS/TASKS/SESSION_LOG/README và hướng dẫn lệnh/env theo implementation, commit/push trong phạm vi đã cho phép. Không đóng DEPLOY-002 hoặc BETA-001 khi chỉ có build/docs; không tự bật AI trả phí.
 
 ## AI-001 đang chờ bước đối chiếu

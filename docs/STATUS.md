@@ -8,6 +8,7 @@ Cập nhật 2026-09-10, Asia/Saigon.
 
 - Neon production/default, neondb, AWS Singapore, pooling bật. Render service `app_ielts` đã được tạo: log 16:39–16:42 ngày 10/09 cho thấy build commit `18d4b56`/Node 22.18.0/npm ci thành công, startup bị chặn vì DATABASE_URL dùng `neondb_owner` thay vì `moi_ngay_runtime`. Chưa kết nối DB hoặc có service Live/domain production được xác minh.
 - Auth Base URL công khai đã thấy trong cấu hình Render: `https://ep-long-cell-aztbwvj6.neonauth.c-3.ap-southeast-1.aws.neon.tech/neondb/auth`. Chưa kiểm tra Auth/JWKS/email thật. Ảnh mới hiển thị mật khẩu owner: đã hướng dẫn reset trong Neon, không chép/lưu/gọi bằng mật khẩu đó; chưa có xác nhận đã đổi.
+- Ảnh Connect tiếp theo: dropdown Role chỉ hiện neondb_owner, hostname bắt đầu `ep-dawn-dream-…`, khác endpoint `ep-long-cell-…` trước đó; mật khẩu được che. Chưa biết người dùng đổi project/branch/compute hay chưa áp migration. Không suy ra role chắc chắn chưa tồn tại chỉ từ dropdown, không ghép DB endpoint mới với Auth URL cũ khi chưa kiểm tra cùng project/branch.
 - Đã có migration `db/neon/001_initial.sql`, adapter Auth REST/JWT, API profile/sync/nhắc, role/RLS/CAS và startup Render. PostgreSQL local thật và browser với Auth fixture đã kiểm tra; chưa gọi Neon Auth/SQL/email cloud.
 - `start:backend` chạy Neon; `build:vercel` dùng VITE_NEON_AUTH_URL + RENDER_API_URL và proxy Auth/data/AI/health. DATABASE_URL chỉ Render, role moi_ngay_runtime. APP_ORIGINS và Neon Trusted Domains điền sau URL Vercel.
 - Giữ 28 bài + bốn kiểm tra, 57 WAV, kho khách/tài khoản, StudyState v3 đọc 1/2/3, ID/backup/outbox. Không ghép tài khoản bằng email. Supabase local/SQL/SDK giữ cho regression và dữ liệu cũ; đường startup cũ là start:backend:supabase.
@@ -16,6 +17,7 @@ Cập nhật 2026-09-10, Asia/Saigon.
 ## Bước người dùng làm ngay
 
 1. Neon → branch production → Postgres database → Roles → reset mật khẩu `neondb_owner` vì ảnh đã hiển thị. Kiểm tra role `moi_ngay_runtime`/migration; đặt mật khẩu runtime riêng rồi Connect bằng đúng role này. Nếu chưa áp migration, dùng [hướng dẫn SQL](DEPLOY_VERCEL_RENDER_NEON.md); không đổi riêng username trong chuỗi owner.
+   Trước khi sửa kết nối: kiểm tra đang ở đúng project/branch dự định dùng. Đóng Connect → Postgres database → SQL Editor → production/neondb, chạy SELECT current_database/current_user, to_regclass('moi_ngay.schema_version') và EXISTS role runtime để phân biệt thiếu migration với dropdown/nhầm project. Chờ kết quả query không có bí mật, chưa có phép thử SQL cloud trong session.
 2. Render service hiện có → Environment → Edit → thay toàn bộ DATABASE_URL bằng connection string runtime pooled/TLS → Save and deploy. Build/start đã đúng; chưa cần sửa code. Chờ Live và thử healthz/readyz.
 3. Vercel chọn **Other**, build `npm run build:vercel`, hai env công khai; bỏ biến/integration Supabase cũ. Khi có domain, cập nhật APP_ORIGINS/Trusted Domains rồi thử OTP/sync thật.
 4. Chưa có quyền truy cập Dashboard để đổi mật khẩu hoặc env thay người dùng. Chỉ gửi URL công khai/log đã che bí mật để tiếp tục; không gửi lại mật khẩu/OTP.

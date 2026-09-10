@@ -6,6 +6,8 @@
 
 151 unit tại mốc DATA-003, gồm chữ ký/claims/cookie và vòng đời Auth muộn sau đổi chủ. Regression legacy chọn `npm run test:auth -- account.spec.ts sync.spec.ts`; giữ Supabase local cho các bài kiểm tra cũ. Cloud Neon/Render/Vercel và thiết bị thật phải ghi kết quả riêng trong DEPLOY-002, xem [NEON_BACKEND.md](NEON_BACKEND.md).
 
+Lượt chẩn đoán startup DEPLOY-002 tăng tổng lên **176 unit/19 file**: thêm 25 ca phân loại mã lỗi, cause/timeout và không đưa bí mật vào log. `test:neon` kiểm tra thêm lỗi thiếu bảng, thiếu grant và sai schema version trên PostgreSQL thật, chạy query chỉ đọc [check_setup.sql](../db/neon/check_setup.sql). Ba smoke test tiến trình Node với transport fixture xác nhận exit 1 và thông điệp an toàn cho lỗi mật khẩu/role/schema; không kết nối Neon cloud hoặc dùng mật khẩu trong ảnh. Lint/typecheck và toàn bộ `test:neon` đạt, gồm build và các luồng DB/HTTP/browser hiện có.
+
 ## Bản phát hành DEPLOY-001
 
 `npm run test:release` tạo artifact khách rồi chạy 38 ca với Chrome desktop và viewport 360px qua preview 4176. Gồm 34 ca tái sử dụng học/bản sao/thích ứng/offline và bốn ca riêng HTTP/cache/404/CSP/AI tắt. Test đổi worker phục vụ chính tài nguyên release trên origin thử riêng, không phụ thuộc `dist` cũ. Không chạy đồng thời hai bộ release hoặc tạo release khác khi bộ này đang dùng con trỏ latest.

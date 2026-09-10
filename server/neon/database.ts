@@ -54,7 +54,9 @@ export class NeonDatabase {
     return this.transaction('moi_ngay_api', null, async (client) => {
       const result = await client.query('SELECT version FROM moi_ngay.schema_version')
       if (result.rows.length !== 1 || result.rows[0].version !== 1)
-        throw new Error('Schema not ready')
+        throw Object.assign(new Error('Unexpected application schema version'), {
+          code: 'APP_SCHEMA_VERSION',
+        })
     })
   }
 }

@@ -10,6 +10,7 @@ import { generateKeyPair, exportJWK, createLocalJWKSet, SignJWT } from 'jose'
 import { chromium, expect } from '@playwright/test'
 import { preview } from 'vite'
 import { NeonDatabase } from '../server/neon/database.ts'
+import { databaseStartupMessage } from '../server/neon/startup-error.ts'
 import { executeData } from '../server/neon/data.ts'
 import { createNeonServer } from '../server/neon/http.ts'
 import { neonIdentity } from '../server/neon/identity.ts'
@@ -51,13 +52,28 @@ try {
   await admin.query(`CREATE DATABASE ${database}`)
   created = true
   setup = new pg.Pool({ ...base, database, max: 1 })
+  await assert.rejects(setup.query('SELECT version FROM moi_ngay.schema_version'), (error) =>
+    databaseStartupMessage(error).includes('NEON_DB_SCHEMA_MISSING'),
+  )
   await setup.query(await readFile('db/neon/001_initial.sql', 'utf8'))
+  await setup.query(await readFile('db/neon/check_setup.sql', 'utf8'))
   await admin.query(`CREATE ROLE ${login} LOGIN PASSWORD '${password}'`)
   loginCreated = true
-  await admin.query(`GRANT moi_ngay_api,moi_ngay_worker TO ${login}`)
   pool = new pg.Pool({ ...base, user: login, password, database, max: 2 })
   const db = new NeonDatabase(pool)
+  await assert.rejects(db.ready(), (error) =>
+    databaseStartupMessage(error).includes('NEON_DB_PERMISSION_DENIED'),
+  )
+  await admin.query(`GRANT moi_ngay_api,moi_ngay_worker TO ${login}`)
+  await setup.query('DELETE FROM moi_ngay.schema_version')
+  await assert.rejects(db.ready(), (error) =>
+    databaseStartupMessage(error).includes('NEON_DB_SCHEMA_VERSION'),
+  )
+  await setup.query('INSERT INTO moi_ngay.schema_version VALUES (1)')
   await db.ready()
+  console.log(
+    'PASS startup diagnostics for missing schema, role grant and schema version on real PostgreSQL',
+  )
   const a = randomUUID(),
     b = randomUUID()
   const call = (owner, action, extra = {}) => executeData(db, { owner, action, ...extra })

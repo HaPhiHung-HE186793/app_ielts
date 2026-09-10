@@ -2,7 +2,7 @@
 
 Cập nhật 2026-09-10. Code đã có adapter Neon, migration, backend Node và cấu hình Vercel. Đã kiểm tra PostgreSQL local và trình duyệt với Auth REST mô phỏng; **chưa xác minh Neon Auth/email/TLS hay deployment cloud thật**. DATA-003 hoàn thành phần code/local; DEPLOY-002 đang thực hiện.
 
-Người dùng đã có Neon `production` / `neondb`, pooling bật, AWS Singapore theo ảnh. Render service `app_ielts` đã build thành công commit `18d4b56`, nhưng startup dừng do DATABASE_URL dùng role owner; xem mục 5. Vercel chưa có deployment được xác minh. Không tạo lại DB/service Render. Dùng repo `HaPhiHung-HE186793/app_ielts`, branch `main` mới nhất.
+Người dùng đã có Neon `production` / `neondb`, pooling bật, AWS Singapore theo ảnh. Render service `app_ielts` build commit `e592f9f` đạt, đã qua validator và ảnh chọn runtime role, nhưng startup dừng với lỗi kiểm tra DB/schema/quyền chung. Code mới có mã chẩn đoán NEON_DB_*; xem mục 5. Vercel chưa có deployment được xác minh. Không tạo lại DB/service Render. Dùng repo `HaPhiHung-HE186793/app_ielts`, branch `main` mới nhất.
 
 ## 1. Chuẩn bị Neon
 
@@ -24,13 +24,13 @@ Migration tạo role SQL **moi_ngay_runtime**, có quyền ứng dụng riêng, 
 
 Mở **Connect**, chọn:
 
-| Trường | Giá trị |
-| --- | --- |
-| Branch | `production` |
-| Database | `neondb` |
-| Role | `moi_ngay_runtime` |
-| Connection pooling | Bật |
-| Connection string | Sao chép chuỗi bắt đầu `postgresql://`, gồm mật khẩu thật và tham số TLS |
+| Trường             | Giá trị                                                                  |
+| ------------------ | ------------------------------------------------------------------------ |
+| Branch             | `production`                                                             |
+| Database           | `neondb`                                                                 |
+| Role               | `moi_ngay_runtime`                                                       |
+| Connection pooling | Bật                                                                      |
+| Connection string  | Sao chép chuỗi bắt đầu `postgresql://`, gồm mật khẩu thật và tham số TLS |
 
 Chuỗi này chỉ dán vào **DATABASE_URL trên Render**. Không bao gồm `psql`, dấu nháy của lệnh shell hoặc dấu `***` che mật khẩu. Không đưa vào chat, Git hay Vercel. Backend yêu cầu đúng role `moi_ngay_runtime` và TLS. Role chủ dành cho migration. Neon phân biệt quyền role tạo bằng SQL và role tạo qua Console; xem [quản lý role](https://neon.com/docs/manage/roles).
 
@@ -45,27 +45,27 @@ Chuỗi này chỉ dán vào **DATABASE_URL trên Render**. Không bao gồm `ps
 
 Ảnh báo đỏ vì **Start Command trống**; `yarn start` màu xám là placeholder. Điền:
 
-| Trường | Giá trị |
-| --- | --- |
-| Name | `moi-ngay-api` hoặc tên service bạn muốn dùng |
-| Language | `Node` |
-| Branch | `main` |
-| Region | `Singapore` |
-| Root Directory | Để trống |
-| Build Command | `npm ci` |
-| Start Command | `npm run start:backend` |
-| Compute | `Free` cho lần thử này |
-| Advanced → Health Check Path | `/healthz` |
+| Trường                       | Giá trị                                       |
+| ---------------------------- | --------------------------------------------- |
+| Name                         | `moi-ngay-api` hoặc tên service bạn muốn dùng |
+| Language                     | `Node`                                        |
+| Branch                       | `main`                                        |
+| Region                       | `Singapore`                                   |
+| Root Directory               | Để trống                                      |
+| Build Command                | `npm ci`                                      |
+| Start Command                | `npm run start:backend`                       |
+| Compute                      | `Free` cho lần thử này                        |
+| Advanced → Health Check Path | `/healthz`                                    |
 
 Ở **Environment Variables**, thêm từng dòng:
 
-| Name | Value |
-| --- | --- |
-| `NODE_VERSION` | `22.18.0` |
-| `DATABASE_URL` | Connection string Neon của role `moi_ngay_runtime` ở bước 1 |
-| `NEON_AUTH_BASE_URL` | Auth Base URL HTTPS ở bước 1 |
-| `AI_ENABLED` | `false` |
-| `AI_TOTAL_BUDGET_USD` | `0` |
+| Name                  | Value                                                       |
+| --------------------- | ----------------------------------------------------------- |
+| `NODE_VERSION`        | `22.18.0`                                                   |
+| `DATABASE_URL`        | Connection string Neon của role `moi_ngay_runtime` ở bước 1 |
+| `NEON_AUTH_BASE_URL`  | Auth Base URL HTTPS ở bước 1                                |
+| `AI_ENABLED`          | `false`                                                     |
+| `AI_TOTAL_BUDGET_USD` | `0`                                                         |
 
 Chưa cần thêm `APP_ORIGINS` khi chưa có URL frontend. Xóa dòng env rỗng còn thừa rồi bấm **Deploy web service**. Form tạo thủ công không tự đọc hết `render.yaml`; cần nhập các trường trên. Backend tự dùng `PORT` Render cấp và bind `0.0.0.0`. [Render Web Services](https://render.com/docs/web-services).
 
@@ -78,24 +78,24 @@ Trang gốc `/` trả 404 là bình thường vì đây là API. Render Free có
 
 ## 3. Điền form Vercel đang mở
 
-| Trường | Giá trị |
-| --- | --- |
-| Project Name | `app-ielts` hoặc tên bạn đã chọn |
-| Application / Framework Preset | **Other** |
-| Root Directory | `./` |
-| Install Command | `npm ci` |
-| Build Command | `npm run build:vercel` |
-| Output Directory | Không bật override; không điền `dist` |
-| Node.js | `22.x` theo `package.json` |
+| Trường                         | Giá trị                               |
+| ------------------------------ | ------------------------------------- |
+| Project Name                   | `app-ielts` hoặc tên bạn đã chọn      |
+| Application / Framework Preset | **Other**                             |
+| Root Directory                 | `./`                                  |
+| Install Command                | `npm ci`                              |
+| Build Command                  | `npm run build:vercel`                |
+| Output Directory               | Không bật override; không điền `dist` |
+| Node.js                        | `22.x` theo `package.json`            |
 
 `vercel.json` đã cấu hình lệnh build và framework. Mặc dù frontend viết bằng Vite, dự án xuất **Build Output API v3** trong `.vercel/output`, gồm static files, header và proxy riêng. Chọn Other để dùng cấu hình này. [Vercel Build Output API](https://vercel.com/docs/build-output-api).
 
 Mở **Environment Variables**, bỏ hai biến Supabase cũ nếu form còn tự điền, thêm đúng hai biến:
 
-| Name | Value |
-| --- | --- |
-| `VITE_NEON_AUTH_URL` | Cùng Auth Base URL đã nhập trên Render |
-| `RENDER_API_URL` | URL Render đã Live, dạng `https://<tên-thực>.onrender.com`, không `/` cuối |
+| Name                 | Value                                                                      |
+| -------------------- | -------------------------------------------------------------------------- |
+| `VITE_NEON_AUTH_URL` | Cùng Auth Base URL đã nhập trên Render                                     |
+| `RENDER_API_URL`     | URL Render đã Live, dạng `https://<tên-thực>.onrender.com`, không `/` cuối |
 
 Không thêm Optional Integration Supabase. Bấm **Create Project / Deploy** theo nút hiện trên form. Khi Ready, lấy **production domain** ổn định trong Settings → Domains, không dùng URL riêng của từng commit. Không deploy `.vercel/output` sẵn trên máy phát triển: artifact kiểm tra chứa URL fixture.
 
@@ -112,6 +112,23 @@ Giả sử production domain thực tế là `https://<domain-thực>.vercel.app
 Ghi URL, commit/revision và kết quả thực tế vào STATUS/SESSION_LOG khi đã xác minh. Chưa đánh dấu DEPLOY-002 DONE chỉ vì form tạo project thành công. Với iPhone dùng Safari → Chia sẻ → Thêm vào Màn hình chính; Android dùng chức năng cài app của trình duyệt, xem [INSTALLATION.md](INSTALLATION.md).
 
 ## 5. Giới hạn và xử lý lỗi
+
+**Lỗi mới khi role đã là moi_ngay_runtime:** thông báo cũ “Chưa kết nối được Neon/schema/quyền” không phân biệt nguyên nhân. Render → **Manual Deploy → Deploy latest commit**, đọc mã mới `NEON_DB_*`. Đồng thời Neon → **SQL Editor**, chọn đúng project/production/neondb, role quản trị neondb_owner, chạy toàn bộ [check_setup.sql](../db/neon/check_setup.sql) và gửi dòng kết quả. Đây là SELECT catalog, không sửa mật khẩu hoặc dữ liệu.
+
+| Mã log mới                              | Ý nghĩa / bước kiểm tra                                                                                                        |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `NEON_DB_AUTH_FAILED` / `28P01`         | Mật khẩu không được Neon chấp nhận; copy lại toàn bộ kết nối runtime từ đúng branch, không chỉ thay username trong chuỗi owner |
+| `NEON_DB_ROLE_MISSING` / `0P000`        | Role mà startup cần chưa có; check_setup phải thấy moi_ngay_api và runtime                                                     |
+| `NEON_DB_PERMISSION_DENIED` / `42501`   | Thiếu quyền SET ROLE hoặc đọc schema; đối chiếu grants/runtime với migration                                                   |
+| `NEON_DB_SCHEMA_MISSING` / `42P01`      | Không tìm thấy schema_version trong database đang chọn; kiểm tra đúng project/database và migration                            |
+| `NEON_DB_SCHEMA_VERSION`                | Bảng phải có đúng một dòng version=1; đối chiếu trước khi sửa, không reset để vượt kiểm tra                                    |
+| `NEON_DB_DATABASE_MISSING`              | Tên database không có trên endpoint đó; lấy lại Connect đúng database                                                          |
+| `NEON_DB_DNS`, `CONNECT_TIMEOUT`, `TLS` | Kiểm tra endpoint/compute/mạng/chứng chỉ theo lời hướng dẫn log; không tắt xác minh TLS                                        |
+| `NEON_DB_UNKNOWN`                       | Mã chưa có trong danh sách an toàn; gửi kết quả check_setup và log mới, không đoán thiếu migration                             |
+
+SQLSTATE là mã PostgreSQL; các mã NEON_DB_* là nhãn của ứng dụng, không phải thông báo nguyên văn của Neon. [PostgreSQL error codes](https://www.postgresql.org/docs/17/errcodes-appendix.html).
+
+Kết quả check_setup mong đợi: database_name neondb, schema_table moi_ngay.schema_version, runtime_can_login true, app_roles có api/runtime/worker; runtime_grants có moi_ngay_api và moi_ngay_worker. Chỉ thấy runtime trong Connect không chứng minh đã chạy migration hoặc đã cấp quyền. Nếu schema_table NULL và chưa áp migration, chạy 001_initial.sql bằng owner; nếu có schema, kiểm tra trước khi chạy SQL cập nhật, không áp lại toàn bộ file mù.
 
 - `DATABASE_URL...role moi_ngay_runtime`: log này là lỗi kiểm tra cấu hình trước khi kết nối PostgreSQL, không phải lỗi mật khẩu hay schema đã được kiểm tra. Ảnh Render ngày 10/09 dùng `neondb_owner`; sửa bằng Neon Connect → Role `moi_ngay_runtime` → copy **toàn bộ chuỗi mới**, gồm mật khẩu của runtime → Render Environment → Edit → DATABASE_URL → **Save and deploy**. Không chỉ sửa tên role trong chuỗi owner vì mỗi role có mật khẩu riêng. Không cần đổi Build/Start Command đang đúng. [Lưu env và redeploy Render](https://render.com/docs/configure-environment-variables).
 - Nếu chưa thấy runtime role, kiểm tra bằng SQL chỉ đọc: `SELECT to_regclass('moi_ngay.schema_version') AS schema_table, EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'moi_ngay_runtime') AS runtime_role_exists;`. Nếu chưa tạo schema/role, áp migration ở mục 1; nếu đã có schema thì không chạy lại migration mù, đối chiếu kết quả trước. Role tạo từ migration cần đặt/reset mật khẩu rồi mới dùng Connect.

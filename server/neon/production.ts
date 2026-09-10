@@ -2,6 +2,7 @@ import { readNeonConfig } from './config.ts'
 import { createNeonPool, NeonDatabase } from './database.ts'
 import { neonIdentity } from './identity.ts'
 import { createNeonServer } from './http.ts'
+import { databaseStartupMessage } from './startup-error.ts'
 
 async function main() {
   const config = readNeonConfig(process.env)
@@ -32,11 +33,10 @@ async function main() {
       stop()
       process.exitCode = 1
     })
-  } catch {
-    await pool.end()
-    throw new Error(
-      'Chưa kết nối được Neon/schema/quyền. Áp db/neon/001_initial.sql và kiểm tra role trước khi deploy.',
-    )
+  } catch (error) {
+    await pool.end().catch(() => {})
+    console.error(databaseStartupMessage(error))
+    process.exitCode = 1
   }
 }
 main().catch((error) => {

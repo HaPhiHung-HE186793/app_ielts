@@ -22,6 +22,8 @@ Budget/nhắc port SQL giữ lock/CAS/quyền và có kiểm tra local. Chưa c�
 
 Pool bỏ tham số TLS URI trước khi cấu hình `ssl.rejectUnauthorized=true` và SCRAM channel binding; timeout kết nối/truy vấn 10 giây. URL chỉ chấp nhận Neon, TLS và runtime role, không ghi chuỗi bí mật trong lỗi. Startup thử schema_version trước listen. `/healthz` là liveness, `/readyz` thử DB lúc gọi; không chứa dữ liệu cá nhân.
 
+Startup dùng `startup-error.ts`: chỉ các SQLSTATE/Node code nằm trong allowlist mới được ánh xạ thành mã NEON_DB_* và lời hướng dẫn cố định. Không in message/detail/hint/stack gốc hoặc cause; lỗi lạ thành UNKNOWN. Nhận diện timeout pg-pool bằng thông điệp cố định trong driver; duyệt cause tối đa bốn mức. Bảng version không đúng trả mã riêng APP_SCHEMA_VERSION. Quá trình đóng pool không che lỗi startup; tiến trình log thông điệp an toàn và thoát 1. `db/neon/check_setup.sql` chỉ đọc catalog và trả một dòng để kiểm tra schema/role/grants mà không dùng credential người học. SQLSTATE theo [PostgreSQL](https://www.postgresql.org/docs/17/errcodes-appendix.html).
+
 ## Giới hạn và kiểm tra
 
 HTTP có giới hạn body, timeout, allowlist origin/route, 240 request/phút/tài khoản, 1.000 tổng/phút và ba lần gửi OTP/phút/email trên một tiến trình. Đây không phải rate limiter chia sẻ giữa nhiều replica; Neon còn có hạn mức Auth riêng. JWT đã cấp có thể còn dùng đến hết hạn, không có kiểm tra revoke từ xa mỗi data request.

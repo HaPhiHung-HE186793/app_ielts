@@ -1,7 +1,8 @@
 import { useEffect, useState, useSyncExternalStore, type FormEvent } from 'react'
 import { ArrowLeft, ArrowRight, Check, LogOut, Mail, UserRound } from 'lucide-react'
 import { getAuthSnapshot, signOutHere, subscribeAuth } from '../../app/auth'
-import { publicConfig, supabase } from '../../services/supabase'
+import { publicConfig, authClient } from '../../services/backend'
+import { readProfile, saveProfile } from '../../services/profile'
 import '../../styles/account.css'
 import { SyncPanel } from './SyncPanel'
 
@@ -14,22 +15,15 @@ function AccountProfile({ userId }: { userId: string }) {
   useEffect(() => {
     let active = true
     const controller = new AbortController()
-    void supabase!
-      .from('account_profiles')
-      .select('display_name')
-      .retry(false)
-      .eq('id', userId)
-      .abortSignal(controller.signal)
-      .maybeSingle()
-      .then(({ data, error }) => {
-        if (!active) return
-        if (error || (data && typeof data.display_name !== 'string')) {
-          setState('error')
-        } else {
-          setName(data?.display_name ?? '')
-          setState('ready')
-        }
-      })
+    void readProfile(userId, controller.signal).then(({ data, error }) => {
+      if (!active) return
+      if (error || (data && typeof data.display_name !== 'string')) {
+        setState('error')
+      } else {
+        setName(data?.display_name ?? '')
+        setState('ready')
+      }
+    })
     return () => {
       active = false
       controller.abort()
@@ -42,9 +36,7 @@ function AccountProfile({ userId }: { userId: string }) {
     setSaving(true)
     setMessage('')
     try {
-      const { error } = await supabase!
-        .from('account_profiles')
-        .upsert({ id: userId, display_name: name.trim() })
+      const { error } = await saveProfile(userId, name.trim())
       setMessage(
         error
           ? 'Chưa lưu được tên tài khoản. Nội dung bạn nhập vẫn còn; hãy thử lại.'
@@ -125,7 +117,7 @@ function EmailSignIn() {
     setBusy(true)
     setMessage('')
     try {
-      const { error } = await supabase!.auth.signInWithOtp({
+      const { error } = await authClient!.signInWithOtp({
         email: address,
         options: { shouldCreateUser: true },
       })
@@ -153,7 +145,7 @@ function EmailSignIn() {
     setBusy(true)
     setMessage('')
     try {
-      const { error } = await supabase!.auth.verifyOtp({
+      const { error } = await authClient!.verifyOtp({
         email: sentTo,
         token: token.trim(),
         type: 'email',

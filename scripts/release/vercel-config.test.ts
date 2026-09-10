@@ -2,8 +2,7 @@ import { expect, it } from 'vitest'
 import { readVercelConfig, vercelRoutes } from './vercel-config.js'
 
 const env = {
-  VITE_SUPABASE_URL: 'https://testproject.supabase.co',
-  VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_TEST_ONLY_0123456789',
+  VITE_NEON_AUTH_URL: 'https://ep-test.neonauth.ap-southeast-1.aws.neon.build/neondb/auth',
   RENDER_API_URL: 'https://test-api.onrender.com',
 }
 
@@ -22,7 +21,7 @@ it('reads only explicit public Vercel config and rejects wrong backend targets',
     'https://api.onrender.com/',
   ])
     expect(() => readVercelConfig({ ...env, RENDER_API_URL })).toThrow()
-  expect(() => readVercelConfig({ ...env, VITE_SUPABASE_PUBLISHABLE_KEY: '' })).toThrow()
+  expect(() => readVercelConfig({ ...env, VITE_NEON_AUTH_URL: '' })).toThrow()
 })
 
 it('routes only the named APIs to Render without making private API responses cacheable', () => {
@@ -41,6 +40,9 @@ it('routes only the named APIs to Render without making private API responses ca
     routes.find((route) => route.src && !route.continue && new RegExp(route.src).test(path))
   expect(match('/api/ai/status')?.dest).toBe(`${backend}/api/ai/$1`)
   expect(match('/api/healthz')?.dest).toBe(`${backend}/healthz`)
+  expect(match('/api/data')?.dest).toBe(`${backend}/api/data`)
+  expect(match('/api/auth/get-session')?.dest).toBe(`${backend}/api/auth/$1`)
+  expect(match('/api/auth/admin')?.status).toBe(404)
   expect(match('/api/ai/status')?.headers?.['Cache-Control']).toBe('no-store')
   expect(match('/api/private')?.status).toBe(404)
   expect(routes.some((route) => route.handle === 'filesystem')).toBe(true)

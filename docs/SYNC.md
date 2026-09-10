@@ -1,6 +1,6 @@
 # Đồng bộ tiến độ
 
-DATA-002 bổ sung đồng bộ phần học của tài khoản, đã kiểm tra với hai browser context độc lập trên Supabase Docker local. Chưa có host công khai hoặc kiểm tra hai điện thoại thật. Cách chạy backend và email thử ở [BACKEND.md](BACKEND.md).
+DATA-002 bổ sung đồng bộ phần học của tài khoản, đã kiểm tra với hai browser context độc lập trên Supabase Docker local. DATA-003 bổ sung đường Neon qua Render, giữ nguyên outbox/CAS/gộp và schema v3; kiểm tra PostgreSQL local, hai trình duyệt với Auth REST fixture, offline/mất phản hồi/đổi tài khoản. Chưa có host công khai hoặc kiểm tra hai điện thoại thật. Neon ở [NEON_BACKEND.md](NEON_BACKEND.md), legacy ở [BACKEND.md](BACKEND.md).
 
 ## Cách dùng
 
@@ -33,7 +33,7 @@ Không chạy song song bản app cũ chưa hiểu `_sync` trên cùng kho. Bả
 | `src/data/study-store.ts` | Ghi trạng thái/metadata atomic, giữ bản lỗi, epoch và số phiên bản giao diện khi tải dữ liệu khác |
 | `src/data/sync-engine.ts` | Outbox, nhận xác nhận, rebase, retry, hoãn khi mở cài đặt và hủy theo chủ |
 | `src/app/sync.ts` | Vòng đời Auth, khóa tab, online/focus/chu kỳ và trạng thái UI |
-| `src/services/study-sync.ts` | Gọi Supabase, validation dữ liệu nhận, truyền AbortSignal/chủ dự kiến |
+| `src/services/study-sync.ts` | Chọn Neon `/api/data` hoặc Supabase legacy, validation dữ liệu nhận và chủ dự kiến; Neon kiểm tra lại chủ trước/sau request, timeout riêng |
 | `src/features/account/SyncPanel.tsx` | Bật/dừng, trạng thái, hai bản xung đột và nhập phần khách |
 
 Lịch sử completion/review/quick/plan được hợp nhất theo ID, không dùng xóa từ một snapshot cũ để loại kết quả phía khác. Checkpoint có cùng ID/nguồn lấy số mili giây cộng dồn lớn nhất, không cộng lại delta. Lịch ôn dựng lại theo thời gian lượt ôn, dùng ID để phá hòa; bắt đầu từ lần hoàn thành đầu tiên. Bản cũ thiếu lịch sử nguồn giữ lịch có sẵn, không bịa các lượt đã mất. Số đo từ các lượt mở khác nhau vẫn cộng, không khẳng định chú ý hoặc band IELTS.

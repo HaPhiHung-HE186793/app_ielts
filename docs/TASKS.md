@@ -43,7 +43,7 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | PWA-001 | DONE | APP-002, LEARN-002 | Manifest/icon/standalone, hướng dẫn và prompt tự nguyện; Chrome đọc manifest/icon và không báo lỗi installability trong hồ sơ thử riêng. Luồng prompt/standalone có kiểm tra điều khiển; chưa cài/khởi chạy trên iPhone/Android hoặc cửa sổ app hệ điều hành. Phạm vi và bước xác minh ở INSTALLATION/TESTING. |
 | PWA-002 | DONE | PWA-001, DATA-002 | Gói học liệu được tạo từ nội dung dự án (ban đầu bảy bài/bảy WAV, đã mở rộng ở CONTENT-002); worker/manifest có hash, tải/dung lượng/xóa/lỗi/quota, mở mới offline và chờ sync. Kiểm tra cập nhật giữ draft/outbox, file thiếu/thử lại, range audio và cache không chứa dữ liệu tài khoản. Hướng dẫn/quyền/giới hạn thiết bị ở OFFLINE. |
 | NOTIFY-001 | DONE | PWA-001, DATA-001, PLAN-001 | Nhắc học tự nguyện, múi giờ và giờ yên lặng, tắt/dời lịch được. Xin quyền từ thao tác người dùng, xử lý từ chối; xác minh nền tảng hỗ trợ, không phụ thuộc thông báo để vào bài. |
-| DATA-003 | READY | DATA-002, NOTIFY-001, DEPLOY-001 | Chuyển backend Supabase sang Neon theo DEC-022: Auth/identity, migration PostgreSQL/quyền theo chủ, profile/sync/nhắc/budget qua Render, cấu hình Vercel/proxy và env máy chủ. Giữ StudyState/bản sao/ID/outbox và dữ liệu cũ; không gán tài khoản theo email. Kiểm tra PostgreSQL thật với hai tài khoản, gửi lặp/đồng thời/mất mạng/đổi chủ, token và hạn mức; không lộ DATABASE_URL. Cập nhật hướng dẫn lệnh/env đã chạy; phân biệt local với Neon hosted còn chờ. |
+| DATA-003 | DONE | DATA-002, NOTIFY-001, DEPLOY-001 | Adapter Neon Managed Auth REST/JWT, migration schema/role/RLS/CAS riêng, profile/sync/nhắc qua Render và cấu hình Vercel. PostgreSQL local thật kiểm tra hai chủ/replay/đồng thời/rollback/budget; browser với Auth fixture kiểm tra offline/mất response/reload/đổi chủ/cookie. Giữ v3/backup/ID/outbox và Supabase local cũ. Build loại env riêng; AI vẫn tắt/0, worker nhắc/provider Neon production chưa bật. Chưa xác minh Neon hosted/SMTP/cloud/thiết bị thật, chuyển phần này sang DEPLOY-002; chi tiết NEON_BACKEND và DEC-023. |
 
 Điều kiện đạt mốc 2: dùng cùng tài khoản để tiếp tục trên hai thiết bị và học phần đã tải khi mất mạng, với giới hạn được hiển thị rõ.
 
@@ -71,16 +71,16 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 | COACH-001 | TODO | BETA-001 | Nếu người dùng cần: dashboard gia sư, giao bài và nhận xét với quyền truy cập có lựa chọn; kiểm tra học viên khác không xem chéo dữ liệu. |
 | MOBILE-001 | TODO | BETA-001 | Nếu cần cửa hàng ứng dụng: đánh giá Capacitor, build/ký và kiểm thử native, chuẩn bị thông tin phát hành. Tài khoản, thiết bị và quyền phát hành phải có trước khi gửi lên cửa hàng. |
 
-## Chi tiết task tiếp theo: DATA-003, sau đó DEPLOY-002
+## Chi tiết task tiếp theo: DEPLOY-002
 
-**DATA-003 READY — người dùng sửa DB thành Neon ngày 2026-09-10.** Xem [hướng dẫn Neon](DEPLOY_VERCEL_RENDER_NEON.md) và DEC-022. Code thực tế vẫn dùng Supabase; DOC-002 chỉ cập nhật hướng dẫn và xác định phần cần chuyển. Đánh dấu DATA-003 IN_PROGRESS trước khi viết code.
+**DATA-003 DONE phần code/local; DEPLOY-002 IN_PROGRESS phần cloud.** Người dùng đã mở form New Web Service Render (Start Command trống) và import Vercel (preset Vite cũ). [Hướng dẫn từng trường](DEPLOY_VERCEL_RENDER_NEON.md) đã khớp code. Giữ thay đổi IDE sẵn có của người dùng ngoài commit task.
 
-1. Kiểm tra và chốt adapter Auth/identity: ưu tiên Neon Auth giữ email OTP, xác thực request tại Render, xử lý khôi phục/đổi chủ/offline. Đối chiếu SDK hiện hành/React/Node trước khi thêm dependency và lockfile. Không tự thay phương thức đăng nhập hoặc ghép tài khoản theo email.
-2. Chuyển schema/RPC sang PostgreSQL có quyền theo chủ, role ứng dụng tách quản trị. Giữ khóa hàng, revision/receipt/idempotency, validation trạng thái, nhắc học và budget AI. Viết migration riêng; không áp nguyên SQL Supabase lên Neon, không reset DB cũ.
-3. Chuyển profile/sync/nhắc/API AI sang adapter Render; cập nhật env/config/startup/build Vercel/proxy/CSP. DATABASE_URL chỉ trên máy chủ. Giữ schema dữ liệu, backup, draft/outbox và bản khách; chứng minh đường chuyển dữ liệu cũ không ghi đè.
-4. Chạy lint/typecheck/build/test phù hợp và kiểm tra Auth/PostgreSQL thật: hai chủ, gửi lặp/đồng thời, mất response/reload, đổi chủ, token lỗi, AI tắt/hạn mức, cache không chứa dữ liệu riêng. Ghi rõ phần cần Neon hosted, email và thiết bị thật; không gọi fixture là cloud.
-5. Người dùng đã tạo Neon: ảnh Connect xác nhận branch production, database neondb, AWS Singapore và pooling bật; chưa kiểm tra kết nối app hoặc Auth. Render/Vercel chưa tạo. Hướng dẫn chuẩn bị tài khoản/repo ở mục 5a tài liệu Neon. Khi DATA-003 hoàn tất, tiếp tục DEPLOY-002: migration đúng branch, Render rồi Vercel, env/origin/Auth và kiểm tra URL HTTPS thật. Các lệnh deployment cũ chưa dùng được với Neon.
-6. Cập nhật STATUS/TASKS/SESSION_LOG/README và hướng dẫn lệnh/env theo implementation, commit/push trong phạm vi đã cho phép. Không đóng DEPLOY-002 hoặc BETA-001 khi chỉ có build/docs; không tự bật AI trả phí.
+1. Neon production/neondb: áp `db/neon/001_initial.sql` bằng owner, kiểm tra version 1; đặt/reset mật khẩu role SQL moi_ngay_runtime và lấy Connect pooled/TLS. Không xóa DB cũ, không đưa chuỗi DB vào chat/Vercel.
+2. Bật Neon Auth, lấy Auth Base URL công khai; chọn email OTP, cấu hình SMTP production khi mở cho học viên. Không đổi sang mật khẩu hoặc ghép tài khoản cũ theo email.
+3. Render: npm ci, npm run start:backend, Singapore, env Neon/AI off. Xác minh Live/healthz/readyz; lấy URL Render thực tế.
+4. Vercel Other, npm run build:vercel, hai env công khai. Sau khi có production domain, điền Render APP_ORIGINS và Neon Trusted Domains chính xác, redeploy; thử OTP thật/profile/sync hai tài khoản/hai thiết bị và offline.
+5. Ghi URL/revision/deployment/kết quả HTTPS/cookie/session/cache thật vào STATUS/SESSION_LOG. Chưa có Auth URL/SQL cloud/SMTP/URL public được xác minh; không gọi fixture là cloud.
+6. Giữ AI tắt/0; xác minh UI báo nhắc chưa sẵn sàng khi chưa có worker. AI-001 và worker production cần bước riêng. Không đóng DEPLOY-002/BETA-001 chỉ vì build/docs hoặc form tạo project thành công.
 
 ## AI-001 đang chờ bước đối chiếu
 

@@ -1,5 +1,11 @@
 # Chạy và kiểm tra ứng dụng
 
+## Adapter Neon DATA-003
+
+`npm run test:neon` cần Docker local đang chạy (`npm run db:start`) và Chrome theo PLAYWRIGHT_CHANNEL hoặc mặc định chrome. Script tạo database/login thử riêng trên PostgreSQL local, áp migration Neon và dọn phần tự tạo. Kiểm tra RLS/CAS/replay/rollback/quyền nhắc/budget, HTTP JWT/owner/schema/CSRF, browser OTP/profile/đồng bộ hai thiết bị/offline/mất phản hồi/reload/đổi chủ/cookie HttpOnly. Auth REST dùng fixture và JWT ký bằng khóa thử; không gọi Neon hosted, SMTP hoặc AI thật, không ghi trace/token. Không chạy đồng thời với release:build/build:vercel/test:release vì dùng con trỏ latest artifact.
+
+151 unit tại mốc DATA-003, gồm chữ ký/claims/cookie và vòng đời Auth muộn sau đổi chủ. Regression legacy chọn `npm run test:auth -- account.spec.ts sync.spec.ts`; giữ Supabase local cho các bài kiểm tra cũ. Cloud Neon/Render/Vercel và thiết bị thật phải ghi kết quả riêng trong DEPLOY-002, xem [NEON_BACKEND.md](NEON_BACKEND.md).
+
 ## Bản phát hành DEPLOY-001
 
 `npm run test:release` tạo artifact khách rồi chạy 38 ca với Chrome desktop và viewport 360px qua preview 4176. Gồm 34 ca tái sử dụng học/bản sao/thích ứng/offline và bốn ca riêng HTTP/cache/404/CSP/AI tắt. Test đổi worker phục vụ chính tài nguyên release trên origin thử riêng, không phụ thuộc `dist` cũ. Không chạy đồng thời hai bộ release hoặc tạo release khác khi bộ này đang dùng con trỏ latest.

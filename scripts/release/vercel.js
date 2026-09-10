@@ -3,7 +3,7 @@ import { resolve, dirname } from 'node:path'
 import { createRelease } from './create.js'
 import { readVercelConfig, vercelRoutes } from './vercel-config.js'
 
-// Read only these three public values; never load .env or expose other build variables.
+// Read only the two public deployment values; never load .env or expose other variables.
 const { input, config, backend } = readVercelConfig(process.env)
 const { directory, site, report } = await createRelease(input, { aiProxy: true })
 const root = await realpath(process.cwd())

@@ -1,5 +1,8 @@
 import { getAuthSnapshot, registerSignOutCleanup, subscribeAuth } from '../../app/auth'
-import { publicConfig, supabase } from '../../services/supabase'
+import { supabase } from '../../services/supabase'
+import { publicConfig, authClient, isNeon } from '../../services/backend'
+import { neonRequest } from '../../services/neon-request'
+import { z } from 'zod'
 import { readReminderBinding, writeReminderBinding } from '../../reminders/push-store'
 import {
   reminderDeviceSchema,
@@ -129,10 +132,29 @@ function checkCurrent(token: number) {
 async function load(token: number) {
   checkCurrent(token)
   const id = deviceId()
-  const [devices, service] = await Promise.all([
-    supabase!.from('reminder_devices').select('*').eq('id', id).retry(false).maybeSingle(),
-    supabase!.from('reminder_service').select('public_key,heartbeat_at').retry(false).maybeSingle(),
-  ])
+  const cloud = isNeon
+    ? z
+        .object({
+          device: reminderDeviceSchema.nullable(),
+          service: z
+            .object({ public_key: z.string(), heartbeat_at: z.string().nullable() })
+            .nullable(),
+        })
+        .parse(await neonRequest({ action: 'reminders.read', owner: owner()!, device: id }))
+    : null
+  const [devices, service] = cloud
+    ? [
+        { data: cloud.device, error: null },
+        { data: cloud.service, error: null },
+      ]
+    : await Promise.all([
+        supabase!.from('reminder_devices').select('*').eq('id', id).retry(false).maybeSingle(),
+        supabase!
+          .from('reminder_service')
+          .select('public_key,heartbeat_at')
+          .retry(false)
+          .maybeSingle(),
+      ])
   checkCurrent(token)
   if (devices.error || service.error)
     throw new Error('Chưa tải được lịch nhắc. Kiểm tra kết nối rồi tải lại.')
@@ -170,7 +192,7 @@ async function load(token: number) {
   })
 }
 export async function refreshReminders() {
-  if (!supabase || getAuthSnapshot().status !== 'signed-in' || snapshot.busy) return
+  if (!authClient || getAuthSnapshot().status !== 'signed-in' || snapshot.busy) return
   const token = generation
   publish({ busy: true, message: '' })
   try {
@@ -186,7 +208,7 @@ export async function changeReminder(
   action: 'enable' | 'save' | 'disable' | 'snooze',
   settings: ReminderSettings,
 ) {
-  if (snapshot.busy || !snapshot.ready || !supabase) return
+  if (snapshot.busy || !snapshot.ready || !authClient) return
   const token = generation,
     expectedOwner = ownerKey(),
     captured = snapshot
@@ -252,8 +274,30 @@ export async function changeReminder(
       // Invalidate old revisions before editing or disabling, even if the network response is lost.
       if (action === 'disable') await clearLocal(expectedOwner)
       checkCurrent(token)
-      const result =
-        action === 'snooze'
+      const result = isNeon
+        ? await neonRequest(
+            action === 'snooze'
+              ? {
+                  action: 'reminders.snooze',
+                  owner: owner()!,
+                  device: captured.device!.id,
+                  revision: captured.device!.revision,
+                }
+              : {
+                  action: 'reminders.save',
+                  owner: owner()!,
+                  device: id,
+                  revision: captured.device?.revision ?? 0,
+                  enabled,
+                  settings: action === 'disable' ? captured.device!.settings : parsed.data!,
+                  subscription: (sub?.toJSON() as Record<string, unknown>) ?? null,
+                  publicKey: captured.publicKey,
+                },
+          ).then(
+            (data) => ({ data, error: null }),
+            () => ({ data: null, error: true }),
+          )
+        : action === 'snooze'
           ? await supabase!.rpc('snooze_reminder', {
               p_owner: owner(),
               p_id: captured.device!.id,
@@ -328,7 +372,25 @@ export function initializeReminders() {
     await locked(async () => {
       const binding = await readReminderBinding()
       await clearLocal(leaving)
-      if (binding?.owner === leaving && supabase) {
+      if (binding?.owner === leaving && isNeon) {
+        const result = z
+          .object({ device: reminderDeviceSchema.nullable() })
+          .parse(
+            await neonRequest({ action: 'reminders.read', owner: id, device: binding.deviceId }),
+          )
+        const row = result.device
+        if (row?.enabled)
+          await neonRequest({
+            action: 'reminders.save',
+            owner: id,
+            device: row.id,
+            revision: row.revision,
+            enabled: false,
+            settings: row.settings,
+            subscription: null,
+            publicKey: null,
+          })
+      } else if (binding?.owner === leaving && supabase) {
         const row = await supabase
           .from('reminder_devices')
           .select('*')

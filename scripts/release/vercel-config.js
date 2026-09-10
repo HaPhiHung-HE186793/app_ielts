@@ -2,9 +2,8 @@ import { releaseConfig, headerRules } from './config.js'
 
 export function readVercelConfig(env) {
   const input = {
-    mode: 'account',
-    supabaseUrl: env.VITE_SUPABASE_URL,
-    publishableKey: env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    mode: 'neon',
+    authUrl: env.VITE_NEON_AUTH_URL,
   }
   const config = releaseConfig(input)
   const backend = env.RENDER_API_URL?.trim() ?? ''
@@ -28,6 +27,13 @@ export function vercelRoutes(config, backend) {
     routes: [
       ...headers,
       { src: '^/api/healthz$', dest: `${backend}/healthz`, headers: privateHeaders },
+      { src: '^/api/readyz$', dest: `${backend}/readyz`, headers: privateHeaders },
+      { src: '^/api/data$', dest: `${backend}/api/data`, headers: privateHeaders },
+      {
+        src: '^/api/auth/(get-session|token|sign-out|sign-in/email-otp|email-otp/send-verification-otp)$',
+        dest: `${backend}/api/auth/$1`,
+        headers: privateHeaders,
+      },
       { src: '^/api/ai/(status|feedback)$', dest: `${backend}/api/ai/$1`, headers: privateHeaders },
       { src: '^/api/.*$', dest: '/404.html', status: 404, headers: privateHeaders },
       { handle: 'filesystem' },

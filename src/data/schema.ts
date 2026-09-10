@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { findLesson } from '../content/lessons'
-import { isCorrect } from '../domain/learning'
+import { findLesson } from '../content/lessons.ts'
+import { isCorrect } from '../domain/learning.ts'
 
 const lessonId = z
   .string()

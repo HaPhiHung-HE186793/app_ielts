@@ -1,6 +1,6 @@
 # Đóng gói và triển khai web
 
-Cập nhật 2026-09-10. **Hướng mới: Vercel frontend + Render backend + Neon PostgreSQL.** Bắt đầu tại [hướng dẫn Neon từ đầu](DEPLOY_VERCEL_RENDER_NEON.md); DATA-003 cần chuyển code Auth/DB trước khi hoàn tất DEPLOY-002. Tài liệu này giữ cách tạo artifact độc lập và quy tắc dữ liệu/worker/rollback của DEPLOY-001. Chế độ tài khoản và các ví dụ Supabase bên dưới là khả năng code cũ, chưa dùng được với Neon; bản khách vẫn dùng được. Chưa có URL public hoặc phép thử cloud/điện thoại thật.
+Cập nhật 2026-09-10. **Hướng mới: Vercel frontend + Render backend + Neon PostgreSQL.** DATA-003 có code/migration và kiểm tra local; bắt đầu deploy ở [hướng dẫn Neon](DEPLOY_VERCEL_RENDER_NEON.md). Tài liệu này giữ cách tạo artifact độc lập và quy tắc dữ liệu/worker/rollback của DEPLOY-001. Các ví dụ Supabase bên dưới là đường legacy; bản khách vẫn dùng được. Chưa có URL public hoặc phép thử cloud/điện thoại thật.
 
 ## 1. Tạo bản để tải lên hosting
 
@@ -51,7 +51,7 @@ Theo [BACKEND.md](BACKEND.md), chọn đúng dự án hosted, áp dụng migrati
 
 ## 3. Phương án hosting đã chuẩn bị
 
-Hướng chính đã đổi sang **Vercel/Render/Neon** theo DEC-022. `build:vercel` hiện vẫn là bản Supabase của DEC-021, cần DATA-003 chuyển sang Neon; dùng hướng dẫn mới ở đầu tài liệu. Phần Direct Upload dưới đây là phương án thay thế từ DEPLOY-001, chỉ dùng cho artifact static tạo bằng release:build; không tải site của build:vercel lên Pages vì thiếu route Render.
+Hướng chính là **Vercel/Render/Neon** theo DEC-023. `build:vercel` đã nhận cấu hình Neon; dùng hướng dẫn mới ở đầu tài liệu. Phần Direct Upload dưới đây là phương án thay thế từ DEPLOY-001, chỉ dùng cho artifact static khách/legacy tạo bằng release:build; không tải site của build:vercel lên Pages vì thiếu route Auth/data/AI Render.
 
 1. Vào tài khoản Cloudflare của chủ dự án, tạo Pages bằng Direct Upload và chọn tên project ổn định. Dashboard nhận thư mục hoặc zip; tải nội dung `site/` thành web root. Ghi lại project, URL production, revision và mã deployment. Không tự bật analytics hoặc dịch vụ trả phí. Direct Upload không đổi sang Git integration trong cùng project; nếu muốn Git integration, chọn cách đó trước khi tạo project. [Tài liệu Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/).
 2. Mở URL HTTPS production, thực hiện bảng kiểm dưới đây trước khi chia sẻ. Giữ origin ổn định qua các lần phát hành. URL preview, `pages.dev`, custom domain và localhost có kho lưu khác nhau; đổi origin cần xuất/nhập JSON hoặc sync rõ ràng, không coi là mất dữ liệu do update.

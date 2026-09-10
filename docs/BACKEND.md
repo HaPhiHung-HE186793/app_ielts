@@ -1,6 +1,6 @@
 # Supabase và tài khoản
 
-> Đây là backend local hiện có để phát triển/kiểm tra. Hướng triển khai mới ngày 2026-09-10 dùng **Neon**, xem [hướng dẫn mới](DEPLOY_VERCEL_RENDER_NEON.md), DATA-003 và DEC-022. Không dùng phần Supabase hosted bên dưới để thiết lập Neon.
+> Đây là backend Supabase local giữ để regression. Hướng triển khai ngày 2026-09-10 đã có adapter **Neon**, xem [kiến trúc mới](NEON_BACKEND.md), [deploy](DEPLOY_VERCEL_RENDER_NEON.md) và DEC-023. Không dùng phần Supabase hosted bên dưới để thiết lập Neon. `start:backend` chạy Neon; `start:backend:supabase` giữ entrypoint Supabase cũ.
 
 DATA-001 có Supabase Auth thật trên Docker local, xác nhận email bằng mã và tên tài khoản có RLS. DATA-002 bổ sung đồng bộ tiến độ có lựa chọn và xử lý xung đột, xem [SYNC.md](SYNC.md). Chưa có dự án Supabase hosted hoặc SMTP gửi thư thật. Quyết định Auth ở [DEC-013](DECISIONS.md#dec-013--tài-khoản-bằng-mã-email-và-kho-học-theo-chủ-sở-hữu).
 

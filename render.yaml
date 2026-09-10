@@ -2,6 +2,7 @@ services:
   - type: web
     name: moi-ngay-api
     runtime: node
+    region: singapore
     plan: free
     buildCommand: npm ci
     startCommand: npm run start:backend
@@ -9,9 +10,9 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 22.18.0
-      - key: SUPABASE_URL
+      - key: DATABASE_URL
         sync: false
-      - key: SUPABASE_SECRET_KEY
+      - key: NEON_AUTH_BASE_URL
         sync: false
       - key: AI_ENABLED
         value: 'false'

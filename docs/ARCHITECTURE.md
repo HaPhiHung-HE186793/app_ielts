@@ -1,8 +1,11 @@
 # Kiến trúc dự kiến
 
-Ngày cập nhật: 2026-09-10. **Đích triển khai mới là Vercel + Render + Neon** theo DEC-022; DATA-003 chưa chuyển code. Frontend, luồng học local, PWA/offline, Supabase Auth/RLS, đồng bộ và nhắc học Web Push đã triển khai/kiểm tra local. Nền tảng API/giao diện AI đã có, chưa gọi/đối chiếu provider thật; cloud hosted chưa triển khai. Phần “Hiện có trong code” mô tả hiện trạng, không phải xác nhận đã dùng Neon. Các quyết định nằm trong [DECISIONS.md](DECISIONS.md).
+Ngày cập nhật: 2026-09-10. **Vercel + Render + Neon** có adapter/migration và kiểm tra local theo DATA-003/DEC-023. Neon Auth/email/TLS và deployment cloud chưa được xác minh. Supabase local giữ cho regression; luồng học/PWA/offline không đổi. AI thật và worker nhắc Neon production chưa bật. Các quyết định nằm trong [DECISIONS.md](DECISIONS.md).
 
 ## Hiện có trong code
+
+- **Đường deploy Neon:** `server/neon/production.ts` khởi động Node/pg, xác minh JWT Neon trên Render và gọi action profile/study/reminders có tham số. `db/neon/001_initial.sql` tạo schema/role/RLS/CAS riêng; mỗi transaction SET LOCAL role/actor, không lấy quyền từ payload. `src/services/backend.ts` chọn adapter Neon hoặc legacy; Auth REST qua proxy cùng origin giữ cookie HttpOnly, chỉ lưu owner hint cho offline. Chi tiết/giới hạn tại [NEON_BACKEND.md](NEON_BACKEND.md).
+- `build:vercel` dùng hai env công khai `VITE_NEON_AUTH_URL` và `RENDER_API_URL`, sinh Build Output API v3 với route Auth/data/AI/health allowlist và no-store. `start:backend` dùng DATABASE_URL runtime role, NEON_AUTH_BASE_URL và APP_ORIGINS; yêu cầu AI tắt/0. `start:backend:supabase` giữ entrypoint cũ. Các mục Supabase bên dưới mô tả đường local được giữ cho regression.
 
 - React + TypeScript + Vite, điều hướng hash cho năm khu vực, `/lesson/:id`, `/session`, `/install`, `/account` và `/reminders`; không cần cấu hình rewrite để mở đường dẫn bài học trên static host.
 - `public/manifest.webmanifest`, `public/icons`, metadata trong `index.html`: tên, ID ở gốc origin, scope, start URL Hôm nay, standalone và bộ icon do dự án tạo. `scripts/generate-icons.js` tái tạo PNG từ SVG. Worker sinh lúc build lưu shell theo hash và gói bài có phiên bản khi người học chọn; hướng dẫn/quyền audio ở [OFFLINE.md](OFFLINE.md).
@@ -36,7 +39,7 @@ Các lệnh và phạm vi kiểm tra nằm trong [TESTING.md](TESTING.md). Đọ
 | Giao diện | React + TypeScript + Vite | Xây web app tương tác, ưu tiên màn hình điện thoại |
 | Điều hướng | Các trang Hôm nay, Khám phá, Luyện tập, Ôn lại, Tiến bộ | Cho phép mở trực tiếp và tiếp tục bài học |
 | Dữ liệu local | IndexedDB khi cần lưu bài, lượt làm và tài nguyên offline | Giữ tiến độ giữa các lần mở; không được xem là bản sao lưu đám mây |
-| Tài khoản/backend | Đích mới: Render + Neon PostgreSQL; ưu tiên đánh giá Neon Auth trong DATA-003 | Chuyển từ Supabase hiện có, giữ đăng nhập và quyền sở hữu tiến độ |
+| Tài khoản/backend | Render + Neon PostgreSQL/Managed Auth REST; Supabase local giữ để regression | Adapter/migration đã kiểm tra local, cloud tiếp tục ở DEPLOY-002 |
 | AI | Dịch vụ phía máy chủ, provider chọn sau thử nghiệm | Quản lý khóa bí mật, ngân sách, phản hồi và audio |
 | Cài lên màn hình chính | Manifest/icons/standalone và service worker | Mở app với gói bốn tuần đã tải; cần kiểm tra thiết bị thật trước phát hành |
 | App Store/Google Play | Capacitor ở giai đoạn sau | Tái sử dụng ứng dụng web, bổ sung tích hợp và quy trình phát hành riêng |

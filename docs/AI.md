@@ -1,5 +1,7 @@
 # Gia sư AI — nền tảng thử nghiệm
 
+> Từ DATA-003 (2026-09-10), deployment Neon có status/feedback API xác thực nhưng luôn tắt AI và ngân sách 0. Budget SQL đã port/kiểm tra; provider/worker Neon còn ở AI-001. Phần API/provider Supabase bên dưới là nền tảng local được giữ. Xem [NEON_BACKEND.md](NEON_BACKEND.md).
+
 Cập nhật 2026-09-07. **AI-001 IN_PROGRESS**: có API, hạn mức và giao diện gợi ý cuối bài; chưa bật hoặc đối chiếu AI thật vì chưa có API key/ngân sách được xác nhận. Không coi các phản hồi fixture trong test là AI thật. Chưa có luyện nói, chấm phát âm, Writing đầy đủ hoặc band IELTS.
 
 ## Dùng trong app

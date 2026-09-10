@@ -1,12 +1,25 @@
 import { readPublicConfig } from '../../src/services/supabase-config.ts'
+import { neonAuthUrl } from '../../src/services/neon-config.ts'
 
 export function releaseConfig(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input))
     throw new Error('Cấu hình release phải là object JSON.')
-  const keys = input.mode === 'guest' ? ['mode'] : ['mode', 'supabaseUrl', 'publishableKey']
+  const keys =
+    input.mode === 'guest'
+      ? ['mode']
+      : input.mode === 'neon'
+        ? ['mode', 'authUrl']
+        : ['mode', 'supabaseUrl', 'publishableKey']
   if (Object.keys(input).some((key) => !keys.includes(key)))
     throw new Error('Cấu hình release chứa trường không được hỗ trợ. Chỉ nhập cấu hình công khai.')
   if (input.mode === 'guest') return { mode: 'guest', supabaseUrl: '', publishableKey: '' }
+  if (input.mode === 'neon')
+    return {
+      mode: 'neon',
+      authUrl: neonAuthUrl(input.authUrl),
+      supabaseUrl: '',
+      publishableKey: '',
+    }
   if (
     input.mode !== 'account' ||
     typeof input.supabaseUrl !== 'string' ||
@@ -33,6 +46,7 @@ export function isolatedViteConfig(config) {
     define: {
       'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(config.supabaseUrl),
       'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(config.publishableKey),
+      'import.meta.env.VITE_NEON_AUTH_URL': JSON.stringify(config.authUrl ?? ''),
       'import.meta.env.VITE_AI_ENABLED': JSON.stringify('false'),
     },
   }

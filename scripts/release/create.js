@@ -11,7 +11,7 @@ import { releaseSource } from './source.js'
 export async function createRelease(input, { aiProxy = false } = {}) {
   process.env.NODE_ENV = 'production'
   const config = releaseConfig(input)
-  if (aiProxy && config.mode !== 'account') throw new Error('API gia sư cần chế độ tài khoản.')
+  if (aiProxy && config.mode === 'guest') throw new Error('API gia sư cần chế độ tài khoản.')
   const { revision, dirty, source } = releaseSource()
   const root = resolve('.local/releases')
   await mkdir(root, { recursive: true })

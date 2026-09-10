@@ -192,7 +192,17 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 - Hướng dẫn mới tại [DEPLOY_VERCEL_RENDER_NEON.md](DEPLOY_VERCEL_RENDER_NEON.md). Có thể tạo project Neon/kiểm tra SELECT trước khi sửa app. render.yaml/start:backend/build:vercel/.env.example vẫn là cấu hình Supabase; chưa hướng dẫn nhập env mới như thể code đã đọc được. Bản release khách độc lập không đổi. Giữ AI tắt/ngân sách 0, worker nhắc production là phần chưa có.
 - Nguồn đã đối chiếu: [Neon connection](https://neon.com/docs/connect/connect-from-any-app), [Neon Auth](https://neon.com/docs/auth/overview), [React SDK](https://neon.com/docs/auth/quick-start/react), [Email OTP](https://neon.com/docs/auth/guides/plugins/email-otp). Kiểm tra lại phiên bản/thực tế dịch vụ lúc viết adapter; không áp hướng dẫn Stack Auth cũ như bản Managed Better Auth hiện tại.
 
-## Các giả định/chọn lựa còn mở
+## DEC-023 — Triển khai adapter Neon và proxy Auth cùng origin
+
+- Ngày 2026-09-10, người dùng đã mở form Render/Vercel và hỏi cách điền. DATA-003 được triển khai để các lệnh/env trong hướng dẫn có code thực thi; thay hiện trạng Supabase-only ghi ở DEC-022. Supabase local giữ nguyên cho regression và xuất bản sao, không xóa/ghép dữ liệu theo email.
+- Dùng Neon Managed Better Auth qua allowlist REST email OTP/session/token/sign-out. Lần cài SDK beta gặp peer dependency/npm edgesOut; không dùng force hoặc tắt kiểm tra dependency. REST adapter nhỏ chỉ quản lý vòng đời client, không tự triển khai cơ chế xác thực. Neon Auth/email hosted vẫn phải thử trong DEPLOY-002; fixture không thay bằng chứng dịch vụ thật.
+- Cookie HttpOnly được proxy Vercel → Render → Neon và gắn vào origin app, Path /api/auth, giữ Secure. Chỉ owner hint lưu local; token trong bộ nhớ. Chặn callback cũ/refresh trong khi logout/verify; lỗi mạng không bỏ kho offline. Origin chính xác bắt buộc với POST cookie.
+- Render dùng pg/Jose, xác minh JWT theo JWKS/EdDSA/issuer/audience/expiry/verified email/UUID trước gọi SQL. Dữ liệu chỉ đi qua action API cố định, không SQL tùy ý hoặc Neon Data API từ browser. Mỗi transaction SET LOCAL role/actor; RLS và CAS/receipt bảo toàn. Migration riêng trong schema moi_ngay, role runtime tạo bằng SQL để tránh quyền neon_superuser của Console-created role. Không giả lập auth.uid/schema Auth nhà cung cấp.
+- Build Vercel chọn Other/Build Output v3, chỉ nhận VITE_NEON_AUTH_URL và RENDER_API_URL; proxy Auth/data/AI/health no-store. Backend yêu cầu DATABASE_URL runtime/TLS, NEON_AUTH_BASE_URL; APP_ORIGINS điền sau URL Vercel. Khóa SQL không đi vào bundle/log.
+- Schema nhắc/budget được port và kiểm tra local; Neon production vẫn tắt AI/0 và chưa có worker nhắc. Hoàn tất tích hợp provider và kiểm tra chi phí ở AI-001, không tự mở khoản chi. DATA-003 DONE phần code/local; DEPLOY-002 tiếp tục migration/Auth/SMTP/cloud/thiết bị thật.
+- Chi tiết tại [NEON_BACKEND.md](NEON_BACKEND.md), hướng dẫn vận hành tại [DEPLOY_VERCEL_RENDER_NEON.md](DEPLOY_VERCEL_RENDER_NEON.md). Nguồn hiện hành: [JWT](https://neon.com/docs/auth/guides/plugins/jwt), [Email OTP](https://neon.com/docs/auth/guides/plugins/email-otp), [Auth flow](https://neon.com/docs/auth/authentication-flow), [roles](https://neon.com/docs/manage/roles).
+
+## Các giả định/chọn lựa còn mở (hiện tại)
 
 | Mã | Vấn đề | Mặc định hiện tại | Thời điểm cần làm rõ |
 | --- | --- | --- | --- |
@@ -200,7 +210,7 @@ Ngày lập: 2026-09-06. Các lựa chọn kỹ thuật là hướng khởi đ�
 | OPEN-002 | Academic hay General Training | Không tự điền loại thi; nền tảng dùng chung | Onboarding và trước xây học liệu luyện thi |
 | OPEN-003 | Đầu vào, thời gian, ngày thi, điểm tối thiểu từng kỹ năng | Đã có form thời gian/ngày mục tiêu và tự nhận xét; chưa có đánh giá đầu vào hoặc yêu cầu band từng kỹ năng | Trước kế hoạch luyện thi cá nhân |
 | OPEN-004 | Nhà cung cấp và ngân sách AI | Chưa chọn, không giả định có API key | AI-001 |
-| OPEN-005 | Project hosting, Neon, tên miền và Auth | Neon đã tạo theo ảnh: production/neondb, Singapore, pooling bật; chưa có tên/ID project/Auth URL, Render/Vercel chưa tạo. Code vẫn Supabase; ưu tiên đánh giá Neon Auth giữ OTP, chưa tích hợp | DATA-003 rồi DEPLOY-002; ghi URL ứng dụng/cấu hình công khai khi có, secret giữ riêng |
+| OPEN-005 | Project hosting, Neon, tên miền và Auth | Neon production/neondb Singapore đã có; người dùng đang ở form Render/Vercel. Adapter Neon/local test đã có, chưa có Auth Base URL, migration/OTP/URL cloud được xác minh | DEPLOY-002: áp migration, Auth, env và deploy/kiểm tra hai tài khoản; secret giữ riêng |
 | OPEN-006 | Đánh giá lại thuật toán lịch ôn | Đã có lịch khởi đầu DEC-009; cần hiệu chỉnh theo dữ liệu | Sau thử nghiệm sử dụng và trước mở rộng |
 | OPEN-007 | Thời gian lưu audio và bài cá nhân trên cloud | Chưa chốt, chưa thu thập dữ liệu thật | Trước upload dữ liệu thật và AI-002 |
 | OPEN-008 | Người kiểm duyệt/giáo viên đối chiếu bài | Chưa bố trí | Trước phê duyệt học liệu beta và đánh giá AI |

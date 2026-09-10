@@ -1,5 +1,7 @@
 # Nhắc học tự nguyện
 
+> DATA-003 (2026-09-10) đã port schema/quyền/endpoint lịch nhắc sang Neon; worker gửi push Neon production chưa triển khai. UI yêu cầu heartbeat, vì vậy chưa thể bật nhắc khi máy gửi chưa sẵn sàng. Các bước Web Push local bên dưới vẫn dùng Supabase. Xem [NEON_BACKEND.md](NEON_BACKEND.md).
+
 Cập nhật 2026-09-07, NOTIFY-001. Trang `#/reminders` mở từ cuối mỗi trang hoặc Tài khoản. Nhắc mặc định tắt; học viên chọn bật cho từng tài khoản/trình duyệt. Có giờ, ngày trong tuần, múi giờ IANA, giờ yên lặng, lưu/sửa, dời lượt tiếp theo 30 phút và tắt. Không phụ thuộc thông báo để mở bài.
 
 ## Dùng bản local

@@ -1,5 +1,5 @@
 import { getAuthSnapshot } from '../app/auth'
-import { supabase } from '../services/supabase'
+import { authClient } from '../services/backend'
 import { aiResponseSchema, aiStatusSchema, isGroundedFeedback, type AiRequest } from './contracts'
 
 export class AiClientError extends Error {
@@ -8,9 +8,13 @@ export class AiClientError extends Error {
   }
 }
 async function headers(owner: string) {
-  if (!supabase || getAuthSnapshot().status !== 'signed-in' || getAuthSnapshot().user?.id !== owner)
+  if (
+    !authClient ||
+    getAuthSnapshot().status !== 'signed-in' ||
+    getAuthSnapshot().user?.id !== owner
+  )
     throw new AiClientError('unauthorized')
-  const session = await supabase.auth.getSession()
+  const session = await authClient.getSession()
   if (
     session.error ||
     session.data.session?.user.id !== owner ||

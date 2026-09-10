@@ -1,13 +1,13 @@
-import type { Session, User } from '@supabase/supabase-js'
-import { authStorageKey, publicConfig, supabase } from '../services/supabase'
+import type { AuthSession as Session } from '../services/neon-auth'
+import { authStorageKey, publicConfig, authClient } from '../services/backend'
 import { switchStudyOwner } from '../data/store'
 
 type AuthSnapshot = {
   status: 'loading' | 'guest' | 'signed-in' | 'offline' | 'unavailable'
-  user: Pick<User, 'id' | 'email'> | null
+  user: { id: string; email?: string } | null
   error: string | null
 }
-let snapshot: AuthSnapshot = { status: supabase ? 'loading' : 'guest', user: null, error: null }
+let snapshot: AuthSnapshot = { status: authClient ? 'loading' : 'guest', user: null, error: null }
 const listeners = new Set<() => void>()
 let initialized = false
 let receivedEvent = false
@@ -29,11 +29,11 @@ function receiveSession(session: Session | null) {
   publish({ status: session ? 'signed-in' : 'guest', user: session?.user ?? null, error: null })
 }
 export function initializeAuth() {
-  if (initialized || !supabase) return
+  if (initialized || !authClient) return
   initialized = true
   window.addEventListener('online', () => {
     // Ask the SDK to refresh; its Auth events decide the actual owner/session.
-    void supabase?.auth.getSession().catch(() => {})
+    void authClient?.getSession().catch(() => {})
   })
   // An expired SDK session may need network before INITIAL_SESSION arrives.
   // Read only its owner hint for local learning; this grants no server access.
@@ -58,12 +58,12 @@ export function initializeAuth() {
     }
   }
   // Synchronous callback: no Supabase API call while the auth client's lock is held.
-  supabase.auth.onAuthStateChange((event, session) => {
+  authClient.onAuthStateChange((event, session) => {
     receivedEvent = true
     if (!session && event === 'INITIAL_SESSION' && snapshot.status === 'offline') return
     receiveSession(session)
   })
-  void supabase.auth
+  void authClient
     .getSession()
     .then(({ data, error }) => {
       if (receivedEvent) return
@@ -95,9 +95,9 @@ export function subscribeAuth(listener: () => void) {
 }
 
 export async function signOutHere() {
-  if (!supabase) return null
+  if (!authClient) return null
   await beforeSignOut?.()
-  const { error } = await supabase.auth.signOut({ scope: 'local' })
+  const { error } = await authClient.signOut({ scope: 'local' })
   if (error && !snapshot.user) {
     publish({
       ...snapshot,

@@ -1,5 +1,7 @@
 import { z } from 'zod'
 import { supabase } from './supabase'
+import { isNeon } from './backend'
+import { neonRequest } from './neon-request'
 import { emptyState } from '../data/schema'
 import { remoteStudySchema } from '../data/sync-schema'
 import type { SyncTransport } from '../data/sync-engine'
@@ -11,6 +13,10 @@ const receiptSchema = z.object({
 export function studyTransport(owner: string): SyncTransport {
   return {
     async read(signal) {
+      if (isNeon) {
+        const data = await neonRequest({ action: 'study.read', owner }, signal)
+        return data ? remoteStudySchema.parse(data) : { revision: 0, state: emptyState() }
+      }
       const { data, error } = await supabase!
         .from('study_snapshots')
         .select('revision,state')
@@ -22,6 +28,21 @@ export function studyTransport(owner: string): SyncTransport {
       return data ? remoteStudySchema.parse(data) : { revision: 0, state: emptyState() }
     },
     async commit(pending, signal) {
+      if (isNeon) {
+        const data = await neonRequest(
+          {
+            action: 'study.commit',
+            owner,
+            mutation: pending.id,
+            revision: pending.expectedRevision,
+            state: pending.state,
+          },
+          signal,
+        )
+        if (data && typeof data === 'object' && 'status' in data && data.status === 'conflict')
+          return { status: 'conflict', ...remoteStudySchema.parse(data) }
+        return receiptSchema.parse(data)
+      }
       const { data, error } = await supabase!
         .rpc('commit_study', {
           p_owner: owner,

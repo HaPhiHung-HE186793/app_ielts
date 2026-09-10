@@ -73,11 +73,11 @@ Mỗi task hoàn thành cần cập nhật trạng thái, kiểm tra và bàn gi
 
 ## Chi tiết task tiếp theo: DEPLOY-002
 
-**DATA-003 DONE phần code/local; DEPLOY-002 IN_PROGRESS phần cloud.** Render `app_ielts` build e592f9f đạt, ảnh đã chọn moi_ngay_runtime và startup qua validator; lỗi hiện tại ở kiểm tra DB/schema/quyền, chưa rõ nguyên nhân. Đã bổ sung log NEON_DB_* và check_setup.sql chỉ đọc; bước tiếp theo nhận log bản mới/kết quả query rồi sửa đúng lỗi. Auth URL cũ ep-long-cell cần đối chiếu với DB ep-dawn-dream đang chọn. [Hướng dẫn](DEPLOY_VERCEL_RENDER_NEON.md). Giữ file IDE đã stage ngoài commit task.
+**DATA-003 DONE phần code/local; DEPLOY-002 IN_PROGRESS phần cloud.** Log Render mới trả NEON_DB_UNKNOWN; query người dùng gửi xác nhận thiếu schema_version/api/worker và runtime_grants chỉ có neon_superuser. Bước ngay: áp toàn bộ migration bằng owner, thu hồi membership quản trị của runtime, kiểm tra version/grants rồi redeploy. Chưa xác định lỗi driver gốc của UNKNOWN. Auth URL cũ ep-long-cell cần đối chiếu với DB ep-dawn-dream đang chọn. [Hướng dẫn](DEPLOY_VERCEL_RENDER_NEON.md). Giữ file IDE đã stage ngoài commit task.
 
 Phần chẩn đoán startup đã kiểm tra bằng unit, PostgreSQL local và entrypoint process với fixture; chưa đóng DEPLOY-002 hoặc kết luận đã sửa kết nối hosted. Không nới quyền hoặc tắt TLS để vượt lỗi.
 
-1. Neon production/neondb đúng project: chạy `db/neon/check_setup.sql` bằng owner trước, đối chiếu log mới; chỉ áp `001_initial.sql` khi chưa có schema/migration. Không xóa DB cũ, không đưa chuỗi DB vào chat/Vercel. Role runtime hiện đã chọn được; cần xác minh grants và bảng chứ không chỉ tên role.
+1. Neon production/neondb đúng project: đã nhận check_setup thiếu thiết lập, áp `001_initial.sql` trong truy vấn trống bằng owner. Sau thành công, REVOKE neon_superuser chỉ từ runtime; xác minh version=1 và grants api/worker. Nếu SQL lỗi thì xử lý lỗi, không DROP/CASCADE hoặc chạy lại mù. Không đưa chuỗi DB vào chat/Vercel. Khi SQL đúng mà vẫn UNKNOWN thì chẩn đoán kết nối riêng.
 2. Dùng Auth Base URL công khai đã có ở STATUS để kiểm tra Neon Auth; chọn email OTP, cấu hình SMTP production khi mở cho học viên. Không hỏi lại URL như chưa nhận; không đổi sang mật khẩu hoặc ghép tài khoản cũ theo email.
 3. Render: npm ci, npm run start:backend, Singapore, env Neon/AI off. Xác minh Live/healthz/readyz; lấy URL Render thực tế.
 4. Vercel Other, npm run build:vercel, hai env công khai. Sau khi có production domain, điền Render APP_ORIGINS và Neon Trusted Domains chính xác, redeploy; thử OTP thật/profile/sync hai tài khoản/hai thiết bị và offline.

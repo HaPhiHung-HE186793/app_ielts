@@ -2,7 +2,7 @@
 
 Cập nhật 2026-09-10. Code đã có adapter Neon, migration, backend Node và cấu hình Vercel. Đã kiểm tra PostgreSQL local và trình duyệt với Auth REST mô phỏng; **chưa xác minh Neon Auth/email/TLS hay deployment cloud thật**. DATA-003 hoàn thành phần code/local; DEPLOY-002 đang thực hiện.
 
-Người dùng đã có Neon `production` / `neondb`, pooling bật, AWS Singapore theo ảnh. Render service `app_ielts` build commit `e592f9f` đạt, đã qua validator và ảnh chọn runtime role, nhưng startup dừng với lỗi kiểm tra DB/schema/quyền chung. Code mới có mã chẩn đoán NEON_DB_*; xem mục 5. Vercel chưa có deployment được xác minh. Không tạo lại DB/service Render. Dùng repo `HaPhiHung-HE186793/app_ielts`, branch `main` mới nhất.
+Người dùng đã có Neon `production` / `neondb`, pooling bật, AWS Singapore theo ảnh. Render service `app_ielts` qua validator nhưng startup mới trả NEON_DB_UNKNOWN. Query người dùng gửi cho thấy thiếu schema_version/api/worker; runtime_grants chỉ có neon_superuser. Bước ngay là áp migration và chỉnh quyền theo mục 5, sau đó mới redeploy. Chưa xác định lỗi driver gốc của UNKNOWN; Vercel chưa có deployment được xác minh. Không tạo lại DB/service Render. Dùng repo `HaPhiHung-HE186793/app_ielts`, branch `main` mới nhất.
 
 ## 1. Chuẩn bị Neon
 
@@ -112,6 +112,24 @@ Giả sử production domain thực tế là `https://<domain-thực>.vercel.app
 Ghi URL, commit/revision và kết quả thực tế vào STATUS/SESSION_LOG khi đã xác minh. Chưa đánh dấu DEPLOY-002 DONE chỉ vì form tạo project thành công. Với iPhone dùng Safari → Chia sẻ → Thêm vào Màn hình chính; Android dùng chức năng cài app của trình duyệt, xem [INSTALLATION.md](INSTALLATION.md).
 
 ## 5. Giới hạn và xử lý lỗi
+
+**Kết quả SQL đã nhận ngày 10/09:** schema_table trống, app_roles chỉ có moi_ngay_runtime, runtime_grants={neon_superuser}. Thiết lập ứng dụng chưa đầy đủ. Neon cấp membership quản trị cho role tạo qua Console/API/CLI; migration của app tạo role qua SQL với quyền riêng. [Neon roles](https://neon.com/docs/manage/roles).
+
+Thực hiện trên project/production/neondb vừa kiểm tra, bằng neondb_owner:
+
+1. Bấm **+** cạnh SQL Editor để mở truy vấn trống. Editor trong ảnh có cả các lệnh tạo/chèn dữ liệu mẫu; không nối migration vào đoạn mẫu đang có. Không cần xóa bảng mẫu hoặc database.
+2. Mở [001_initial.sql](../db/neon/001_initial.sql), sao chép toàn bộ **652 dòng**, từ phần đầu có BEGIN đến COMMIT cuối file, dán vào truy vấn trống rồi Run. Nếu xem GitHub, mở Raw trước khi chọn tất cả. Migration giữ role runtime đã có và mật khẩu của nó, tạo api/worker/bảng/quyền còn thiếu. Nếu báo lỗi, gửi nguyên thông báo SQL không có bí mật; không chạy lệnh DROP hoặc sửa ngẫu nhiên từng đoạn.
+3. Chỉ sau migration thành công, chạy riêng:
+
+```sql
+REVOKE neon_superuser FROM moi_ngay_runtime;
+SELECT version FROM moi_ngay.schema_version;
+```
+
+Lệnh REVOKE chỉ thu hồi membership quản trị của role chạy app; không đổi mật khẩu, không thu hồi quyền của neondb_owner. Nếu Neon báo thiếu quyền hoặc phụ thuộc, giữ nguyên lỗi để xử lý; không thêm CASCADE hay chuyển sang dùng owner cho Render. Cú pháp theo [PostgreSQL REVOKE](https://www.postgresql.org/docs/17/sql-revoke.html); thao tác này chưa được xác minh trên project Neon thật.
+
+4. Kết quả version phải là một dòng 1. Chạy lại [check_setup.sql](../db/neon/check_setup.sql): schema_table phải là moi_ngay.schema_version; app_roles có api/runtime/worker; runtime_grants có moi_ngay_api và moi_ngay_worker, không còn neon_superuser.
+5. Đối chiếu DATABASE_URL Render với Connect runtime của đúng project/branch, rồi Manual Deploy → Deploy latest commit. Chỉ khi log ready và readyz đạt mới coi backend kết nối được. Nếu vẫn NEON_DB_UNKNOWN, gửi log mới và kết quả SQL sau migration; chưa khẳng định thiếu migration giải thích toàn bộ lỗi driver.
 
 **Lỗi mới khi role đã là moi_ngay_runtime:** thông báo cũ “Chưa kết nối được Neon/schema/quyền” không phân biệt nguyên nhân. Render → **Manual Deploy → Deploy latest commit**, đọc mã mới `NEON_DB_*`. Đồng thời Neon → **SQL Editor**, chọn đúng project/production/neondb, role quản trị neondb_owner, chạy toàn bộ [check_setup.sql](../db/neon/check_setup.sql) và gửi dòng kết quả. Đây là SELECT catalog, không sửa mật khẩu hoặc dữ liệu.
 
